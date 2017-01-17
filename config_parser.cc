@@ -152,71 +152,94 @@ bool NginxConfigParser::Parse(std::istream* config_file, NginxConfig* config) {
   config_stack.push(config);
   TokenType last_token_type = TOKEN_TYPE_START;
   TokenType token_type;
-  while (true) {
-    std::string token;
-    token_type = ParseToken(config_file, &token);
-    printf ("%s: %s\n", TokenTypeAsString(token_type), token.c_str());
-    if (token_type == TOKEN_TYPE_ERROR) {
-      break;
+  while (true) 
+    {
+      std::string token;
+      token_type = ParseToken(config_file, &token);
+      printf ("%s: %s\n", TokenTypeAsString(token_type), token.c_str());
+      if (token_type == TOKEN_TYPE_ERROR) 
+	{
+	  break;
+	}
+      
+      if (token_type == TOKEN_TYPE_COMMENT) 
+	{
+	  // Skip comments.
+	  continue;
+	}
+      
+      if (token_type == TOKEN_TYPE_START) 
+	{
+	  // Error.
+	  break;
+	} 
+      else if (token_type == TOKEN_TYPE_NORMAL) 
+	{
+	  if (last_token_type == TOKEN_TYPE_START ||
+	      last_token_type == TOKEN_TYPE_STATEMENT_END ||
+	      last_token_type == TOKEN_TYPE_START_BLOCK ||
+	      last_token_type == TOKEN_TYPE_END_BLOCK ||
+	      last_token_type == TOKEN_TYPE_NORMAL) 
+	    {
+	      if (last_token_type != TOKEN_TYPE_NORMAL) 
+		{
+		  config_stack.top()->statements_.emplace_back(new NginxConfigStatement);
+		}
+	      config_stack.top()->statements_.back().get()->tokens_.push_back(token);
+	    } 
+	  else 
+	    {
+	      // Error.
+	      break;
+	    }
+	} 
+      else if (token_type == TOKEN_TYPE_STATEMENT_END) 
+	{
+	  if (last_token_type != TOKEN_TYPE_NORMAL) 
+	    {
+	      // Error.
+	      break;
+	    }
+	} 
+      else if (token_type == TOKEN_TYPE_START_BLOCK) 
+	{
+	  if (last_token_type != TOKEN_TYPE_NORMAL) 
+	    {
+	      // Error.
+	      break;
+	    }
+	  NginxConfig* const new_config = new NginxConfig;
+	  config_stack.top()->statements_.back().get()->child_block_.reset(new_config);
+	  config_stack.push(new_config);
+	} 
+      else if (token_type == TOKEN_TYPE_END_BLOCK) 
+	{
+	  if (last_token_type != TOKEN_TYPE_STATEMENT_END) 
+	    {
+	      // Error.
+	      break;
+	    }
+	  config_stack.pop();
+	} 
+      else if (token_type == TOKEN_TYPE_EOF) 
+	{
+	  // the check in this if statement used to && but I think that's wrong. A token
+	  // can't be of two types simultaneously..
+	  if (last_token_type != TOKEN_TYPE_STATEMENT_END ||
+	      last_token_type != TOKEN_TYPE_END_BLOCK) 
+	    {
+	      // Error.
+	      break;
+	    }
+	  return true;
+	} 
+      else 
+	{
+	  // Error. Unknown token.
+	  break;
+	}
+      last_token_type = token_type;
     }
-
-    if (token_type == TOKEN_TYPE_COMMENT) {
-      // Skip comments.
-      continue;
-    }
-
-    if (token_type == TOKEN_TYPE_START) {
-      // Error.
-      break;
-    } else if (token_type == TOKEN_TYPE_NORMAL) {
-      if (last_token_type == TOKEN_TYPE_START ||
-          last_token_type == TOKEN_TYPE_STATEMENT_END ||
-          last_token_type == TOKEN_TYPE_START_BLOCK ||
-          last_token_type == TOKEN_TYPE_END_BLOCK ||
-          last_token_type == TOKEN_TYPE_NORMAL) {
-        if (last_token_type != TOKEN_TYPE_NORMAL) {
-          config_stack.top()->statements_.emplace_back(
-              new NginxConfigStatement);
-        }
-        config_stack.top()->statements_.back().get()->tokens_.push_back(
-            token);
-      } else {
-        // Error.
-        break;
-      }
-    } else if (token_type == TOKEN_TYPE_STATEMENT_END) {
-      if (last_token_type != TOKEN_TYPE_NORMAL) {
-        // Error.
-        break;
-      }
-    } else if (token_type == TOKEN_TYPE_START_BLOCK) {
-      if (last_token_type != TOKEN_TYPE_NORMAL) {
-        // Error.
-        break;
-      }
-      NginxConfig* const new_config = new NginxConfig;
-      config_stack.top()->statements_.back().get()->child_block_.reset(
-          new_config);
-      config_stack.push(new_config);
-    } else if (token_type == TOKEN_TYPE_END_BLOCK) {
-      if (last_token_type != TOKEN_TYPE_STATEMENT_END) {
-        // Error.
-        break;
-      }
-      config_stack.pop();
-    } else if (token_type == TOKEN_TYPE_EOF) {
-      if (last_token_type != TOKEN_TYPE_STATEMENT_END &&
-          last_token_type != TOKEN_TYPE_END_BLOCK) {
-        // Error.
-        break;
-      }
-      return true;
-    } else {
-      // Error. Unknown token.
-      break;
-    }
-    last_token_type = token_type;
-  }
 
   printf ("Bad transition from %s to %s\n",
           TokenTypeAsString(last_token_type),

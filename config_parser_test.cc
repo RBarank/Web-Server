@@ -91,4 +91,3 @@ TEST(NginxConfigParserInvalid, BadSemicolons)
   EXPECT_FALSE(parser.Parse(&buf, &out_config));
 
 }
-
