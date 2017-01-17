@@ -41,7 +41,7 @@ TEST(NginxConfigParserInvalid, BadBrackets)
   NginxConfigParser parser;
   NginxConfig out_config;
 
-  std::stringstream buf("server listen 80; server_name foo.com; root /home/ubuntu/sites/foo/; ");
+  std::stringstream buf("server {{ listen 80; server_name foo.com; root /home/ubuntu/sites/foo/; ");
   EXPECT_FALSE(parser.Parse(&buf, &out_config));
 
   buf.str("server { listen 80; server_name foo.com; root /home/ubuntu/sites/foo/; ");
@@ -52,7 +52,7 @@ TEST(NginxConfigParserInvalid, BadBrackets)
   buf.clear();
   EXPECT_FALSE(parser.Parse(&buf, &out_config));
 
-  buf.str("server { listen 80; server_name foo.com;} root /home/ubuntu/sites/foo/; ");
+  buf.str("server {}");
   buf.clear();
   EXPECT_FALSE(parser.Parse(&buf, &out_config));
 }
