@@ -152,6 +152,7 @@ bool NginxConfigParser::Parse(std::istream* config_file, NginxConfig* config) {
   config_stack.push(config);
   TokenType last_token_type = TOKEN_TYPE_START;
   TokenType token_type;
+  bool in_brackets = false;
   while (true) {
     std::string token;
     token_type = ParseToken(config_file, &token);
@@ -198,18 +199,32 @@ bool NginxConfigParser::Parse(std::istream* config_file, NginxConfig* config) {
       config_stack.top()->statements_.back().get()->child_block_.reset(
           new_config);
       config_stack.push(new_config);
+      in_brackets = true; 
     } else if (token_type == TOKEN_TYPE_END_BLOCK) {
       if (last_token_type != TOKEN_TYPE_STATEMENT_END) {
         // Error.
         break;
       }
+      if (in_brackets == false)
+	{
+	  // Error. unmatched closing brackets
+	  printf("Error: Unmatched closing brackets.\n");
+	  return false;
+	}
       config_stack.pop();
+      in_brackets = false;
     } else if (token_type == TOKEN_TYPE_EOF) {
       if (last_token_type != TOKEN_TYPE_STATEMENT_END &&
           last_token_type != TOKEN_TYPE_END_BLOCK) {
         // Error.
         break;
       }
+      if (in_brackets)
+	{
+	  // Error. unmatched open brackets.
+	  printf("Error: Unmatched open brackets.\n");
+	  return false;
+	}
       return true;
     } else {
       // Error. Unknown token.
