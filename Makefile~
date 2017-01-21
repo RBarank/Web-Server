@@ -1,0 +1,3 @@
+
+all:
+g++ config_parser.cc config_parser_main.cc -std=c++0x -g -Wall -o config_parser  
