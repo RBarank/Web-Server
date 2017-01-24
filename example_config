@@ -1,7 +1,7 @@
 foo "bar";
 
 server {
-  listen   80;
+  listen   3000;
   server_name foo.com;
   root /home/ubuntu/sites/foo/;
 }
