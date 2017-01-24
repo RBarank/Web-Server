@@ -253,3 +253,41 @@ bool NginxConfigParser::Parse(const char* file_name, NginxConfig* config) {
   config_file.close();
   return return_value;
 }
+
+
+int GetPortNumber::getPortNumber(NginxConfig config)
+{
+    for (const auto& statement : config.statements_)
+    {
+        if (statement->tokens_[0] == "server" &&  statement->child_block_ != nullptr)
+        {
+            for (const auto& stuff : statement->child_block_->statements_)
+            {
+                // std::cout << stuff->tokens_[0] << "\n" ;
+                if (stuff->tokens_[0] == "listen")
+                {
+                    if (stuff->tokens_.size() != 2)
+                    {
+                        return default_port_number;
+                    }
+                    std::string port_string = stuff->tokens_[1];
+                    
+                    for (int i = 0; i < port_string.length(); i++) {
+                        if (!isdigit(port_string[i]))
+                        {
+                            return default_port_number;
+                        }
+                    }
+                    
+                    int port_num = std::stoi(port_string);
+                    return port_num;
+                }
+            }
+        }
+    }
+    return default_port_number;
+}
+
+
+
+
