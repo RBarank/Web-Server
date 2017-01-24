@@ -5,7 +5,6 @@
 #include <unordered_map>
 
 #include "server.hpp"
-#include <signal.h>
 #include <utility>
 
 #include "connection.hpp"
@@ -60,7 +59,6 @@ server::server(const std::string& address, const std::string& port)
     acceptor_(io_service_),
     socket_(io_service_)
     {
-  do_await_stop();
 
   // Open the acceptor with the option to reuse the address (i.e. SO_REUSEADDR).
   boost::asio::ip::tcp::resolver resolver(io_service_);
@@ -98,18 +96,6 @@ void server::do_accept()
       });
 }
 
-void server::do_await_stop()
-{
-  signals_.async_wait(
-      [this](boost::system::error_code /*ec*/, int /*signo*/)
-      {
-        // The server is stopped by cancelling all outstanding asynchronous
-        // operations. Once all operations have finished the io_service::run()
-        // call will exit.
-        acceptor_.close();
-      });
-}
-
 } // namespace server
 } // namespace http
 
@@ -137,7 +123,7 @@ int main(int argc, char* argv[])
     try
     {
 
-        server s("127.0.0.1", std::toString(port_number));
+        http::server::server s("127.0.0.1", std::to_string(port_number));
 
         s.run();
     }
