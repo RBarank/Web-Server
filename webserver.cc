@@ -4,6 +4,115 @@
 #include <stdlib.h>
 #include <unordered_map>
 
+#include "server.hpp"
+#include <signal.h>
+#include <utility>
+
+#include "connection.hpp"
+#include <vector>
+
+namespace http {
+namespace server {
+
+connection::connection(boost::asio::ip::tcp::socket socket)
+  : socket_(std::move(socket))
+{
+}
+
+void connection::start()
+{
+  do_read();
+}
+
+void connection::stop()
+{
+  socket_.close();
+}
+
+void connection::do_read()
+{
+  auto self(shared_from_this());
+  socket_.async_read_some(boost::asio::buffer(buffer_),
+      [this, self](boost::system::error_code ec, std::size_t bytes_transferred)
+      {
+        //TODO: Handle Request
+      });
+}
+
+void connection::do_write()
+{
+  auto self(shared_from_this());
+  boost::asio::async_write(socket_, reply_.to_buffers(),
+      [this, self](boost::system::error_code ec, std::size_t)
+      {
+        if (!ec)
+        {
+          // Initiate graceful connection closure.
+          boost::system::error_code ignored_ec;
+          socket_.shutdown(boost::asio::ip::tcp::socket::shutdown_both,
+            ignored_ec);
+        }
+      });
+}
+
+server::server(const std::string& address, const std::string& port)
+  : io_service_(),
+    acceptor_(io_service_),
+    socket_(io_service_)
+    {
+  do_await_stop();
+
+  // Open the acceptor with the option to reuse the address (i.e. SO_REUSEADDR).
+  boost::asio::ip::tcp::resolver resolver(io_service_);
+  boost::asio::ip::tcp::endpoint endpoint = *resolver.resolve({address, port});
+  acceptor_.open(endpoint.protocol());
+  acceptor_.set_option(boost::asio::ip::tcp::acceptor::reuse_address(true));
+  acceptor_.bind(endpoint);
+  acceptor_.listen();
+
+  do_accept();
+}
+
+void server::run()
+{
+  // The io_service::run() call will block until all asynchronous operations
+  // have finished. While the server is running, there is always at least one
+  // asynchronous operation outstanding: the asynchronous accept call waiting
+  // for new incoming connections.
+  io_service_.run();
+}
+
+void server::do_accept()
+{
+  acceptor_.async_accept(socket_,
+      [this](boost::system::error_code ec)
+      {
+        // Check whether the server was stopped by a signal before this
+        // completion handler had a chance to run.
+        if (!acceptor_.is_open())
+        {
+          return;
+        }
+
+        do_accept();
+      });
+}
+
+void server::do_await_stop()
+{
+  signals_.async_wait(
+      [this](boost::system::error_code /*ec*/, int /*signo*/)
+      {
+        // The server is stopped by cancelling all outstanding asynchronous
+        // operations. Once all operations have finished the io_service::run()
+        // call will exit.
+        acceptor_.close();
+      });
+}
+
+} // namespace server
+} // namespace http
+
 
 
 
@@ -24,6 +133,20 @@ int main(int argc, char* argv[])
     
     GetPortNumber port_stuff = GetPortNumber(config);
     int port_number = port_stuff.portNumber();
+
+    try
+    {
+
+        server s("127.0.0.1", std::toString(port_number));
+
+        s.run();
+    }
+    catch (std::exception& e)
+    {
+        std::cerr << "Exception: " << e.what() << "\n";
+    }
+
+    return 0;
     
     //std::cout << port_number;
 
