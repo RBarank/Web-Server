@@ -272,7 +272,7 @@ int GetPortNumber::getPortNumber(NginxConfig config)
                     }
                     std::string port_string = stuff->tokens_[1];
                     
-                    for (int i = 0; i < port_string.length(); i++) {
+                    for (unsigned i = 0; i < port_string.length(); i++) {
                         if (!isdigit(port_string[i]))
                         {
                             return default_port_number;
