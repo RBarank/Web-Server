@@ -115,7 +115,7 @@ int main(int argc, char* argv[])
     config_parser.Parse(argv[1], &config);
     
     std::string config_string = config.ToString().c_str();
-    std::cout << config_string << std::endl;
+    //std::cout << config_string << std::endl;
     
     GetPortNumber port_stuff = GetPortNumber(config);
     int port_number = port_stuff.portNumber();
