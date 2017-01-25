@@ -34,7 +34,8 @@ void connection::do_read()
   socket_.async_read_some(boost::asio::buffer(buffer_),
       [this, self](boost::system::error_code ec, std::size_t bytes_transferred)
       {
-        //TODO: Handle Request
+        //TODO: handle request
+	printf("In connection do read\n"); // Debugging
       });
 }
 
@@ -44,6 +45,9 @@ void connection::do_write()
   boost::asio::async_write(socket_, reply_.to_buffers(),
       [this, self](boost::system::error_code ec, std::size_t)
       {
+
+	printf("in connection do write\n"); // debugging
+
         if (!ec)
         {
           // Initiate graceful connection closure.
