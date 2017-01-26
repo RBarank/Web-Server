@@ -45,21 +45,6 @@ void connection::do_read()
 void connection::do_write()
 {
   auto self(shared_from_this());
-  /*
-  reply_.status = reply::ok;
-  header head0;
-  head0.name = "Content-Length";
-  head0.value = std::to_string(reply_.content.size());
-  reply_.headers.push_back(head0);
-  //reply_.headers[0].name = "Content-Length";
-  //reply_.headers[0].value= std::to_string(reply_.content.size());
-  header head1;
-  head1.name = "Content-Type";
-  head1.value = "text/plain";
-  reply_.headers.push_back(head1);
-  //reply_.headers[1].name = "Content-Type";
-  //reply_.headers[1].value = "text/plain";
-  */
   
   std::vector<boost::asio::const_buffer> buffers;
   std::string sendString = "";
