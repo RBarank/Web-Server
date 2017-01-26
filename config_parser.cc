@@ -156,7 +156,7 @@ bool NginxConfigParser::Parse(std::istream* config_file, NginxConfig* config) {
   while (true) {
     std::string token;
     token_type = ParseToken(config_file, &token);
-    printf ("%s: %s\n", TokenTypeAsString(token_type), token.c_str());
+    //printf ("%s: %s\n", TokenTypeAsString(token_type), token.c_str());
     if (token_type == TOKEN_TYPE_ERROR) {
       break;
     }
@@ -272,7 +272,7 @@ int GetPortNumber::getPortNumber(NginxConfig config)
                     }
                     std::string port_string = stuff->tokens_[1];
                     
-                    for (int i = 0; i < port_string.length(); i++) {
+                    for (unsigned i = 0; i < port_string.length(); i++) {
                         if (!isdigit(port_string[i]))
                         {
                             return default_port_number;
