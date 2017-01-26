@@ -1,0 +1,5 @@
+team "Razzle-Dazzle";
+
+server {
+  listen   3000;
+}
