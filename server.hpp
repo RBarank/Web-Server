@@ -29,7 +29,7 @@ private:
   void do_accept();
 
   /// Wait for a request to stop the server.
-  void do_await_stop();
+  // void do_await_stop();
 
   /// The io_service used to perform asynchronous operations.
   boost::asio::io_service io_service_;

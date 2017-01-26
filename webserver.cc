@@ -32,28 +32,41 @@ void connection::do_read()
 {
   auto self(shared_from_this());
   socket_.async_read_some(boost::asio::buffer(buffer_),
-      [this, self](boost::system::error_code ec, std::size_t bytes_transferred)
+      [this, self](boost::system::error_code ec, std::size_t bytes)
       {
-        //TODO: handle request
-	printf("In connection do read\n"); // Debugging
+        reply_.content.append(buffer_.data(), buffer_.data() + bytes);
+        if (reply_.content.substr(reply_.content.size() - 4, 4) == "\r\n\r\n" )
+          do_write();
+        else
+          do_read();
       });
 }
 
 void connection::do_write()
 {
   auto self(shared_from_this());
+
+  reply_.status = reply::ok;
+  header head0;
+  head0.name = "Content-Length";
+  head0.value = std::to_string(reply_.content.size());
+  reply_.headers.push_back(head0);
+  //reply_.headers[0].name = "Content-Length";
+  //reply_.headers[0].value= std::to_string(reply_.content.size());
+  header head1;
+  head0.name = "Content-Type";
+  head0.value = "text/plain";
+  reply_.headers.push_back(head1);
+  //reply_.headers[1].name = "Content-Type";
+  //reply_.headers[1].value = "text/plain";
+
   boost::asio::async_write(socket_, reply_.to_buffers(),
       [this, self](boost::system::error_code ec, std::size_t)
       {
-
-	printf("in connection do write\n"); // debugging
-
         if (!ec)
         {
-          // Initiate graceful connection closure.
           boost::system::error_code ignored_ec;
-          socket_.shutdown(boost::asio::ip::tcp::socket::shutdown_both,
-            ignored_ec);
+          stop();
         }
       });
 }
@@ -77,10 +90,6 @@ server::server(const std::string& address, const std::string& port)
 
 void server::run()
 {
-  // The io_service::run() call will block until all asynchronous operations
-  // have finished. While the server is running, there is always at least one
-  // asynchronous operation outstanding: the asynchronous accept call waiting
-  // for new incoming connections.
   io_service_.run();
 }
 
@@ -95,7 +104,10 @@ void server::do_accept()
         {
           return;
         }
-
+        if (!ec)
+        {
+          std::make_shared<connection>(std::move(socket_))->start();
+        }
         do_accept();
       });
 }
