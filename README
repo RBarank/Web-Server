@@ -3,3 +3,7 @@ Parser for nginx config files.
 Includes code from googletest-1.7.0. See https://code.google.com/p/googletest/
 
 Inspired by https://github.com/fatiherikli/nginxparser
+
+Web Server largely inspired by Boost Official Examples : 
+http://www.boost.org/doc/libs/1_62_0/doc/html/boost_asio/example/cpp11/http/server/server.cpp
+http://www.boost.org/doc/libs/1_62_0/doc/html/boost_asio/example/cpp11/http/server/connection.cpp
