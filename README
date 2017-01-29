@@ -1,8 +1,11 @@
-Parser for nginx config files.
+Roi Barank, Abineet Das Sharma, Suchit Panjiyar
+Team Razzle-Dazzle
+UCLA CS 130: Software Engineering
+Winter 2017
+
+Parser for nginx config files inspired by https://github.com/fatiherikli/nginxparser.
 
 Includes code from googletest-1.7.0. See https://code.google.com/p/googletest/
-
-Inspired by https://github.com/fatiherikli/nginxparser
 
 Web Server largely inspired by Boost Official Examples : 
 http://www.boost.org/doc/libs/1_62_0/doc/html/boost_asio/example/cpp11/http/server/server.cpp
