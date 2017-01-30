@@ -2,7 +2,6 @@
 #include <string>
 #include <stdio.h>
 #include <stdlib.h>
-#include <unordered_map>
 #include "server.hpp"
 #include "connection.hpp"
 #include <utility>
@@ -90,33 +89,4 @@ int main(int argc, char* argv[])
 
     return 0;
     
-    //std::cout << port_number;
-
-    
-    
-    
-    
-    /*
-     size_t port_location = config_string.find("listen \D.*");
-     if (port_location == -1)
-     {
-     printf("Listen not found in config string\n");
-     exit(1);
-     }
-     port_location += 7; // the portno starts 7 chars after the l in listen
-     string port_string = "";
-     while (isdigit(config_string[port_location]))
-     {
-     
-     }
-     
-     
-     
-     printf("The portno is %d\n", portno);
-     
-     
-     
-     
-     return 0;
-     */
 }
