@@ -1,7 +1,0 @@
-foo "bar";
-
-server {
-  listen   3000;
-  server_name foo.com;
-  root /home/ubuntu/sites/foo/;
-}
