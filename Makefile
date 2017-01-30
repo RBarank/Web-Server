@@ -8,5 +8,5 @@ run:
 clean:
 	rm webserver config_parser_test # plus rest of tests we add
 
-tests:
+test:
 	./build_tests.sh # && ./run_all_tests??? or list them all one by one??
