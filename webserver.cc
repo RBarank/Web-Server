@@ -26,9 +26,7 @@ int main(int argc, char* argv[])
 
     try
     {
-
         http::server::server s("127.0.0.1", std::to_string(port_number));
-
         s.run();
     }
     catch (std::exception& e)
