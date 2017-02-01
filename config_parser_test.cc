@@ -26,14 +26,6 @@ TEST(NginxConfigStatementTest2, toString2) {
 	EXPECT_EQ(st.ToString(0), "foo bar;\n");
 }
 
-
-
-TEST(NginxConfigTest, toString) {
-	NginxConfig config;
-}
-
-
-
 class NginxStringConfigTest : public ::testing::Test {
 protected:
 	bool ParseString(const std::string config_string) {
@@ -62,7 +54,6 @@ TEST_F(NginxStringConfigTest, NestedConfig) {
 TEST_F(NginxStringConfigTest, UnbalancedCurlyBraces) {
 	EXPECT_FALSE(ParseString("server { port 3000; "));
 }
-
 
 TEST(GetPortNumberTest, check_different_ports) {
     for (int i = 1; i <= 5; i++)
