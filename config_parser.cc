@@ -271,6 +271,10 @@ bool GetPortNumber::getPortNumber(NginxConfig config)
                         return false;
                     }
                     std::string port_string = stuff->tokens_[1];
+                    if (port_string.length() > 5)
+                    {
+                        return false;
+                    }
                     
                     for (unsigned i = 0; i < port_string.length(); i++) {
                         if (!isdigit(port_string[i]))
