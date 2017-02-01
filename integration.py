@@ -20,19 +20,19 @@ req = requests.get('http://localhost:3000')
 
 if req.status_code != 200:
 	print "Error: Wrong Status Code."
-	exit()
+	exit(1)
 else:
 	print "Status Code Correct: 200"
 
 if req.headers['content-type'] != 'text/plain':
 	print "Incorrect content-type"
-	exit()
+	exit(2)
 else:
 	print "Content Type Correct: text/plain"
 
 if req.headers['content-length'] != str(len(req.content)):
 	print "Error: Length Header Invalid"
-	exit()
+	exit(3)
 else: 
 	print "Content Length Correct"
 
@@ -45,4 +45,4 @@ print "Cleaning previous build"
 subprocess.call(["make", "clean"])
 
 t.terminate()
-
+exit(0)
