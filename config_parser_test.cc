@@ -70,12 +70,17 @@ TEST(GetPortNumberTest, check_different_ports) {
         NginxConfigParser parser;
         NginxConfig out_config;
         std::string tmp = "test_file/config_file"+std::to_string(i);
-        std::cout << tmp << std::endl;
-        const char *cstr = tmp.c_str();
-        parser.Parse(cstr, &out_config);
+        parser.Parse(tmp.c_str(), &out_config);
         GetPortNumber port_stuff = GetPortNumber(out_config);
         EXPECT_EQ(port_stuff.portNumber(), -1);
     }
+    
+    NginxConfigParser parser;
+    NginxConfig out_config;
+    std::string tmp = "config_file";
+    parser.Parse(tmp.c_str(), &out_config);
+    GetPortNumber port_stuff = GetPortNumber(out_config);
+    EXPECT_EQ(port_stuff.portNumber(), 3000);
 }
 
 
