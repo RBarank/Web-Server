@@ -255,7 +255,7 @@ bool NginxConfigParser::Parse(const char* file_name, NginxConfig* config) {
 }
 
 
-int GetPortNumber::getPortNumber(NginxConfig config)
+bool GetPortNumber::getPortNumber(NginxConfig config)
 {
     for (const auto& statement : config.statements_)
     {
@@ -268,24 +268,35 @@ int GetPortNumber::getPortNumber(NginxConfig config)
                 {
                     if (stuff->tokens_.size() != 2)
                     {
-                        return default_port_number;
+                        return false;
                     }
                     std::string port_string = stuff->tokens_[1];
+                    if (port_string.length() > 5)
+                    {
+                        return false;
+                    }
                     
                     for (unsigned i = 0; i < port_string.length(); i++) {
                         if (!isdigit(port_string[i]))
                         {
-                            return default_port_number;
+                            return false;
                         }
                     }
                     
-                    int port_num = std::stoi(port_string);
-                    return port_num;
+                    port_number = std::stoi(port_string);
+                    
+                    if(port_number == 0 || port_number > 65535)
+                    {
+                        port_number = -1;
+                        return false;
+                    }
+                    
+                    return true;
                 }
             }
         }
     }
-    return default_port_number;
+    return false;
 }
 
 

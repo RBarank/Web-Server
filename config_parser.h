@@ -61,11 +61,12 @@ class NginxConfigParser {
 
 class GetPortNumber {
 public:
-    GetPortNumber(NginxConfig config) { port_number = getPortNumber(config); }
-    int portNumber() { return port_number;  }
+    GetPortNumber(NginxConfig config) { isPossible = getPortNumber(config);}
+    int portNumber() { if (isPossible) return port_number; else return -1; }
 private:
     int port_number;
-    int getPortNumber(NginxConfig config);
+    bool isPossible;
+    bool getPortNumber(NginxConfig config);
 };
 
 
