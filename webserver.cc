@@ -23,7 +23,12 @@ int main(int argc, char* argv[])
     
     GetPortNumber port_stuff = GetPortNumber(config);
     int port_number = port_stuff.portNumber();
-
+    if (port_number == -1)
+    {
+        std::cout << "Config file improperly formatted" << std::endl;
+        return 1;
+    }
+    
     try
     {
         http::server::server s("127.0.0.1", std::to_string(port_number));

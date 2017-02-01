@@ -1,5 +1,8 @@
 #include "gtest/gtest.h"
 #include "config_parser.h"
+#include <string>
+
+
 
 TEST(NginxConfigParserTest, SimpleConfig) {
   NginxConfigParser parser;
@@ -59,5 +62,21 @@ TEST_F(NginxStringConfigTest, NestedConfig) {
 TEST_F(NginxStringConfigTest, UnbalancedCurlyBraces) {
 	EXPECT_FALSE(ParseString("server { port 3000; "));
 }
+
+
+TEST(GetPortNumberTest, check_different_ports) {
+    for (int i = 1; i <= 4; i++)
+    {
+        NginxConfigParser parser;
+        NginxConfig out_config;
+        std::string tmp = "test_file/config_file"+std::to_string(i);
+        std::cout << tmp << std::endl;
+        const char *cstr = tmp.c_str();
+        parser.Parse(cstr, &out_config);
+        GetPortNumber port_stuff = GetPortNumber(out_config);
+        EXPECT_EQ(port_stuff.portNumber(), -1);
+    }
+}
+
 
 
