@@ -65,7 +65,7 @@ TEST_F(NginxStringConfigTest, UnbalancedCurlyBraces) {
 
 
 TEST(GetPortNumberTest, check_different_ports) {
-    for (int i = 1; i <= 4; i++)
+    for (int i = 1; i <= 5; i++)
     {
         NginxConfigParser parser;
         NginxConfig out_config;
