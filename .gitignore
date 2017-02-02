@@ -3,3 +3,4 @@ webserver.dSYM
 server_test
 config_parser_test
 webserver
+connection_test
