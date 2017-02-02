@@ -15,3 +15,6 @@ clean_tests:
 
 test:
 	./build_tests.sh # && ./run_all_tests??? or list them all one by one??
+
+integration:
+	python integration.py
