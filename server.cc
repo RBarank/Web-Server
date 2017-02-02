@@ -67,7 +67,7 @@ namespace http {
 	  
         }
 
-      bool server::isValidServer()
+      bool server::isValid()
         {
 	  // port number must be between these two numbers
 	  if ((portno_ < 0) || (portno_ > 65536))
@@ -77,6 +77,11 @@ namespace http {
 
 	  // ip address must be xxx.xxx.xxx.xxx where each xxx is 0-255
 	  if ((addr_.length() < 7) || (addr_.length() > 15))
+	    {
+	      return false;
+	    }
+
+	  if (acceptor_.is_open() == false)
 	    {
 	      return false;
 	    }

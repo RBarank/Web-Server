@@ -23,7 +23,7 @@ public:
   /// Run the server's io_service loop.
   void run();
 
-  bool isValidServer();
+  bool isValid();
 
 private:
   /// Perform an asynchronous accept operation.
