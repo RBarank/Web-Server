@@ -14,6 +14,11 @@ namespace http {
         acceptor_(io_service_),
         socket_(io_service_)
         {
+            int port_number = std::stoi(port);
+            if (port_number < 1 || port_number > 65535)
+            {
+                throw boost::system::errc::make_error_code(boost::system::errc::invalid_argument);
+            }
             
             // Open the acceptor with the option to reuse the address (i.e. SO_REUSEADDR).
             boost::asio::ip::tcp::resolver resolver(io_service_);
@@ -28,26 +33,35 @@ namespace http {
         
         void server::run()
         {
-            io_service_.run();
+            try {
+                io_service_.run();
+            } catch (boost::system::error_code const &e) {
+                throw e;
+            }
         }
         
         void server::do_accept()
         {
-            acceptor_.async_accept(socket_,
-                                   [this](boost::system::error_code ec)
-                                   {
-                                       // Check whether the server was stopped by a signal before this
-                                       // completion handler had a chance to run.
-                                       if (!acceptor_.is_open())
+            try {
+                acceptor_.async_accept(socket_,
+                                       [this](boost::system::error_code ec)
                                        {
-                                           return;
-                                       }
-                                       if (!ec)
-                                       {
-                                           std::make_shared<connection>(std::move(socket_))->start();
-                                       }
-                                       do_accept();
-                                   });
+                                           // Check whether the server was stopped by a signal before this
+                                           // completion handler had a chance to run.
+                                           if (!acceptor_.is_open())
+                                           {
+                                               return;
+                                           }
+                                           if (!ec)
+                                           {
+                                               std::make_shared<connection>(std::move(socket_))->start();
+                                           }
+                                           do_accept();
+                                       });
+            } catch (boost::system::error_code const &e) {
+                throw e;
+            }
+            
         }
         
     } // namespace server
