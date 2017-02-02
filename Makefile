@@ -23,9 +23,4 @@ integration:
 	python integration.py
 
 coverage: test
-	./server_test
-	gcov -r server.cc
-	./connection_test
-	gcov -r connection.cc
-	./config_parser_test
-	gcov -r config_parser.cc
+	gcov -r server.cc connection.cc config_parser.cc
