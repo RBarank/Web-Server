@@ -28,26 +28,35 @@ namespace http {
         
         void server::run()
         {
-            io_service_.run();
+            try {
+                io_service_.run();
+            } catch (boost::system::error_code const &e) {
+                throw e;
+            }
         }
         
         void server::do_accept()
         {
-            acceptor_.async_accept(socket_,
-                                   [this](boost::system::error_code ec)
-                                   {
-                                       // Check whether the server was stopped by a signal before this
-                                       // completion handler had a chance to run.
-                                       if (!acceptor_.is_open())
+            try {
+                acceptor_.async_accept(socket_,
+                                       [this](boost::system::error_code ec)
                                        {
-                                           return;
-                                       }
-                                       if (!ec)
-                                       {
-                                           std::make_shared<connection>(std::move(socket_))->start();
-                                       }
-                                       do_accept();
-                                   });
+                                           // Check whether the server was stopped by a signal before this
+                                           // completion handler had a chance to run.
+                                           if (!acceptor_.is_open())
+                                           {
+                                               return;
+                                           }
+                                           if (!ec)
+                                           {
+                                               std::make_shared<connection>(std::move(socket_))->start();
+                                           }
+                                           do_accept();
+                                       });
+            } catch (boost::system::error_code const &e) {
+                throw e;
+            }
+            
         }
         
     } // namespace server

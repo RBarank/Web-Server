@@ -11,12 +11,17 @@ connection::connection(boost::asio::ip::tcp::socket socket)
 
 void connection::start()
 {
-  do_read();
+    try {
+        do_read();
+    }
+    catch(boost::system::error_code &e) {
+        throw e;
+    }
 }
 
 void connection::stop()
 {
-  socket_.close();
+    socket_.close();
 }
 
 void connection::do_read()
