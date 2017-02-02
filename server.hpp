@@ -23,6 +23,8 @@ public:
   /// Run the server's io_service loop.
   void run();
 
+  bool isValid();
+
 private:
   /// Perform an asynchronous accept operation.
   void do_accept();
@@ -38,6 +40,9 @@ private:
 
   /// The next socket to be accepted.
   boost::asio::ip::tcp::socket socket_;
+
+  int portno_;
+  std::string addr_;
 };
 
 } // namespace server
