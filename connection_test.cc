@@ -1,11 +1,24 @@
 #include "gtest/gtest.h"
-//#include "connection.hpp"
+#include "connection.hpp"
 #include <boost/asio.hpp>
 
+boost::asio::io_service io_service_;
+boost::asio::ip::tcp::socket socket_(io_service_);
 
-TEST(ServerTest, InvalidPortNumber) {
-    EXPECT_EQ("aa", "aa");
+void startConnection(http::server::connection& test_connection)
+{
+    test_connection.start();
+}
+
+void stopConnection(http::server::connection& test_connection)
+{
+    test_connection.stop();
 }
 
 
-g++ -std=c++0x -isystem googletest/googletest/include -pthread connection_test.cc -lboost_system googletest/googletest/src/gtest_main.cc libgtest.a -o connection_test
+TEST(ConnectionTest, constructor_tests) {
+    http::server::connection test_connection(std::move(socket_));
+    EXPECT_FALSE(socket_.is_open());
+    EXPECT_ANY_THROW(startConnection(test_connection));
+    EXPECT_NO_THROW(stopConnection(test_connection));
+}
