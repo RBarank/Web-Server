@@ -15,6 +15,7 @@ clean-tests:
 	rm config_parser_test server_test connection_test
 
 test:
+	./build_tests.sh
 	g++ -std=c++0x -isystem googletest/googletest/include -pthread server_test.cc server.cc connection.cc -lboost_system googletest/googletest/src/gtest_main.cc libgtest.a -o server_test -fprofile-arcs -ftest-coverage
 	g++ -std=c++0x -isystem googletest/googletest/include -pthread connection_test.cc connection.cc -lboost_system googletest/googletest/src/gtest_main.cc libgtest.a -o connection_test -fprofile-arcs -ftest-coverage
 
@@ -26,3 +27,5 @@ coverage: test
 	gcov -r server.cc
 	./connection_test
 	gcov -r connection.cc
+	./config_parser_test
+	gcov -r config_parser.cc
