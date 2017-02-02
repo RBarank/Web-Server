@@ -11,17 +11,19 @@ connection::connection(boost::asio::ip::tcp::socket socket)
 
 void connection::start()
 {
-    try {
-        do_read();
+  try 
+    {
+      do_read();
     }
-    catch(boost::system::error_code &e) {
-        throw e;
+  catch(boost::system::error_code &e) 
+    {
+      throw e;
     }
 }
 
 void connection::stop()
 {
-    socket_.close();
+  socket_.close();
 }
 
 void connection::do_read()
@@ -32,9 +34,13 @@ void connection::do_read()
       {
         reply_.append(buffer_.data(), buffer_.data() + bytes);
         if (reply_.substr(reply_.size() - 4, 4) == "\r\n\r\n" )
-          do_write();
+	  {
+	    do_write();
+	  }
         else
-          do_read();
+	  {
+	    do_read();
+	  }
       });
 }
 
@@ -59,16 +65,16 @@ void connection::do_write()
 
   buffers.push_back(boost::asio::buffer(sendString));
   
-    boost::asio::async_write(socket_, buffers,
-      [this, self](boost::system::error_code ec, std::size_t)
-      {
-        if (!ec)
-        {
-          boost::system::error_code ignored_ec;
-          stop();
-        }
-      });
-      
+  boost::asio::async_write(socket_, buffers,
+			   [this, self](boost::system::error_code ec, std::size_t)
+			   {
+			     if (!ec)
+			       {
+				 boost::system::error_code ignored_ec;
+				 stop();
+			       }
+			   });
+    
 }
 
 } // namespace server

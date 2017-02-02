@@ -2,14 +2,19 @@
 #include "server.hpp"
 #include <string>
 
-TEST(ServerTest, Construtor) {
-    try {
-        std::string link = "127.0.0.1", port = "8080";
-        http::server::server test_server(link, port);
-        test_server.run();
-    }
-    catch(boost::system::error_code &e) {
-        throw e.message();
-    }
+TEST(ServerTest, BadPortNo) 
+{
+  std::string link = "127.0.0.1", port = "999998080";
+  http::server::server test_server(link, port);
+
+  EXPECT_FALSE(test_server.isValidServer());
 }
 
+
+TEST(ServerTest, BadAddr) 
+{
+  std::string link = ".0.0.1", port = "8080";
+  http::server::server test_server(link, port);
+
+  EXPECT_FALSE(test_server.isValidServer());
+}
