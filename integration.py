@@ -6,13 +6,12 @@ import requests
 
 def threadExec():
 	subprocess.call(["./webserver", "config_file"])
-#p = subprocess.Popen("./webserver config_file")
 
 print "Building binary"
 subprocess.call(["make"])
 
-t = Process(target=threadExec)
-t.start()
+serverProcess = Process(target=threadExec)
+serverProcess.start()
 
 sleep(5)
 
@@ -44,5 +43,5 @@ subprocess.call(["fuser", "-k", "3000/tcp"])
 print "Cleaning previous build"
 subprocess.call(["make", "clean"])
 
-t.terminate()
+serverProcess.terminate()
 exit(0)
