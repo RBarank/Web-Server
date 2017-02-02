@@ -27,7 +27,9 @@ public:
 
   /// Stop all asynchronous operations associated with the connection.
   void stop();
-
+  
+    //boost::asio::ip::tcp::socket getSocket() {return socket_;}
+    
 private:
   /// Perform an asynchronous read operation.
   void do_read();

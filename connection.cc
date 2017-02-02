@@ -43,7 +43,7 @@ void connection::do_read()
 	  }
       });
 }
-
+    
 void connection::do_write()
 {
   auto self(shared_from_this());

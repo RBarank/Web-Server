@@ -29,3 +29,4 @@ TEST(ServerTest, GoodConfigs)
   http::server::server test_server("127.0.0.1", "8080");  
   EXPECT_TRUE(test_server.isValid());
 }
+
