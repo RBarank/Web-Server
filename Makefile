@@ -25,3 +25,6 @@ integration:
 
 coverage: test
 	gcov -r server.cc connection.cc config_parser.cc
+
+clean_coverage:
+	rm *gcov *gcda *gcno
