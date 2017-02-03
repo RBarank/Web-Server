@@ -7,3 +7,5 @@ connection_test
 *gcda
 *gcno
 *gcov
+gtest-all.o
+libgtest.a
