@@ -40,9 +40,9 @@ private:
 
   /// The next socket to be accepted.
   boost::asio::ip::tcp::socket socket_;
-
-  int portno_;
-  std::string addr_;
+//
+//  int portno_;
+//  std::string addr_;
 };
 
 } // namespace server
