@@ -5,6 +5,7 @@
 
 #include <boost/asio.hpp>
 #include <string>
+#include "reply.hpp"
 
 namespace http {
 namespace server {

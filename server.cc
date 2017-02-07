@@ -4,7 +4,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-
+const int MAX_PORT_NO = 65535;
+const int MIN_PORT_NO = 1;
 
 namespace http {
     namespace server {
@@ -15,7 +16,7 @@ namespace http {
         socket_(io_service_)
         {
             int port_number = std::stoi(port);
-            if (port_number < 1 || port_number > 65535)
+            if (port_number < MIN_PORT_NO || port_number > MAX_PORT_NO)
             {
                 throw boost::system::errc::make_error_code(boost::system::errc::invalid_argument);
             }
