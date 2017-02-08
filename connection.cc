@@ -149,13 +149,14 @@ void connection::do_static()
 
   // Request path must be absolute and not contain "..".
   if (request_path.empty() || request_path[0] != '/'
-      || request_path.find("..") != std::string::npos)
+      || (request_path.find("..") != std::string::npos))
   {
     reply_ = reply::stock_reply(reply::bad_request);
     return;
   }
 
   // If path ends in slash (i.e. is a directory) then add "index.html".
+  // TODO: why not return a bad request here??
   if (request_path[request_path.size() - 1] == '/')
   {
     request_path += "index.html";
@@ -174,8 +175,8 @@ void connection::do_static()
       return;
     }
 
-
   // Open the file to send back.
+  // TODO: why not treat file path from beginning as starting after the second "/" in /static/..
   std::string full_path = request_path.substr(1);
 
   //std::cout << "full path: " << full_path << std::endl;
@@ -190,14 +191,17 @@ void connection::do_static()
   reply_.status = reply::ok;
   char buf[512];
   while (is.read(buf, sizeof(buf)).gcount() > 0)
-    reply_.content.append(buf, is.gcount());
-  //std::cout << "content: " << reply_.content << std::endl;
+    {
+      reply_.content.append(buf, is.gcount());
+      memset(buf, 0, sizeof(buf));
+    }
+  //std::cout << "content: " << reply_.content << std::endl; // Debugging
   reply_.headers.resize(2);
   reply_.headers[0].name = "Content-Length";
   reply_.headers[0].value = std::to_string(reply_.content.size());
   reply_.headers[1].name = "Content-Type";
   reply_.headers[1].value = mime_types::extension_to_type(extension);  
-  std::cout << "type: " << reply_.headers[1].value << std::endl;
+  //std::cout << "type: " << reply_.headers[1].value << std::endl; // Debugging
 
 
   //stop();
