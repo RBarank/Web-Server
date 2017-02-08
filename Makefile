@@ -22,8 +22,8 @@ test:
 	g++ -std=c++0x -isystem ${GTEST_DIR}/include -I${GTEST_DIR} -pthread -c ${GTEST_DIR}/src/gtest-all.cc
 	ar -rv libgtest.a gtest-all.o
 	g++ config_parser_test.cc config_parser.cc -o config_parser_test $(STD_FLAGS) $(COV_FLAGS)
-	g++ server_test.cc server.cc connection.cc reply.cc -o server_test $(STD_FLAGS) $(COV_FLAGS)
-	g++ connection_test.cc connection.cc reply.cc -o connection_test $(STD_FLAGS) $(COV_FLAGS)
+	g++ server_test.cc server.cc connection.cc reply.cc mime-types.cc -o server_test $(STD_FLAGS) $(COV_FLAGS)
+	g++ connection_test.cc connection.cc reply.cc mime-types.cc -o connection_test $(STD_FLAGS) $(COV_FLAGS)
 	./server_test && ./connection_test && ./config_parser_test
 
 integration:
