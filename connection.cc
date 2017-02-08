@@ -48,21 +48,8 @@ void connection::do_read()
 	// TODO: For now always go to handle_request
 	handle_request();
 
-  do_write();
+	do_write();
 
-	/*
-        reply_.content.append(request_.content, bytes);
-	if (reply_.content.substr(reply_.content.size() - 4, 4) == "\r\n\r\n" )
-	  {
-	    // call parse_request instead
-	    // parse_request(...)
-	    //do_write();
-	    handle_request();
-	  }
-        else
-	  {
-	    do_read();
-	  }*/
   });
 }
 
@@ -83,40 +70,12 @@ void connection::handle_request()
   
   std::cout << "request_method: " << request_.method << "\nrequest_uri: " << request_.uri << std::endl;
 
-  /*
-  std::string segment;
-  size_t i =  0;
-  bool method_parsed = false;
-
-  while (i < request_.length)
-    {
-      segment += request_.content[i];
-      if (request_.content[i] == ' ')
-	{
-	  if (method_parsed == false)
-	    {
-	      request_.method = segment;
-	      method_parsed = true;
-	      std::cout << "method " << request_.method << std::endl;
-	    }
-	  else
-	    {
-	      request_.uri = segment;
-	      std::cout << "uri " << request_.uri << std::endl;
-	      break;
-	    }
-	  segment = "";
-	}
-      i++;
-    }
-  */
-
-  if (request_.uri.substr(0, 5) == "/echo")
+  if (request_.uri.substr(0, 6) == "/echo/")
     {
       request_.base = "echo";
       do_echo();
     }
-  else if (request_.uri.substr(0, 7) == "/static")
+  else if (request_.uri.substr(0, 8) == "/static/")
     {
       request_.base = "static";
       do_static();
@@ -124,12 +83,10 @@ void connection::handle_request()
   else
     {
       // TODO: neither static nor echo base specified
+      reply_ = reply::stock_reply(reply::bad_request);
+      return;
     }
   
-/*
-  std::cout << "request base: " << request_.base << std::endl;
-  std::cout << request_.method << "   " << request_.uri << std::endl;
-  do_echo();*/  
 }
 
 bool url_decode(const std::string& in, std::string& out)
@@ -177,11 +134,8 @@ void connection::do_static()
 
   std::cout << "in do_static" << std::endl;
 
-  // for now, handle only .html
-  // TODO: add definition of supported file extensions in request.hpp
-
   // filepath beings after /static/ so at the 8th char
-  std::string filepath = request_.uri.substr(7, std::string::npos);
+  std::string filepath = request_.uri.substr(7);
   std::cout << "filepath: " << filepath << std::endl;
 
   std::string request_path;
@@ -214,6 +168,11 @@ void connection::do_static()
   {
     extension = request_path.substr(last_dot_pos + 1);
   }
+  else
+    {
+      reply_ = reply::stock_reply(reply::bad_request);
+      return;
+    }
 
 
   // Open the file to send back.
@@ -244,7 +203,6 @@ void connection::do_static()
   //stop();
 }
 
-// This is the same as the old do_write
 void connection::do_echo()
 {
   std::cout << "in do_echo" << std::endl;
@@ -259,18 +217,7 @@ void connection::do_echo()
   reply_.headers[0].value = std::to_string(reply_.content.size());
   reply_.headers[1].name = "Content-Type";
   reply_.headers[1].value = "text/plain";
-  /*
-  boost::asio::async_write(socket_, reply_.to_buffers(),
-      [this, self](boost::system::error_code ec, std::size_t)
-      {
-        if (!ec)
-        {
-          boost::system::error_code ignored_ec;
-          stop();
-        }
-      });
-      */
-    }
+}
 
 void connection::do_write()
 {
