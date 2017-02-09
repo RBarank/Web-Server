@@ -7,6 +7,7 @@
 #include <boost/asio.hpp>
 #include "reply.hpp"
 #include "request.hpp"
+#include <unordered_map>
 
 
 //const int MAX_REQUEST_SIZE = 8192;
@@ -25,7 +26,7 @@ namespace http {
       connection& operator=(const connection&) = delete;
       
       /// Construct a connection with the given socket.
-      explicit connection(boost::asio::ip::tcp::socket socket);
+      explicit connection(boost::asio::ip::tcp::socket socket, const std::unordered_map<std::string, std::string>& pathMap);
       
       /// Start the first asynchronous operation for the connection.
       void start();
@@ -50,6 +51,8 @@ namespace http {
       
       /// Socket for the connection.
       boost::asio::ip::tcp::socket socket_;
+
+      std::unordered_map<std::string, std::string> pathMap_;
       
       /// Buffer for incoming data.
       //char request_buffer[MAX_REQUEST_SIZE];

@@ -10,5 +10,10 @@ server {
     path /static {
           action static;
           root /test_folder;
+   }
+   
+    path /static2 {
+        action static;
+        root /test_folder2;
     }
 }
