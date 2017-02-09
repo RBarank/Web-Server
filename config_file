@@ -4,8 +4,7 @@ server {
     listen   3000;
 
     path /echo {
-          action echo;
-             
+          action echo;             
     }
 
     path /static {
