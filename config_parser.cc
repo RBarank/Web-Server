@@ -148,15 +148,15 @@ NginxConfigParser::TokenType NginxConfigParser::ParseToken(std::istream* input,
 }
 
 bool NginxConfigParser::Parse(std::istream* config_file, NginxConfig* config) {
+  int nest = 0;
   std::stack<NginxConfig*> config_stack;
   config_stack.push(config);
   TokenType last_token_type = TOKEN_TYPE_START;
   TokenType token_type;
-  bool in_brackets = false;
   while (true) {
     std::string token;
     token_type = ParseToken(config_file, &token);
-    //printf ("%s: %s\n", TokenTypeAsString(token_type), token.c_str());
+//    printf ("%s: %s\n", TokenTypeAsString(token_type), token.c_str());
     if (token_type == TOKEN_TYPE_ERROR) {
       break;
     }
@@ -175,14 +175,13 @@ bool NginxConfigParser::Parse(std::istream* config_file, NginxConfig* config) {
           last_token_type == TOKEN_TYPE_START_BLOCK ||
           last_token_type == TOKEN_TYPE_END_BLOCK ||
           last_token_type == TOKEN_TYPE_NORMAL) {
-          if (last_token_type != TOKEN_TYPE_NORMAL) {
-              config_stack.top()->statements_.emplace_back(
+        if (last_token_type != TOKEN_TYPE_NORMAL) {
+          config_stack.top()->statements_.emplace_back(
               new NginxConfigStatement);
-          }
-          config_stack.top()->statements_.back().get()->tokens_.push_back(
+        }
+        config_stack.top()->statements_.back().get()->tokens_.push_back(
             token);
-      }
-      else {
+      } else {
         // Error.
         break;
       }
@@ -192,6 +191,7 @@ bool NginxConfigParser::Parse(std::istream* config_file, NginxConfig* config) {
         break;
       }
     } else if (token_type == TOKEN_TYPE_START_BLOCK) {
+      nest += 1;
       if (last_token_type != TOKEN_TYPE_NORMAL) {
         // Error.
         break;
@@ -200,32 +200,23 @@ bool NginxConfigParser::Parse(std::istream* config_file, NginxConfig* config) {
       config_stack.top()->statements_.back().get()->child_block_.reset(
           new_config);
       config_stack.push(new_config);
-      in_brackets = true; 
     } else if (token_type == TOKEN_TYPE_END_BLOCK) {
-      if (last_token_type != TOKEN_TYPE_STATEMENT_END) {
+      nest -= 1;
+      if (!(last_token_type == TOKEN_TYPE_STATEMENT_END || last_token_type == TOKEN_TYPE_END_BLOCK )) {
         // Error.
         break;
       }
-      if (in_brackets == false)
-	{
-	  // Error. unmatched closing brackets
-	  printf("Error: Unmatched closing brackets.\n");
-	  return false;
-	}
       config_stack.pop();
-      in_brackets = false;
     } else if (token_type == TOKEN_TYPE_EOF) {
+      if (nest != 0)
+      {
+        break;
+      }
       if (last_token_type != TOKEN_TYPE_STATEMENT_END &&
           last_token_type != TOKEN_TYPE_END_BLOCK) {
         // Error.
         break;
       }
-      if (in_brackets)
-	{
-	  // Error. unmatched open brackets.
-	  printf("Error: Unmatched open brackets.\n");
-	  return false;
-	}
       return true;
     } else {
       // Error. Unknown token.
@@ -255,7 +246,7 @@ bool NginxConfigParser::Parse(const char* file_name, NginxConfig* config) {
 }
 
 
-bool GetPortNumber::getPortNumber(NginxConfig config)
+bool GetConfigInfo::getPortNumber(NginxConfig config)
 {
     for (const auto& statement : config.statements_)
     {
@@ -299,6 +290,28 @@ bool GetPortNumber::getPortNumber(NginxConfig config)
     return false;
 }
 
-
-
-
+std::unordered_map<std::string, std::string> GetConfigInfo::getPathMap(NginxConfig config)
+{
+    for (const auto& statement : config.statements_)
+    {
+         if (statement->tokens_[0] == "server" &&  statement->child_block_ != nullptr)
+         {
+             for (const auto& within_server : statement->child_block_->statements_)
+             {
+                 if (within_server->tokens_.size() >= 2 && within_server->tokens_[0] == "path" && within_server->child_block_ != nullptr)
+                 {
+                     m_path_instr_map[within_server->tokens_[1]] = "";
+                     for (const auto& within_path : within_server->child_block_->statements_)
+                     {
+                         if (within_path->tokens_.size() >= 2 && within_path->tokens_[0] == "root")
+                         {
+                             m_path_instr_map[within_server->tokens_[1]] = within_path->tokens_[1];
+                         }
+                     }
+                     
+                 }
+             }
+         }
+    }
+    return m_path_instr_map;
+}

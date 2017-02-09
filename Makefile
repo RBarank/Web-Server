@@ -1,8 +1,12 @@
+GTEST_DIR = googletest/googletest
+STD_FLAGS = -std=c++0x -g -Wall -Werror -pthread -lboost_system
+COV_FLAGS = -isystem $(GTEST_DIR)/include -fprofile-arcs -ftest-coverage libgtest.a $(GTEST_DIR)/src/gtest_main.cc
+
 all:
-	g++ config_parser.cc connection.cc webserver.cc server.cc -o webserver -std=c++0x -g -Wall -Werror -lboost_system -lpthread
+	g++ config_parser.cc connection.cc server.cc reply.cc webserver.cc mime-types.cc -o webserver $(STD_FLAGS)
 
 run:
-	g++ config_parser.cc connection.cc reply.cc webserver.cc -o webserver -std=c++0x -g -Wall -Werror -lboost_system -lpthread
+	g++ config_parser.cc connection.cc server.cc reply.cc webserver.cc mime-types.cc -o webserver $(STD_FLAGS)
 	./webserver config_file
 
 clean:
@@ -15,9 +19,11 @@ clean-tests:
 	rm config_parser_test server_test connection_test
 
 test:
-	./build_tests.sh
-	g++ -std=c++0x -isystem googletest/googletest/include -pthread server_test.cc server.cc connection.cc -lboost_system googletest/googletest/src/gtest_main.cc libgtest.a -o server_test -fprofile-arcs -ftest-coverage
-	g++ -std=c++0x -isystem googletest/googletest/include -pthread connection_test.cc connection.cc -lboost_system googletest/googletest/src/gtest_main.cc libgtest.a -o connection_test -fprofile-arcs -ftest-coverage
+	g++ -std=c++0x -isystem ${GTEST_DIR}/include -I${GTEST_DIR} -pthread -c ${GTEST_DIR}/src/gtest-all.cc
+	ar -rv libgtest.a gtest-all.o
+	g++ config_parser_test.cc config_parser.cc -o config_parser_test $(STD_FLAGS) $(COV_FLAGS)
+	g++ server_test.cc server.cc connection.cc reply.cc mime-types.cc -o server_test $(STD_FLAGS) $(COV_FLAGS)
+	g++ connection_test.cc connection.cc reply.cc mime-types.cc -o connection_test $(STD_FLAGS) $(COV_FLAGS)
 	./server_test && ./connection_test && ./config_parser_test
 
 integration:
@@ -26,5 +32,5 @@ integration:
 coverage: test
 	gcov -r server.cc connection.cc config_parser.cc
 
-clean_coverage:
+clean-coverage:
 	rm *gcov *gcda *gcno

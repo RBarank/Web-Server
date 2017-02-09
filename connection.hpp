@@ -5,51 +5,67 @@
 #include <array>
 #include <memory>
 #include <boost/asio.hpp>
+#include "reply.hpp"
+#include "request.hpp"
+#include <unordered_map>
+
+
+//const int MAX_REQUEST_SIZE = 8192;
 
 namespace http {
-namespace server {
+  namespace server {
 
-class connection_manager;
+    class connection_manager;
 
-/// Represents a single connection from a client.
-class connection
-  : public std::enable_shared_from_this<connection>
-{
-public:
-  connection(const connection&) = delete;
-  connection& operator=(const connection&) = delete;
+    /// Represents a single connection from a client.
+    class connection
+      : public std::enable_shared_from_this<connection>
+    {
+    public:
+      connection(const connection&) = delete;
+      connection& operator=(const connection&) = delete;
+      
+      /// Construct a connection with the given socket.
+      explicit connection(boost::asio::ip::tcp::socket socket, const std::unordered_map<std::string, std::string>& pathMap);
+      
+      /// Start the first asynchronous operation for the connection.
+      void start();
+      
+      /// Stop all asynchronous operations associated with the connection.
+      void stop();
+      
+      //boost::asio::ip::tcp::socket getSocket() {return socket_;}
+      
+    private:
+      /// Perform an asynchronous read operation.
+      void do_read();
+      
+      /// Perform an asynchronous write operation.
+      void do_write();
 
-  /// Construct a connection with the given socket.
-  explicit connection(boost::asio::ip::tcp::socket socket);
+      
+      void handle_request();
+      void do_echo();
+      void do_static();
 
-  /// Start the first asynchronous operation for the connection.
-  void start();
+      
+      /// Socket for the connection.
+      boost::asio::ip::tcp::socket socket_;
 
-  /// Stop all asynchronous operations associated with the connection.
-  void stop();
-  
-    //boost::asio::ip::tcp::socket getSocket() {return socket_;}
-    
-private:
-  /// Perform an asynchronous read operation.
-  void do_read();
+      std::unordered_map<std::string, std::string> pathMap_;
+      
+      /// Buffer for incoming data.
+      //char request_buffer[MAX_REQUEST_SIZE];
+      
+      /// The reply to be sent back to the client.
+      reply reply_;
 
-  /// Perform an asynchronous write operation.
-  void do_write();
+      request request_;
+    };
 
-  /// Socket for the connection.
-  boost::asio::ip::tcp::socket socket_;
+    typedef std::shared_ptr<connection> connection_ptr;
 
-  /// Buffer for incoming data.
-  std::array<char, 8192> buffer_;
-
-  /// The reply to be sent back to the client.
-  std::string reply_;
-};
-
-typedef std::shared_ptr<connection> connection_ptr;
-
-} // namespace server
+  } // namespace server
 } // namespace http
 
 #endif // HTTP_CONNECTION_HPP
