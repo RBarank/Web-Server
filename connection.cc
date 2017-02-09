@@ -12,7 +12,7 @@ namespace http {
 namespace server {
 
 connection::connection(boost::asio::ip::tcp::socket socket, const std::unordered_map<std::string, std::string>& pathMap)
-  : socket_(std::move(socket)), pathMap_(pathMap) 
+  : socket_(std::move(socket)), pathMap_(pathMap)//,request_handler_(NULL) 
 {
 }
 
@@ -44,9 +44,7 @@ void connection::do_read()
       [this, self](boost::system::error_code ec, std::size_t bytes)
       {
 	request_.length = bytes;
-	// TODO: Handle num bytes read
-       
-	// TODO: For now always go to handle_request
+
 	handle_request();
 
 	do_write();
@@ -54,7 +52,7 @@ void connection::do_read()
   });
 }
 
-// Handle Request to be an intermediary between do_read and do_write
+// Handle Request is called by do_read, uses request_ to properly fill out reply_, then calls do_write()
 void connection::handle_request()
 {
   std::cout << "request begin\n" << request_.content << "response end" << std::endl;
@@ -84,7 +82,7 @@ void connection::handle_request()
     }
   else
     {
-      // TODO: neither static nor echo base specified
+      // If the request's base is not supported, return a bad request error
       reply_ = reply::stock_reply(reply::bad_request);
       return;
     }
@@ -132,8 +130,6 @@ bool url_decode(const std::string& in, std::string& out)
 
 void connection::do_static()
 {
-  // TODO: error checking and input validation
-
   std::cout << "in do_static" << std::endl;
 
   // filepath beings after /static/ so at the 8th char
@@ -158,7 +154,6 @@ void connection::do_static()
   }
 
   // If path ends in slash (i.e. is a directory) then add "index.html".
-  // TODO: why not return a bad request here??
   if (request_path[request_path.size() - 1] == '/')
   {
     request_path += "index.html";
@@ -178,7 +173,6 @@ void connection::do_static()
     }
 
   // Open the file to send back.
-  // TODO: why not treat file path from beginning as starting after the second "/" in /static/..
   std::string full_path = pathMap_[request_.base] + request_path;
   full_path = full_path.substr(1);
   std::cout << "filepath: " << pathMap_[request_.base] << std::endl;

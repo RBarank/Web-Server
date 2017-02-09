@@ -59,8 +59,8 @@ namespace http {
       
       /// The reply to be sent back to the client.
       reply reply_;
-
       request request_;
+      // request_handler* request_handler_;
     };
 
     typedef std::shared_ptr<connection> connection_ptr;
