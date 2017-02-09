@@ -21,13 +21,15 @@ int main(int argc, char* argv[])
     std::string config_string = config.ToString().c_str();
     //std::cout << config_string << std::endl;
     
-    GetPortNumber port_stuff = GetPortNumber(config);
+    GetConfigInfo port_stuff = GetConfigInfo(config);
     int port_number = port_stuff.portNumber();
     if (port_number == -1)
     {
         std::cout << "Config file improperly formatted" << std::endl;
         return 1;
     }
+
+    std::unordered_map<std::string, std::unordered_map<std::string, std::string>> instrs = port_stuff.getPathMap();
     /*    
     try
     {

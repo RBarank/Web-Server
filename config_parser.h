@@ -60,11 +60,12 @@ class NginxConfigParser {
   TokenType ParseToken(std::istream* input, std::string* value);
 };
 
-class GetPortNumber {
+class GetConfigInfo {
 public:
-    GetPortNumber(NginxConfig config) { isPossible = getPortNumber(config);}
+    GetConfigInfo(NginxConfig config) { isPossible = getPortNumber(config);}
     int portNumber() { if (isPossible) return port_number; else return -1; }
-
+    std::unordered_map<std::string, std::unordered_map<std::string, std::string>> getPathMap() 
+      { return m_path_instr_map; };
 private:
     int port_number;
     bool isPossible;

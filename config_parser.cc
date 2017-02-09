@@ -256,7 +256,7 @@ bool NginxConfigParser::Parse(const char* file_name, NginxConfig* config) {
 }
 
 
-bool GetPortNumber::getPortNumber(NginxConfig config)
+bool GetConfigInfo::getPortNumber(NginxConfig config)
 {
   for (const auto& statement : config.statements_)
     {
