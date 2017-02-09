@@ -6,6 +6,7 @@
 #include <sstream>
 #include <string>
 #include "mime-types.hpp"
+#include <iostream>
 
 namespace http {
 namespace server {

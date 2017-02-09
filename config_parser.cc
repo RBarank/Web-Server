@@ -15,7 +15,6 @@
 #include <string>
 #include <vector>
 
-
 #include "config_parser.h"
 
 std::string NginxConfig::ToString(int depth) {
@@ -149,15 +148,15 @@ NginxConfigParser::TokenType NginxConfigParser::ParseToken(std::istream* input,
 }
 
 bool NginxConfigParser::Parse(std::istream* config_file, NginxConfig* config) {
+  int nest = 0;
   std::stack<NginxConfig*> config_stack;
   config_stack.push(config);
   TokenType last_token_type = TOKEN_TYPE_START;
   TokenType token_type;
-  int in_brackets = 0;
   while (true) {
     std::string token;
     token_type = ParseToken(config_file, &token);
-    //printf ("%s: %s\n", TokenTypeAsString(token_type), token.c_str());
+    printf ("%s: %s\n", TokenTypeAsString(token_type), token.c_str());
     if (token_type == TOKEN_TYPE_ERROR) {
       break;
     }
@@ -176,14 +175,13 @@ bool NginxConfigParser::Parse(std::istream* config_file, NginxConfig* config) {
           last_token_type == TOKEN_TYPE_START_BLOCK ||
           last_token_type == TOKEN_TYPE_END_BLOCK ||
           last_token_type == TOKEN_TYPE_NORMAL) {
-          if (last_token_type != TOKEN_TYPE_NORMAL) {
-              config_stack.top()->statements_.emplace_back(
+        if (last_token_type != TOKEN_TYPE_NORMAL) {
+          config_stack.top()->statements_.emplace_back(
               new NginxConfigStatement);
-          }
-          config_stack.top()->statements_.back().get()->tokens_.push_back(
+        }
+        config_stack.top()->statements_.back().get()->tokens_.push_back(
             token);
-      }
-      else {
+      } else {
         // Error.
         break;
       }
@@ -193,6 +191,7 @@ bool NginxConfigParser::Parse(std::istream* config_file, NginxConfig* config) {
         break;
       }
     } else if (token_type == TOKEN_TYPE_START_BLOCK) {
+      nest += 1;
       if (last_token_type != TOKEN_TYPE_NORMAL) {
         // Error.
         break;
@@ -201,32 +200,23 @@ bool NginxConfigParser::Parse(std::istream* config_file, NginxConfig* config) {
       config_stack.top()->statements_.back().get()->child_block_.reset(
           new_config);
       config_stack.push(new_config);
-      in_brackets++; 
     } else if (token_type == TOKEN_TYPE_END_BLOCK) {
-      if (last_token_type != TOKEN_TYPE_STATEMENT_END && last_token_type != TOKEN_TYPE_END_BLOCK) {
+      nest -= 1;
+      if (!(last_token_type == TOKEN_TYPE_STATEMENT_END || last_token_type == TOKEN_TYPE_END_BLOCK )) {
         // Error.
         break;
       }
-      if (in_brackets < 0)
-	{
-	  // Error. unmatched closing brackets
-	  printf("Error: Unmatched closing brackets.\n");
-	  return false;
-	}
       config_stack.pop();
-      in_brackets--;
     } else if (token_type == TOKEN_TYPE_EOF) {
+      if (nest != 0)
+      {
+        break;
+      }
       if (last_token_type != TOKEN_TYPE_STATEMENT_END &&
           last_token_type != TOKEN_TYPE_END_BLOCK) {
         // Error.
         break;
       }
-      if (in_brackets != 0)
-	{
-	  // Error. unmatched open brackets.
-	  printf("Error: Unmatched brackets.\n");
-	  return false;
-	}
       return true;
     } else {
       // Error. Unknown token.
@@ -258,73 +248,74 @@ bool NginxConfigParser::Parse(const char* file_name, NginxConfig* config) {
 
 bool GetConfigInfo::getPortNumber(NginxConfig config)
 {
-  for (const auto& statement : config.statements_)
+    for (const auto& statement : config.statements_)
     {
-      if (statement->tokens_[0] == "server" &&  statement->child_block_ != nullptr)
+        if (statement->tokens_[0] == "server" &&  statement->child_block_ != nullptr)
         {
-	  for (const auto& stuff : statement->child_block_->statements_)
+            for (const auto& stuff : statement->child_block_->statements_)
             {
-	      //std::cout << stuff->tokens_[0] << "\n" ;
-	      if (stuff->tokens_[0] == "listen")
+                // std::cout << stuff->tokens_[0] << "\n" ;
+                if (stuff->tokens_[0] == "listen")
                 {
-		  if (stuff->tokens_.size() != 2)
+                    if (stuff->tokens_.size() != 2)
                     {
-		      return false;
+                        return false;
                     }
-		  std::string port_string = stuff->tokens_[1];
-		  if (port_string.length() > 5)
+                    std::string port_string = stuff->tokens_[1];
+                    if (port_string.length() > 5)
                     {
-		      return false;
+                        return false;
                     }
-		  
-		  for (unsigned i = 0; i < port_string.length(); i++) {
-		    if (!isdigit(port_string[i]))
-		      {
-			return false;
-		      }
-		  }
-		  
-		  port_number = std::stoi(port_string);
-                  
-		  if(port_number == 0 || port_number > 65535)
+                    
+                    for (unsigned i = 0; i < port_string.length(); i++) {
+                        if (!isdigit(port_string[i]))
+                        {
+                            return false;
+                        }
+                    }
+                    
+                    port_number = std::stoi(port_string);
+                    
+                    if(port_number == 0 || port_number > 65535)
                     {
-		      port_number = -1;
-		      return false;
+                        port_number = -1;
+                        return false;
                     }
-		  
-		  //return true;
+                    
+                    return true;
                 }
-	      else if (stuff->tokens_[0] == "path")
-		{
-		  std::string path_name = stuff->tokens_[1];
-		  //std::cout << path_name << "\n";
-		  std::unordered_map<std::string, std::string> cur_path_instr_pairs;
-		  for (const auto& instr_pair : stuff->child_block_->statements_)
-		    {
-		      //std::cout << instr_pair->tokens_[0] << " " << instr_pair->tokens_[1] << "\n";
-		      cur_path_instr_pairs[instr_pair->tokens_[0]] = instr_pair->tokens_[1];
-		    }
-		  m_path_instr_map[path_name] = cur_path_instr_pairs;
-		}
             }
         }
     }
-  
-  std::unordered_map<std::string, std::unordered_map<std::string, std::string>>:: iterator itr;
-  std::unordered_map<std::string, std::string>:: iterator itr2;  
-  for (itr = m_path_instr_map.begin(); itr != m_path_instr_map.end(); itr++)
-    {
-      std::cout << "cur path: " << itr->first << "\n";
-      for (itr2 = itr->second.begin(); itr2 != itr->second.end(); itr2++)
-	{
-	  std::cout << itr2->first << " " << itr2->second << "\n";
-	}
-    }
-  std::cout << "printing out /static's action: " << m_path_instr_map["/static"]["action"] << "\n";
-
-  return false;
+    return false;
 }
 
-
-
-
+std::unordered_map<std::string, std::string> GetConfigInfo::getPathMap(NginxConfig config)
+{
+    for (const auto& statement : config.statements_)
+    {
+         if (statement->tokens_[0] == "server" &&  statement->child_block_ != nullptr)
+         {
+             for (const auto& within_server : statement->child_block_->statements_)
+             {
+//                 std::cout << within_server->tokens_[0] << "\n" ;
+//                 std::cout << within_server->tokens_[1] << "\n" ;
+                 if (within_server->tokens_.size() >= 2 && within_server->tokens_[0] == "path" && within_server->child_block_ != nullptr)
+                 {
+                     m_path_instr_map[within_server->tokens_[1]] = "";
+                     for (const auto& within_path : within_server->child_block_->statements_)
+                     {
+                         if (within_path->tokens_.size() >= 2 && within_path->tokens_[0] == "root")
+                         {
+//                             std::cout << within_server->tokens_[1] << "\n";
+//                             std::cout << within_path->tokens_[1] << "\n" ;
+                             m_path_instr_map[within_server->tokens_[1]] = within_path->tokens_[1];
+                         }
+                     }
+                     
+                 }
+             }
+         }
+    }
+    return m_path_instr_map;
+}

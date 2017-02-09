@@ -5,6 +5,8 @@
 #include "server.hpp"
 #include <utility>
 #include <vector>
+#include <iostream>
+
 
 int main(int argc, char* argv[])
 {
@@ -28,8 +30,16 @@ int main(int argc, char* argv[])
         std::cout << "Config file improperly formatted" << std::endl;
         return 1;
     }
+    
+    std::cout << port_number << std::endl;
+    std::unordered_map<std::string, std::string> pathMapRoot = port_stuff.getPathMap(config);
+    
+    std::unordered_map<std::string, std::string>::iterator it = pathMapRoot.begin();
+    while (it != pathMapRoot.end()) {
+        std::cout << it->first << " : " << it->second << "\n";
+        it++;
+    }
 
-    std::unordered_map<std::string, std::unordered_map<std::string, std::string>> instrs = port_stuff.getPathMap();
     /*    
     try
     {

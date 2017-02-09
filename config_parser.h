@@ -64,13 +64,12 @@ class GetConfigInfo {
 public:
     GetConfigInfo(NginxConfig config) { isPossible = getPortNumber(config);}
     int portNumber() { if (isPossible) return port_number; else return -1; }
-    std::unordered_map<std::string, std::unordered_map<std::string, std::string>> getPathMap() 
-      { return m_path_instr_map; };
+    std::unordered_map<std::string, std::string> getPathMap(NginxConfig config);
 private:
     int port_number;
     bool isPossible;
     bool getPortNumber(NginxConfig config);
-    std::unordered_map<std::string, std::unordered_map<std::string, std::string>> m_path_instr_map;
+    std::unordered_map<std::string, std::string> m_path_instr_map;
 };
 
 
