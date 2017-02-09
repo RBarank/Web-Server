@@ -28,7 +28,7 @@ int main(int argc, char* argv[])
         std::cout << "Config file improperly formatted" << std::endl;
         return 1;
     }
-    
+    /*    
     try
     {
         http::server::server s("127.0.0.1", std::to_string(port_number));
@@ -38,7 +38,7 @@ int main(int argc, char* argv[])
     {
         std::cerr << "Exception: " << e.what() << "\n";
     }
-
+    */
     return 0;
     
 }

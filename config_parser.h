@@ -4,6 +4,7 @@
 #include <memory>
 #include <string>
 #include <vector>
+#include <unordered_map>
 
 const int default_port_number = 80;
 
@@ -63,10 +64,12 @@ class GetPortNumber {
 public:
     GetPortNumber(NginxConfig config) { isPossible = getPortNumber(config);}
     int portNumber() { if (isPossible) return port_number; else return -1; }
+
 private:
     int port_number;
     bool isPossible;
     bool getPortNumber(NginxConfig config);
+    std::unordered_map<std::string, std::unordered_map<std::string, std::string>> m_path_instr_map;
 };
 
 

@@ -15,6 +15,7 @@
 #include <string>
 #include <vector>
 
+
 #include "config_parser.h"
 
 std::string NginxConfig::ToString(int depth) {
@@ -257,46 +258,71 @@ bool NginxConfigParser::Parse(const char* file_name, NginxConfig* config) {
 
 bool GetPortNumber::getPortNumber(NginxConfig config)
 {
-    for (const auto& statement : config.statements_)
+  for (const auto& statement : config.statements_)
     {
-        if (statement->tokens_[0] == "server" &&  statement->child_block_ != nullptr)
+      if (statement->tokens_[0] == "server" &&  statement->child_block_ != nullptr)
         {
-            for (const auto& stuff : statement->child_block_->statements_)
+	  for (const auto& stuff : statement->child_block_->statements_)
             {
-                // std::cout << stuff->tokens_[0] << "\n" ;
-                if (stuff->tokens_[0] == "listen")
+	      //std::cout << stuff->tokens_[0] << "\n" ;
+	      if (stuff->tokens_[0] == "listen")
                 {
-                    if (stuff->tokens_.size() != 2)
+		  if (stuff->tokens_.size() != 2)
                     {
-                        return false;
+		      return false;
                     }
-                    std::string port_string = stuff->tokens_[1];
-                    if (port_string.length() > 5)
+		  std::string port_string = stuff->tokens_[1];
+		  if (port_string.length() > 5)
                     {
-                        return false;
+		      return false;
                     }
-                    
-                    for (unsigned i = 0; i < port_string.length(); i++) {
-                        if (!isdigit(port_string[i]))
-                        {
-                            return false;
-                        }
-                    }
-                    
-                    port_number = std::stoi(port_string);
-                    
-                    if(port_number == 0 || port_number > 65535)
+		  
+		  for (unsigned i = 0; i < port_string.length(); i++) {
+		    if (!isdigit(port_string[i]))
+		      {
+			return false;
+		      }
+		  }
+		  
+		  port_number = std::stoi(port_string);
+                  
+		  if(port_number == 0 || port_number > 65535)
                     {
-                        port_number = -1;
-                        return false;
+		      port_number = -1;
+		      return false;
                     }
-                    
-                    return true;
+		  
+		  //return true;
                 }
+	      else if (stuff->tokens_[0] == "path")
+		{
+		  std::string path_name = stuff->tokens_[1];
+		  //std::cout << path_name << "\n";
+		  std::unordered_map<std::string, std::string> cur_path_instr_pairs;
+		  for (const auto& instr_pair : stuff->child_block_->statements_)
+		    {
+		      //std::cout << instr_pair->tokens_[0] << " " << instr_pair->tokens_[1] << "\n";
+		      cur_path_instr_pairs[instr_pair->tokens_[0]] = instr_pair->tokens_[1];
+		    }
+		  m_path_instr_map[path_name] = cur_path_instr_pairs;
+		}
             }
         }
     }
-    return false;
+  
+  std::unordered_map<std::string, std::unordered_map<std::string, std::string>>:: iterator itr;
+  std::unordered_map<std::string, std::string>:: iterator itr2;  
+  for (itr = m_path_instr_map.begin(); itr != m_path_instr_map.end(); itr++)
+    {
+      std::cout << "cur path: " << itr->first << "\n";
+      for (itr2 = itr->second.begin(); itr2 != itr->second.end(); itr2++)
+	{
+	  std::cout << itr2->first << " " << itr2->second << "\n";
+	}
+    }
+  std::cout << "printing out /static's action: " << m_path_instr_map["/static"]["action"] << "\n";
+
+  return false;
 }
 
 
