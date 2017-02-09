@@ -10,10 +10,15 @@ server {
     path /static {
           action static;
           root /test_folder;
-   }
-   
+    }
+
     path /static2 {
         action static;
-        root /test_folder2;
+        root /testing_folder;
+    }
+
+    path /static3 {
+        action static;
+        root /test;
     }
 }
