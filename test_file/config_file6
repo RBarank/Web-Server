@@ -10,5 +10,6 @@ server {
     path /static {
           action static;
           root /test_folder;
+          add extra stuff, shouldn't crash;
     }
 }

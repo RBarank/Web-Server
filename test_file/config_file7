@@ -3,12 +3,7 @@ team "Razzle-Dazzle";
 server {
     listen   3000;
 
-    path /echo {
-          action echo;             
-    }
-
     path /static {
           action static;
-          root /test_folder;
     }
 }
