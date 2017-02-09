@@ -6,6 +6,7 @@
 #include <boost/asio.hpp>
 #include <string>
 #include "reply.hpp"
+#include <unordered_map>
 
 namespace http {
 namespace server {
@@ -19,7 +20,7 @@ public:
 
   /// Construct the server to listen on the specified TCP address and port, and
   /// serve up files from the given directory.
-  explicit server(const std::string& address, const std::string& port);
+  explicit server(const std::string& address, const std::string& port, const std::unordered_map<std::string, std::string>& pathMap);
 
   /// Run the server's io_service loop.
   void run();
@@ -28,7 +29,7 @@ public:
 
 private:
   /// Perform an asynchronous accept operation.
-  void do_accept();
+  void do_accept(const std::unordered_map<std::string, std::string>& pathMap);
 
   /// Wait for a request to stop the server.
   // void do_await_stop();

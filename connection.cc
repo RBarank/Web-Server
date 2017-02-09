@@ -11,8 +11,8 @@
 namespace http {
 namespace server {
 
-connection::connection(boost::asio::ip::tcp::socket socket)
-  : socket_(std::move(socket))
+connection::connection(boost::asio::ip::tcp::socket socket, const std::unordered_map<std::string, std::string>& pathMap)
+  : socket_(std::move(socket)), pathMap_(pathMap) 
 {
 }
 
@@ -71,15 +71,16 @@ void connection::handle_request()
   
   std::cout << "request_method: " << request_.method << "\nrequest_uri: " << request_.uri << std::endl;
 
-  if (request_.uri.substr(0, 6) == "/echo/")
+  size_t secondSlash = request_.uri.substr(1).find_first_of("/");
+  request_.base = request_.uri.substr(0,secondSlash + 1);
+  std::cout << "request_base: " << request_.base << std::endl;
+  if (pathMap_.find(request_.base) != pathMap_.end())
     {
-      request_.base = "echo";
-      do_echo();
-    }
-  else if (request_.uri.substr(0, 8) == "/static/")
-    {
-      request_.base = "static";
-      do_static();
+      if(request_.base == "/echo")
+        do_echo();
+      else{ 
+        do_static();
+      }
     }
   else
     {
@@ -137,7 +138,7 @@ void connection::do_static()
 
   // filepath beings after /static/ so at the 8th char
   std::string filepath = request_.uri.substr(7);
-  std::cout << "filepath: " << filepath << std::endl;
+  
 
   std::string request_path;
   if (!url_decode(filepath, request_path))
@@ -178,9 +179,10 @@ void connection::do_static()
 
   // Open the file to send back.
   // TODO: why not treat file path from beginning as starting after the second "/" in /static/..
-  std::string full_path = request_path.substr(1);
-
-  //std::cout << "full path: " << full_path << std::endl;
+  std::string full_path = pathMap_[request_.base] + request_path;
+  full_path = full_path.substr(1);
+  std::cout << "filepath: " << pathMap_[request_.base] << std::endl;
+  std::cout << "full path: " << full_path << std::endl;
   std::ifstream is(full_path.c_str(), std::ios::in | std::ios::binary);
   if (!is)
   {

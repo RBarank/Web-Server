@@ -39,18 +39,16 @@ int main(int argc, char* argv[])
         std::cout << it->first << " : " << it->second << "\n";
         it++;
     }
-
-    /*    
+  
     try
     {
-        http::server::server s("127.0.0.1", std::to_string(port_number));
+        http::server::server s("127.0.0.1", std::to_string(port_number), pathMapRoot);
         s.run();
     }
     catch (std::exception& e)
     {
         std::cerr << "Exception: " << e.what() << "\n";
     }
-    */
     return 0;
     
 }

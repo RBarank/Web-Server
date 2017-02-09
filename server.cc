@@ -10,7 +10,7 @@ const int MIN_PORT_NO = 1;
 namespace http {
     namespace server {
         
-        server::server(const std::string& address, const std::string& port)
+        server::server(const std::string& address, const std::string& port, const std::unordered_map<std::string, std::string>& pathMap)
         : io_service_(),
         acceptor_(io_service_),
         socket_(io_service_)
@@ -29,7 +29,7 @@ namespace http {
             acceptor_.bind(endpoint);
             acceptor_.listen();
             
-            do_accept();
+            do_accept(pathMap);
         }
         
         void server::run()
@@ -41,11 +41,11 @@ namespace http {
             }
         }
         
-        void server::do_accept()
+        void server::do_accept(const std::unordered_map<std::string, std::string>& pathMap)
         {
             try {
                 acceptor_.async_accept(socket_,
-                                       [this](boost::system::error_code ec)
+                                       [this, &pathMap](boost::system::error_code ec)
                                        {
                                            // Check whether the server was stopped by a signal before this
                                            // completion handler had a chance to run.
@@ -55,9 +55,9 @@ namespace http {
                                            }
                                            if (!ec)
                                            {
-                                               std::make_shared<connection>(std::move(socket_))->start();
+                                               std::make_shared<connection>(std::move(socket_), pathMap)->start();
                                            }
-                                           do_accept();
+                                           do_accept(pathMap);
                                        });
             } catch (boost::system::error_code const &e) {
                 throw e;
