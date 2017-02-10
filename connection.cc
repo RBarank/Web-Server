@@ -61,6 +61,9 @@ void connection::do_read()
 	do_write();
     
   });
+
+  
+
 }
 
 // Handle Request is called by do_read, uses request_ to properly fill out reply_, then calls do_write()

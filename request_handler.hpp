@@ -15,7 +15,7 @@ namespace http {
     {
     public:
     	request_handler() {}
-		virtual ~request_handler() {}
+        virtual ~request_handler() {}
     	static request_handler* generateHandler(std::string& url, std::string& root);
     	virtual bool handle_request(const request& request_, reply& reply_)=0;
     };
