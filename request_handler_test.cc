@@ -7,7 +7,6 @@
 
 TEST(request_handle_constructor_and_rh_, URL)
 {
-//    http::server::request_handler requestHandler;
     std::string echo_str = "/echo", empty = "";
     EXPECT_NO_THROW(http::server::request_handler::generateHandler(echo_str, empty));
 }
