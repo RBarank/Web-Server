@@ -5,16 +5,19 @@
 #include <vector>
 #include <boost/asio.hpp>
 #include "request.hpp"
-#include "response.hpp"
+#include "reply.hpp"
+#include "mime-types.hpp"
 
 namespace http {
   namespace server {
 
     class request_handler
     {
-      request_handler();
-      virtual ~request_handler();
-      virtual bool handle_request(const request& request_, response& response_);
+    public:
+    	request_handler() {}
+		virtual ~request_handler() {}
+    	static request_handler* generateHandler(std::string& url, std::string& root);
+    	virtual bool handle_request(const request& request_, reply& reply_)=0;
     };
     
   } // namespace server

@@ -7,6 +7,9 @@
 #include <boost/asio.hpp>
 #include "reply.hpp"
 #include "request.hpp"
+#include "request_handler.hpp"
+#include "echo_handler.hpp"
+#include "static_handler.hpp"
 #include <unordered_map>
 
 
@@ -44,7 +47,7 @@ namespace http {
       void do_write();
 
       
-      void handle_request();
+      void parseRequest();
       void do_echo();
       void do_static();
 

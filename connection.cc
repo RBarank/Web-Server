@@ -45,7 +45,17 @@ void connection::do_read()
       {
 	request_.length = bytes;
 
-	handle_request();
+	parseRequest();
+
+  if (pathMap_.find(request_.base) != pathMap_.end()){
+    request_handler* currentHandler = request_handler::generateHandler(request_.base, pathMap_.find(request_.base)->second);
+    if(currentHandler != NULL)
+      currentHandler->handle_request(request_, reply_);
+    else
+      reply_ = reply::stock_reply(reply::bad_request);
+  }
+  else
+    reply_ = reply::stock_reply(reply::bad_request);
 
 	do_write();
 
@@ -53,7 +63,7 @@ void connection::do_read()
 }
 
 // Handle Request is called by do_read, uses request_ to properly fill out reply_, then calls do_write()
-void connection::handle_request()
+void connection::parseRequest()
 {
   std::cout << "request begin\n" << request_.content << "response end" << std::endl;
 
@@ -72,20 +82,20 @@ void connection::handle_request()
   size_t secondSlash = request_.uri.substr(1).find_first_of("/");
   request_.base = request_.uri.substr(0,secondSlash + 1);
   std::cout << "request_base: " << request_.base << std::endl;
-  if (pathMap_.find(request_.base) != pathMap_.end())
-    {
-      if(request_.base == "/echo")
-        do_echo();
-      else{ 
-        do_static();
-      }
-    }
-  else
-    {
-      // If the request's base is not supported, return a bad request error
-      reply_ = reply::stock_reply(reply::bad_request);
-      return;
-    }
+  // if (pathMap_.find(request_.base) != pathMap_.end())
+  //   {
+  //     if(request_.base == "/echo")
+  //       do_echo();
+  //     else{ 
+  //       do_static();
+  //     }
+  //   }
+  // else
+  //   {
+  //     // If the request's base is not supported, return a bad request error
+  //     reply_ = reply::stock_reply(reply::bad_request);
+  //     return;
+  //   }
   
 }
 
