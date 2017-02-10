@@ -16,7 +16,7 @@ clean-emacs:
 	rm *~
 
 clean-tests:
-	rm config_parser_test server_test connection_test
+	rm -f config_parser_test server_test connection_test request_handler_test echo_handler_test static_handler_test
 
 test:
 	g++ -std=c++0x -isystem ${GTEST_DIR}/include -I${GTEST_DIR} -pthread -c ${GTEST_DIR}/src/gtest-all.cc
@@ -34,3 +34,11 @@ coverage: test
 
 clean-coverage:
 	rm *gcov *gcda *gcno
+
+handler_test:
+	g++ -std=c++0x -isystem ${GTEST_DIR}/include -pthread request_handler_test.cc request_handler.cc echo_handler.cc static_handler.cc reply.cc mime-types.cc ${GTEST_DIR}/src/gtest_main.cc libgtest.a -o request_handler_test -lboost_system
+	./request_handler_test
+	g++ -std=c++0x -isystem ${GTEST_DIR}/include -pthread echo_handler_test.cc echo_handler.cc reply.cc ${GTEST_DIR}/src/gtest_main.cc libgtest.a -o echo_handler_test -lboost_system
+	./echo_handler_test
+	g++ -std=c++0x -isystem ${GTEST_DIR}/include -pthread static_handler_test.cc static_handler.cc reply.cc mime-types.cc ${GTEST_DIR}/src/gtest_main.cc libgtest.a -o static_handler_test -lboost_system
+	./static_handler_test
