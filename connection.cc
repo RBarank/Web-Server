@@ -53,12 +53,13 @@ void connection::do_read()
       currentHandler->handle_request(request_, reply_);
     else
       reply_ = reply::stock_reply(reply::bad_request);
+    delete currentHandler;
   }
   else
     reply_ = reply::stock_reply(reply::bad_request);
 
 	do_write();
-
+    
   });
 }
 
