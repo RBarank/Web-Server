@@ -1,6 +1,7 @@
 #include "static_handler.hpp"
 #include <fstream>
 #include <sstream>
+#include <iostream>
 
 namespace http{
 	namespace server{
@@ -51,8 +52,8 @@ namespace http{
 
 		bool static_handler::handle_request(const request& request_, reply& reply_){
 			// filepath beings after /static/ so at the 8th char
-		  std::string filepath = request_.uri.substr(7);
-		  
+            
+		  std::string filepath = request_.uri.substr(request_.base.length());
 
 		  std::string request_path;
 		  if (!url_decode(filepath, request_path))
@@ -60,8 +61,6 @@ namespace http{
 		    reply_ = reply::stock_reply(reply::bad_request);
 		    return false;
 		  }
-
-		  //std::cout << "request path: " << request_path << std::endl;
 
 		  // Request path must be absolute and not contain "..".
 		  if (request_path.empty() || request_path[0] != '/'

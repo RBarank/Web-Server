@@ -9,3 +9,6 @@ connection_test
 *gcov
 gtest-all.o
 libgtest.a
+echo_handler_test
+request_handler_test
+static_handler_test
