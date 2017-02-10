@@ -7,6 +7,9 @@
 #include <boost/asio.hpp>
 #include "reply.hpp"
 #include "request.hpp"
+#include "request_handler.hpp"
+#include "echo_handler.hpp"
+#include "static_handler.hpp"
 #include <unordered_map>
 
 
@@ -44,11 +47,8 @@ namespace http {
       void do_write();
 
       
-      void handle_request();
-      void do_echo();
-      void do_static();
+      void parseRequest();
 
-      
       /// Socket for the connection.
       boost::asio::ip::tcp::socket socket_;
 
@@ -59,8 +59,8 @@ namespace http {
       
       /// The reply to be sent back to the client.
       reply reply_;
-
       request request_;
+      // request_handler* request_handler_;
     };
 
     typedef std::shared_ptr<connection> connection_ptr;
