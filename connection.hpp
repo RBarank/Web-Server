@@ -48,10 +48,7 @@ namespace http {
 
       
       void parseRequest();
-      void do_echo();
-      void do_static();
 
-      
       /// Socket for the connection.
       boost::asio::ip::tcp::socket socket_;
 
