@@ -20,26 +20,19 @@ int main(int argc, char* argv[])
     NginxConfig config;
     config_parser.Parse(argv[1], &config);
     
-    std::string config_string = config.ToString().c_str();
-    //std::cout << config_string << std::endl;
-    
-    GetConfigInfo port_stuff = GetConfigInfo(config);
-    int port_number = port_stuff.portNumber();
+    GetConfigInfo config_info = GetConfigInfo(config);
+    int port_number = config_info.portNumber();
     if (port_number == -1)
     {
-        std::cout << "Config file improperly formatted" << std::endl;
+        std::cout << "Config file improperly formatted, port no is wrong." << std::endl;
         return 1;
     }
-    
-//    std::cout << port_number << std::endl;
-    std::unordered_map<std::string, std::string> pathMapRoot = port_stuff.getPathMap(config);
-//    
-//    std::unordered_map<std::string, std::string>::iterator it = pathMapRoot.begin();
-//    while (it != pathMapRoot.end()) {
-//        std::cout << it->first << " : " << it->second << "\n";
-//        it++;
-//    }
-  
+
+    std::cout << "port number " << port_number << std::endl;
+
+    /*
+    std::unordered_map<std::string, std::string> pathMapRoot = config_info.getPathMap(config);
+
     try
     {
         http::server::server s("127.0.0.1", std::to_string(port_number), pathMapRoot);
@@ -50,5 +43,5 @@ int main(int argc, char* argv[])
         std::cerr << "Exception: " << e.what() << "\n";
     }
     return 0;
-    
+    */
 }

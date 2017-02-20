@@ -202,7 +202,7 @@ bool NginxConfigParser::Parse(std::istream* config_file, NginxConfig* config) {
       config_stack.push(new_config);
     } else if (token_type == TOKEN_TYPE_END_BLOCK) {
       nest -= 1;
-      if (!(last_token_type == TOKEN_TYPE_STATEMENT_END || last_token_type == TOKEN_TYPE_END_BLOCK )) {
+      if (!(last_token_type == TOKEN_TYPE_STATEMENT_END || last_token_type == TOKEN_TYPE_START_BLOCK )) {
         // Error.
         break;
       }
@@ -250,41 +250,31 @@ bool GetConfigInfo::getPortNumber(NginxConfig config)
 {
     for (const auto& statement : config.statements_)
     {
-        if (statement->tokens_[0] == "server" &&  statement->child_block_ != nullptr)
+        if (statement->tokens_[0] == "port" && statement->tokens_.size() == 2)
         {
-            for (const auto& stuff : statement->child_block_->statements_)
-            {
-                // std::cout << stuff->tokens_[0] << "\n" ;
-                if (stuff->tokens_[0] == "listen")
-                {
-                    if (stuff->tokens_.size() != 2)
-                    {
-                        return false;
-                    }
-                    std::string port_string = stuff->tokens_[1];
-                    if (port_string.length() > 5)
-                    {
-                        return false;
-                    }
+	  std::string port_string = statement->tokens_[1];
+	  if (port_string.length() > 5)
+	    {
+	      return false;
+	    }        
+	  for (unsigned i = 0; i < port_string.length(); i++) 
+	    {
+	      if (!isdigit(port_string[i]))
+		{
+		  return false;
+		}
+	    }
+	  
+	  port_number = std::stoi(port_string);
+
+	  // port number not in valid range
+	  if(port_number == 0 || port_number > 65535)
+	    {
+	      port_number = -1;
+	      return false;
+	    }
                     
-                    for (unsigned i = 0; i < port_string.length(); i++) {
-                        if (!isdigit(port_string[i]))
-                        {
-                            return false;
-                        }
-                    }
-                    
-                    port_number = std::stoi(port_string);
-                    
-                    if(port_number == 0 || port_number > 65535)
-                    {
-                        port_number = -1;
-                        return false;
-                    }
-                    
-                    return true;
-                }
-            }
+	  return true;
         }
     }
     return false;
