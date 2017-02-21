@@ -7,6 +7,7 @@
 #include <string>
 #include "reply.hpp"
 #include <unordered_map>
+#include "config_parser.h"
 
 namespace http {
 namespace server {
@@ -20,7 +21,10 @@ public:
 
   /// Construct the server to listen on the specified TCP address and port, and
   /// serve up files from the given directory.
-  explicit server(const std::string& address, const std::string& port, const std::unordered_map<std::string, std::string>& pathMap);
+  explicit server(const std::string& address, const NginxConfig& config);
+
+  // Get Server configuration information from the config
+  bool get_config_info(const NginxConfig& config);
 
   /// Run the server's io_service loop.
   void run();
@@ -42,9 +46,10 @@ private:
 
   /// The next socket to be accepted.
   boost::asio::ip::tcp::socket socket_;
-//
-//  int portno_;
-//  std::string addr_;
+
+  int portno_;
+  // TODO: make this a map to request handlers
+  std::map<std::string, std::string> path_handler_map;
 };
 
 } // namespace server

@@ -280,28 +280,30 @@ bool GetConfigInfo::getPortNumber(NginxConfig config)
     return false;
 }
 
-std::unordered_map<std::string, std::string> GetConfigInfo::getPathMap(NginxConfig config)
+// according to spec: order of path blocks in config file doesnt matter, matching is by longest prefix,
+// and duplicate paths are illegal
+// make this a server method and change to: bool InitHandlers(NginxConfig config)
+/*std::unordered_map<std::string, std::string> GetConfigInfo::getPathMap(NginxConfig config)
 {
     for (const auto& statement : config.statements_)
     {
-         if (statement->tokens_[0] == "server" &&  statement->child_block_ != nullptr)
-         {
-             for (const auto& within_server : statement->child_block_->statements_)
-             {
-                 if (within_server->tokens_.size() >= 2 && within_server->tokens_[0] == "path" && within_server->child_block_ != nullptr)
-                 {
-                     m_path_instr_map[within_server->tokens_[1]] = "";
-                     for (const auto& within_path : within_server->child_block_->statements_)
-                     {
-                         if (within_path->tokens_.size() >= 2 && within_path->tokens_[0] == "root")
-                         {
-                             m_path_instr_map[within_server->tokens_[1]] = within_path->tokens_[1];
-                         }
-                     }
-                     
-                 }
-             }
-         }
+        if (statement->tokens_[0] == "path" && statement->tokens_.size() == 3)
+        {
+	  
+	  std::string uri_prefix = statements->tokens_[1];
+	  std::string handler_name = statements->tokens_[2];
+	  
+	  
+	  // auto handler = RequestHandler::CreateByName(handler_name, statement_->child_block);
+	  // handler_map[uri_prefix] = handler
+	  // TODO: handle duplicate and invalid paths
+	  
+	  
+
+	}
     }
+
+
     return m_path_instr_map;
 }
+*/

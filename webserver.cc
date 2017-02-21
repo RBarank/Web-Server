@@ -19,7 +19,7 @@ int main(int argc, char* argv[])
     NginxConfigParser config_parser;
     NginxConfig config;
     config_parser.Parse(argv[1], &config);
-    
+    /*    
     GetConfigInfo config_info = GetConfigInfo(config);
     int port_number = config_info.portNumber();
     if (port_number == -1)
@@ -30,18 +30,18 @@ int main(int argc, char* argv[])
 
     std::cout << "port number " << port_number << std::endl;
 
-    /*
+    
     std::unordered_map<std::string, std::string> pathMapRoot = config_info.getPathMap(config);
-
+    */
     try
     {
-        http::server::server s("127.0.0.1", std::to_string(port_number), pathMapRoot);
-        s.run();
+        http::server::server s("127.0.0.1", config);
+        //s.run();
     }
     catch (std::exception& e)
     {
         std::cerr << "Exception: " << e.what() << "\n";
     }
     return 0;
-    */
+    
 }

@@ -1,3 +1,6 @@
+#ifndef CONFIG_PARSER_H
+#define CONFIG_PARSER_H
+
 // An nginx config file parser.
 
 #include <iostream>
@@ -73,5 +76,4 @@ private:
 };
 
 
-
-
+#endif // CONFIG_PARSER_H
