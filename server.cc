@@ -13,7 +13,8 @@ namespace http {
     server::server(const std::string& address, const NginxConfig& config)
       : io_service_(),
         acceptor_(io_service_),
-        socket_(io_service_)
+        socket_(io_service_),
+	portno_(-1)
     {
       if (!get_config_info(config))
 	{
@@ -22,6 +23,11 @@ namespace http {
       
       std::string port = std::to_string(portno_);
       std::cout << port << std::endl;
+
+      for (auto const& x : uri_to_handler_map)
+	{
+	  std::cout << x.first << " " << x.second << std::endl;
+	}
 
       // Open the acceptor with the option to reuse the address (i.e. SO_REUSEADDR).
       boost::asio::ip::tcp::resolver resolver(io_service_);
@@ -36,6 +42,8 @@ namespace http {
     
     bool server::get_config_info(const NginxConfig& config)
     {
+      std::map<std::string, bool> handlers_created;
+
       for (const auto& statement : config.statements_)
 	{
 	  if (statement->tokens_[0] == "port" && statement->tokens_.size() == 2)
@@ -60,9 +68,37 @@ namespace http {
 		{
 		  return false;
 		}
+	    }
+	  else if (statement->tokens_[0] == "path" && statement->tokens_.size() == 3)
+	    {
+
+	      std::string uri_prefix = statement->tokens_[1];
+	      std::string handler_name = statement->tokens_[2];
+	      
+	      const auto find_handler = uri_to_handler_map.find(uri_prefix);
+	      if (handlers_created[handler_name])
+		{
+		  uri_to_handler_map[uri_prefix] = find_handler.second();
+		}
+	      
+	      uri_to_handler_map[uri_prefix] = RequestHandler::CreateByName(handler_name);
+	      uri_to_handler_map[uri_prefix].Init(uri_prefix, statement->child_block_);
+	      handlers_created[handler_name] = true;
+
+	      // auto handler = RequestHandler::CreateByName(handler_name, statement_->child_block);                                                                        
+	      // handler_map[uri_prefix] = handler                                                                                                                          
+	      // TODO: handle duplicate and invalid paths                                                                                                                   
+
+
 
 	    }
 	}
+      // if the port number is uninitialized or the handler map is empty, our server should not start
+      if (portno_ == -1 || uri_to_handler_map.empty())
+	{
+	  return false;
+	}
+
       return true;
     }
         
