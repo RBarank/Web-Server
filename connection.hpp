@@ -5,7 +5,7 @@
 #include <array>
 #include <memory>
 #include <boost/asio.hpp>
-#include "reply.hpp"
+#include "response.hpp"
 #include "request.hpp"
 #include "request_handler.hpp"
 #include "echo_handler.hpp"
@@ -13,7 +13,7 @@
 #include <unordered_map>
 
 
-//const int MAX_REQUEST_SIZE = 8192;
+const int MAX_REQUEST_SIZE = 8192;
 
 namespace http {
   namespace server {
@@ -58,8 +58,8 @@ namespace http {
       //char request_buffer[MAX_REQUEST_SIZE];
       
       /// The reply to be sent back to the client.
-      reply reply_;
-      request request_;
+      Response reply_;
+      char request_buffer[MAX_REQUEST_SIZE];
       // request_handler* request_handler_;
     };
 
