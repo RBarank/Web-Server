@@ -8,6 +8,7 @@
 #include "reply.hpp"
 #include <unordered_map>
 #include "config_parser.h"
+#include "request_handler.h"
 
 namespace http {
 namespace server {
@@ -49,7 +50,7 @@ private:
 
   int portno_;
   // TODO: make this a map to request handlers
-  std::map<std::string, std::string> path_handler_map;
+  std::map<std::string, std::shared_ptr<RequestHandler>> uri_to_handler_map;
 };
 
 } // namespace server
