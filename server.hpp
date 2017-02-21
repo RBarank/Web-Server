@@ -1,14 +1,14 @@
 
-
 #ifndef HTTP_SERVER_HPP
 #define HTTP_SERVER_HPP
 
+#include "config_parser.h"
+#include "request_handler.hpp"
+#include "reply.hpp"
+
 #include <boost/asio.hpp>
 #include <string>
-#include "reply.hpp"
 #include <unordered_map>
-#include "config_parser.h"
-#include "request_handler.h"
 
 namespace http {
 namespace server {

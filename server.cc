@@ -20,14 +20,6 @@ namespace http {
 	{
 	  throw boost::system::errc::make_error_code(boost::system::errc::invalid_argument);
 	}
-      
-      std::string port = std::to_string(portno_);
-      std::cout << port << std::endl;
-
-      for (auto const& x : uri_to_handler_map)
-	{
-	  std::cout << x.first << " " << x.second << std::endl;
-	}
 
       // Open the acceptor with the option to reuse the address (i.e. SO_REUSEADDR).
       boost::asio::ip::tcp::resolver resolver(io_service_);
@@ -42,7 +34,6 @@ namespace http {
     
     bool server::get_config_info(const NginxConfig& config)
     {
-      std::map<std::string, bool> handlers_created;
 
       for (const auto& statement : config.statements_)
 	{
@@ -71,29 +62,33 @@ namespace http {
 	    }
 	  else if (statement->tokens_[0] == "path" && statement->tokens_.size() == 3)
 	    {
+	      // TODO: check for multiple paths mapping to handler with the same name
 
 	      std::string uri_prefix = statement->tokens_[1];
 	      std::string handler_name = statement->tokens_[2];
 	      
-	      const auto find_handler = uri_to_handler_map.find(uri_prefix);
-	      if (handlers_created[handler_name])
+	      auto handler = RequestHandler::CreateByName(handler_name);
+	      
+	      // create by name will return a nullptr if it can't find a handler with this name or there is some error
+	      if (handler == nullptr)
 		{
-		  uri_to_handler_map[uri_prefix] = find_handler.second();
+		  return false;
 		}
 	      
-	      uri_to_handler_map[uri_prefix] = RequestHandler::CreateByName(handler_name);
-	      uri_to_handler_map[uri_prefix].Init(uri_prefix, statement->child_block_);
-	      handlers_created[handler_name] = true;
-
-	      // auto handler = RequestHandler::CreateByName(handler_name, statement_->child_block);                                                                        
-	      // handler_map[uri_prefix] = handler                                                                                                                          
-	      // TODO: handle duplicate and invalid paths                                                                                                                   
-
-
-
+	      // TODO: check return status of init and handle errors
+	      handler.Init(uri_prefix, statement->child_block_); // get rid of this and replace with below
+	      /* Status handler_init_status = handler.Init(uri_prefix, statement->child_block_);
+	      if (handler_init_status == TODO_BAD_STATUS)
+		  {
+		    return false;
+		    }*/
+      
+	      uri_to_handler_map[uri_prefix] = handler;
+ 
 	    }
 	}
-      // if the port number is uninitialized or the handler map is empty, our server should not start
+      // if the port number is uninitialized or the handler map is empty, the server should not start
+      // we need to to do this check in case we don't come across any config blocks with "port" or "path" terms
       if (portno_ == -1 || uri_to_handler_map.empty())
 	{
 	  return false;
