@@ -12,8 +12,9 @@ namespace http {
 namespace server {
 
 connection::connection(boost::asio::ip::tcp::socket socket, const std::unordered_map<std::string, std::string>& pathMap)
-  : socket_(std::move(socket)), pathMap_(pathMap)//,request_handler_(NULL) 
+  : socket_(std::move(socket)), pathMap_(pathMap)
 {
+
 }
 
 void connection::start()
@@ -41,31 +42,29 @@ void connection::do_read()
   memset(request_buffer, 0, MAX_REQUEST_SIZE);
   
   socket_.async_read_some(boost::asio::buffer(request_buffer),
-      [this, self](boost::system::error_code ec, std::size_t bytes)
-      {
-	size_t request_buffer_size = bytes;
-  std::string bufferString(request_buffer);
+			  [this, self](boost::system::error_code ec, std::size_t bytes)
+			  {
+			    //size_t request_buffer_size = bytes;
+			    //std::string bufferString(request_buffer);
 
-  //TODO: call parse method of request
-	//parseRequest();
-
-  if (pathMap_.find(request_.base) != pathMap_.end()){
-    request_handler* currentHandler = request_handler::generateHandler(request_.base, pathMap_.find(request_.base)->second);
-    if(currentHandler != NULL)
-      currentHandler->handle_request(request_, reply_);
-    else
-      reply_ = Response::stock_reply(Response::bad_request);
-    delete currentHandler;
-  }
-  else
-    reply_ = Response::stock_reply(Response::bad_request);
-
-	do_write();
-    
-  });
-
+			    //TODO: call parse method of request
+			    //parseRequest();
+			    /*
+			    if (pathMap_.find(request_.base) != pathMap_.end()){
+			      request_handler* currentHandler = request_handler::generateHandler(request_.base, pathMap_.find(request_.base)->second);
+			      if(currentHandler != NULL)
+				currentHandler->handle_request(request_, reply_);
+			      else
+				reply_ = Response::stock_reply(Response::bad_request);
+			      delete currentHandler;
+			    }
+			    else
+			      reply_ = Response::stock_reply(Response::bad_request);
+			    */
+			    do_write();
+			    
+			  }); 
   
-
 }
 
 // Handle Request is called by do_read, uses request_ to properly fill out reply_, then calls do_write()
@@ -93,8 +92,9 @@ void connection::do_read()
 void connection::do_write()
 {
   auto self(shared_from_this());
-
-  boost::asio::async_write(socket_, reply_.to_buffers(),
+  
+                                    // TODO: replace below with the actual response
+  boost::asio::async_write(socket_, boost::asio::buffer(request_buffer),
       [this, self](boost::system::error_code ec, std::size_t)
       {
         if (!ec)

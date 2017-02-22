@@ -14,7 +14,7 @@ namespace http {
     class echo_handler : public request_handler
     {
     public: 
-      // echo_handler(){}
+      //echo_handler(){}
       //virtual ~echo_handler() {}
       
       //virtual bool handle_request(const request& request_, reply& reply_);
@@ -22,6 +22,7 @@ namespace http {
       // failure condition.
       // uri_prefix is the value in the config file that this handler will run for.
       // config is the contents of the child block for this handler ONLY.
+      
       virtual Status Init(const std::string& uri_prefix,
                           const NginxConfig& config);
 
@@ -33,7 +34,7 @@ namespace http {
                                    Response* response);
     };
 
-    REGISTER_REQUEST_HANDLER(EchoHandler);
+    REGISTER_REQUEST_HANDLER(echo_handler);
     
   } // namespace server
 } // namespace http

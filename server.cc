@@ -67,7 +67,7 @@ namespace http {
 	      std::string uri_prefix = statement->tokens_[1];
 	      std::string handler_name = statement->tokens_[2];
 	      
-	      auto handler = request_handler::CreateByName(handler_name);
+	      std::unique_ptr<request_handler> handler(request_handler::CreateByName(handler_name));
 	      
 	      // create by name will return a nullptr if it can't find a handler with this name or there is some error
 	      if (handler == nullptr)
@@ -76,14 +76,15 @@ namespace http {
 		}
 	      
 	      // TODO: check return status of init and handle errors
-	      handler.Init(uri_prefix, statement->child_block_); // get rid of this and replace with below
+	      
+	      handler->Init(uri_prefix, *(statement->child_block_)); // get rid of this and replace with below
 	      /* Status handler_init_status = handler.Init(uri_prefix, statement->child_block_);
 	      if (handler_init_status == TODO_BAD_STATUS)
 		  {
 		    return false;
 		    }*/
       
-	      uri_to_handler_map[uri_prefix] = handler;
+	      uri_to_handler_map[uri_prefix] = std::move(handler);
  
 	    }
 	}

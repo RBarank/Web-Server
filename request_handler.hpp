@@ -11,6 +11,7 @@
 #include "reply.hpp"
 #include "mime-types.hpp"
 #include "config_parser.h"
+#include "response.hpp"
 
 namespace http {
   namespace server {
@@ -40,7 +41,7 @@ namespace http {
                                    Response* response) = 0;
     
       // Creates a request handler of the specified type
-      static request_handler* CreateByName(const char* type);
+      static request_handler* CreateByName(const std::string& type);
 
     protected:
       std::string uri_prefix_; // TODO: make this a vector if we have handlers that handle multiple uri's
