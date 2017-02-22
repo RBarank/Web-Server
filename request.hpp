@@ -2,6 +2,7 @@
 #define HTTP_REQUEST_HPP
 
 #include <string>
+#include <memory>
 #include <vector>
 #include <boost/asio.hpp>
 #include "header.hpp"
@@ -13,7 +14,8 @@ namespace http {
 
     class Request {
      public:
-      static unique_ptr<Request> Parse(const std::string& raw_request);
+
+      static std::unique_ptr<Request> Parse(const std::string& raw_request);
 
       std::string raw_request() const;
       std::string method() const;

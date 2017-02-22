@@ -5,75 +5,75 @@
 
 namespace http{
   namespace server{
-
-    Status Init(const std::string& uri_prefix, const NginxConfig& config)
+    
+    request_handler::Status static_handler::Init(const std::string& uri_prefix, const NginxConfig& config)
     {
       return request_handler::OK;
     }
     
 
-
+    /*
     
-		static_handler::static_handler(std::string root)
-			:fileRoot(root)
-		{}
-
-		bool static_handler::url_decode(const std::string& in, std::string& out)
+    static_handler::static_handler(std::string root)
+      :fileRoot(root)
+    {}
+    */
+    bool url_decode(const std::string& in, std::string& out)
+    {
+      out.clear();
+      out.reserve(in.size());
+      for (std::size_t i = 0; i < in.size(); ++i)
+	{
+	  if (in[i] == '%')
+	    {
+	      if (i + 3 <= in.size())
 		{
-		  out.clear();
-		  out.reserve(in.size());
-		  for (std::size_t i = 0; i < in.size(); ++i)
-		  {
-		    if (in[i] == '%')
+		  int value = 0;
+		  std::istringstream is(in.substr(i + 1, 2));
+		  if (is >> std::hex >> value)
 		    {
-		      if (i + 3 <= in.size())
-		      {
-		        int value = 0;
-		        std::istringstream is(in.substr(i + 1, 2));
-		        if (is >> std::hex >> value)
-		        {
-		          out += static_cast<char>(value);
-		          i += 2;
-		        }
-		        else
-		        {
-		          return false;
-		        }
-		      }
-		      else
-		      {
-		        return false;
-		      }
+		      out += static_cast<char>(value);
+		      i += 2;
 		    }
-		    else if (in[i] == '+')
+		  else
 		    {
-		      out += ' ';
+		      return false;
 		    }
-		    else
-		    {
-		      out += in[i];
-		    }
-		  }
-		  return true;
-		} 
-
-		Status static_handler::HandleRequest(const Request& request, Response* response){
-			
 		}
-
-		/*
-		bool static_handler::handle_request(const request& request_, reply& reply_){
+	      else
+		{
+		  return false;
+		}
+	    }
+	  else if (in[i] == '+')
+	    {
+	      out += ' ';
+	    }
+	  else
+	    {
+	      out += in[i];
+	    }
+	}
+      return true;
+    } 
+    
+    request_handler::Status static_handler::HandleRequest(const Request& request, Response* response){
+      return request_handler::OK;
+    }
+    
+    /*
+      bool static_handler::handle_request(const request& request_, reply& reply_){
 			// filepath beings after /static/ so at the 8th char
-            
-		  std::string filepath = request_.uri.substr(request_.base.length());
-
-		  std::string request_path;
-		  if (!url_decode(filepath, request_path))
-		  {
-		    reply_ = reply::stock_reply(reply::bad_request);
-		    return false;
-		  }
-
+			
+			std::string filepath = request_.uri.substr(request_.base.length());
+			
+			std::string request_path;
+			if (!url_decode(filepath, request_path))
+			{
+			reply_ = reply::stock_reply(reply::bad_request);
+			return false;
+			}
+			
 		  // Request path must be absolute and not contain "..".
 		  if (request_path.empty() || request_path[0] != '/'
 		      || (request_path.find("..") != std::string::npos))

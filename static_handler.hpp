@@ -35,7 +35,7 @@ namespace http {
     };
     
 
-    REGISTER_REQUEST_HANDLER(StaticHandler);
+    REGISTER_REQUEST_HANDLER(static_handler);
 
   } // namespace server
 } // namespace http
