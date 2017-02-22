@@ -9,7 +9,7 @@
 const int MAX_REQUEST_SIZE = 8192;
 
 namespace http {
-  namespace server {
+  namespace server {Status Init(const std::string& uri_prefix, const NginxConfig& config);
 
     class Request {
      public:

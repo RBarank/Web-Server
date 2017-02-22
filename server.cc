@@ -14,12 +14,12 @@ namespace http {
       : io_service_(),
         acceptor_(io_service_),
         socket_(io_service_),
-	portno_(-1)
+		portno_(-1)
     {
-      if (!get_config_info(config))
-	{
-	  throw boost::system::errc::make_error_code(boost::system::errc::invalid_argument);
-	}
+    	
+      if (!get_config_info(config)){
+	  	throw boost::system::errc::make_error_code(boost::system::errc::invalid_argument);
+	  }
 
       // Open the acceptor with the option to reuse the address (i.e. SO_REUSEADDR).
       boost::asio::ip::tcp::resolver resolver(io_service_);

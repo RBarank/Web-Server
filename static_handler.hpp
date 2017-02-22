@@ -13,6 +13,8 @@ namespace http {
 
     class static_handler : public request_handler
     {
+      std::string uri_prefix_;
+      std::string root_path_;
     public:
       //static_handler(std::string root);
       //      virtual ~static_handler() {}
@@ -22,15 +24,13 @@ namespace http {
       // failure condition.
       // uri_prefix is the value in the config file that this handler will run for.
       // config is the contents of the child block for this handler ONLY.
-      virtual Status Init(const std::string& uri_prefix,
-                          const NginxConfig& config);
+      virtual Status Init(const std::string& uri_prefix, const NginxConfig& config);
       
       // Handles an HTTP request, and generates a response. Returns a response code
       // indicating success or failure condition. If ResponseCode is not OK, the
       // contents of the response object are undefined, and the server will return
       // HTTP code 500.
-      virtual Status HandleRequest(const Request& request,
-                                   Response* response);
+      virtual Status HandleRequest(const Request& request, Response* response);
 
     };
     

@@ -21,6 +21,7 @@ namespace http {
      public:
       enum Status {
         OK = 0
+        NOT_OK = 1;
         // Define your status codes here.
       };
       
@@ -59,7 +60,7 @@ namespace http {
 	return new T;
       }
     };
-    
+
     #define REGISTER_REQUEST_HANDLER(ClassName)				\
       static RequestHandlerRegisterer<ClassName> ClassName##__registerer(#ClassName)
     
