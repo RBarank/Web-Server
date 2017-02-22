@@ -9,8 +9,8 @@
 const int MAX_REQUEST_SIZE = 8192;
 
 namespace http {
-  namespace server {Status Init(const std::string& uri_prefix, const NginxConfig& config);
-
+  namespace server {
+    
     class Request {
      public:
       static unique_ptr<Request> Parse(const std::string& raw_request);
