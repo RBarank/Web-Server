@@ -20,9 +20,9 @@ namespace http {
     {
       const auto type_and_builder = request_handler_builders->find(type);
       if (type_and_builder == request_handler_builders->end()) 
-	{
-	  return nullptr;
-	}
+    	{
+    	  return nullptr;
+    	}
       return (*type_and_builder->second)();
     }
 
