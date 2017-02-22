@@ -67,7 +67,7 @@ namespace http {
 	      std::string uri_prefix = statement->tokens_[1];
 	      std::string handler_name = statement->tokens_[2];
 	      
-	      std::shared_ptr<request_handler> handler(request_handler::CreateByName(handler_name));
+	      std::unique_ptr<request_handler> handler(request_handler::CreateByName(handler_name));
 	      
 	      // create by name will return a nullptr if it can't find a handler with this name or there is some error
 	      if (handler == nullptr)
@@ -84,7 +84,7 @@ namespace http {
 		    return false;
 		    }*/
       
-	      uri_to_handler_map[uri_prefix] = handler;
+	      uri_to_handler_map[uri_prefix] = std::move(handler);
  
 	    }
 	}
