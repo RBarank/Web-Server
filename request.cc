@@ -16,9 +16,9 @@ namespace http{
       req.method_ = *(tokens_it);
       ++tokens_it;
       req.uri_ = *(tokens_it);
-      ++tokens_it
-	req.version_ = *(tokens_it);
-      
+      ++tokens_it;
+      req.version_ = *(tokens_it);
+
       return req;
       //std::cout << "request_method: " << request_.method << "\nrequest_uri: " << request_.uri << std::endl;
       // size_t secondSlash = request_.uri.substr(1).find_first_of("/");
