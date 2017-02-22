@@ -21,9 +21,8 @@ namespace http {
     class request_handler {
      public:
       enum Status {
-        OK = 0
-        NOT_OK = 1;
-        // Define your status codes here.
+        OK = 0,
+        NOT_OK = 1
       };
       
       // Initializes the handler. Returns a response code indicating success or

@@ -18,10 +18,10 @@ namespace http{
 
     request_handler::Status echo_handler::HandleRequest(const Request& request, Response* response){
       
-      response.SetStatus(Response::ok);
-      response.AddHeader("Content-Length", std::to_string(request.raw_request().size());
-      response.AddHeader("Content-Type", "text/plain");
-      response.SetBody(request.raw_request());
+      response->SetStatus(Response::ok);
+      response->AddHeader("Content-Length", std::to_string(request.raw_request().size());
+      response->AddHeader("Content-Type", "text/plain");
+      response->SetBody(request.raw_request());
       return request_handler::OK;
     }
 
