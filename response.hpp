@@ -1,10 +1,9 @@
-#ifndef HTTP_REPLY_HPP
-#define HTTP_REPLY_HPP
+#ifndef HTTP_RESPONSE_HPP
+#define HTTP_RESPONSE_HPP
 
 #include <string>
 #include <vector>
 #include <boost/asio.hpp>
-#include "header.hpp"
 
 namespace http {
   namespace server {
@@ -29,17 +28,13 @@ namespace http {
 	not_implemented = 501,
 	bad_gateway = 502,
 	service_unavailable = 503
-      } status;
+      };
       
       void SetStatus(const ResponseCode response_code);
       void AddHeader(const std::string& header_name, const std::string& header_value);
       void SetBody(const std::string& body);
       std::string ToString();
-
-      std::vector<boost::asio::const_buffer> to_buffers();
-      
-      /// Get a stock reply.
-      static Response stock_reply(status_type status);
+      static Response stock_response(status_type status);
 
     private:
       
@@ -53,4 +48,4 @@ namespace http {
   }
 }
 
-#endif //HTTP_REPLY_HPP
+#endif //HTTP_RESPONSE_HPP
