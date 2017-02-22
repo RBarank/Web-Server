@@ -4,6 +4,9 @@
 #include <string>
 #include <vector>
 #include <boost/asio.hpp>
+#include <map>
+#include <memory>
+
 #include "request.hpp"
 #include "reply.hpp"
 #include "mime-types.hpp"
@@ -11,15 +14,6 @@
 
 namespace http {
   namespace server {
-
-    // class request_handler
-    // {
-    // public:
-    // 	request_handler() {}
-    //     virtual ~request_handler() {}
-    // 	static request_handler* generateHandler(std::string& url, std::string& root);
-    // 	virtual bool handle_request(const request& request_, reply& reply_)=0;
-    // };
 
     // Represents the parent of all request handlers. Implementations should expect to
     // be long lived and created at server constrution.
@@ -43,7 +37,32 @@ namespace http {
       // HTTP code 500.
       virtual Status HandleRequest(const Request& request,
                                    Response* response) = 0;
+    
+      // Creates a request handler of the specified type
+      static RequestHandler* CreateByName(const char* type);
+
+    protected:
+      std::string uri_prefix_; // TODO: make this a vector if we have handlers that handle multiple uri's
     };
+    
+    extern std::map<std::string, RequestHandler* (*)(void)>* request_handler_builders;
+    template<typename T>
+    class RequestHandlerRegisterer {
+    public:
+      RequestHandlerRegisterer(const std::string& type) {
+	if (request_handler_builders == nullptr) {
+	  request_handler_builders = new std::map<std::string, RequestHandler* (*)(void)>;
+	}
+	(*request_handler_builders)[type] = RequestHandlerRegisterer::Create;
+      }
+      static RequestHandler* Create() {
+	return new T;
+      }
+    };
+    #define REGISTER_REQUEST_HANDLER(ClassName)				\
+      static RequestHandlerRegisterer<ClassName> ClassName##__registerer(#ClassName)
+    
+
     
   } // namespace server
 } // namespace http

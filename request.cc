@@ -27,7 +27,7 @@ namespace http{
     }
     
     std::string Request::raw_request() const{
-      return raw_equest_;
+      return raw_request_;
     }
     std::string Request::method() const{
       return method_;

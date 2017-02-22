@@ -50,7 +50,7 @@ private:
 
   int portno_;
   // TODO: make this a map to request handlers
-  std::map<std::string, std::shared_ptr<RequestHandler>> uri_to_handler_map;
+  std::map<std::string, std::shared_ptr<request_handler>> uri_to_handler_map;
 };
 
 } // namespace server

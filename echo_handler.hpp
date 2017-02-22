@@ -14,8 +14,9 @@ namespace http {
     class echo_handler : public request_handler
     {
     public: 
-      echo_handler(){}
-      virtual ~echo_handler() {}
+      // echo_handler(){}
+      //virtual ~echo_handler() {}
+      
       //virtual bool handle_request(const request& request_, reply& reply_);
       // Initializes the handler. Returns a response code indicating success or
       // failure condition.
@@ -31,6 +32,8 @@ namespace http {
       virtual Status HandleRequest(const Request& request,
                                    Response* response);
     };
+
+    REGISTER_REQUEST_HANDLER(EchoHandler);
     
   } // namespace server
 } // namespace http
