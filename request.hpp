@@ -11,25 +11,7 @@ const int MAX_REQUEST_SIZE = 8192;
 namespace http {
   namespace server {
 
-    // struct request
-    // {
-    //   char content[MAX_REQUEST_SIZE];
-    //   size_t length;
-    //   std::string method;
-    //   std::string uri;
-    //   std::vector<header> headers;
-    //   std::string base;
-
-    // };
-
     class Request {
-      std::string rawReqest;
-      std::string method;
-      std::string uri;
-      std::string version;
-
-      std::string body;
-
      public:
       static unique_ptr<Request> Parse(const std::string& raw_request);
 
@@ -37,11 +19,19 @@ namespace http {
       std::string method() const;
       std::string uri() const;
       std::string version() const;
+      std::string body() const;
+      
+      using Headers = std::vector<std::pair<std::string, std::string>>;
+      Headers headers() const;
 
-      // using Headers = std::vector<std::pair<std::string, std::string>>;
-      // Headers headers() const;
+    private:
 
-      //std::string body() const;
+      std::string raw_request_;
+      std::string method_;
+      std::string uri_;
+      std::string version_;
+      std::string body_;
+      Headers headers_;
     };
     
   } // namespace server
