@@ -43,7 +43,7 @@ void connection::do_read()
   socket_.async_read_some(boost::asio::buffer(request_buffer),
       [this, self](boost::system::error_code ec, std::size_t bytes)
       {
-	request_buffer = bytes;
+	size_t request_buffer_size = bytes;
   std::string bufferString(request_buffer);
 
   //TODO: call parse method of request

@@ -34,7 +34,7 @@ namespace http {
       void AddHeader(const std::string& header_name, const std::string& header_value);
       void SetBody(const std::string& body);
       std::string ToString();
-      static Response stock_response(status_type status);
+      static Response stock_response(ResponseCode status);
 
     private:
       

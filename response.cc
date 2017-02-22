@@ -102,7 +102,7 @@ namespace http{
       return outputResponse;
     }
     
-    Response Response::stock_response(Response::status_type status)
+    Response Response::stock_response(Response::ResponseCode status)
     {
       Response resp;
       resp.response_code_ = status;

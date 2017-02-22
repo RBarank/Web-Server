@@ -4,8 +4,16 @@
 #include <iostream>
 
 namespace http{
-	namespace server{
+  namespace server{
 
+    Status Init(const std::string& uri_prefix, const NginxConfig& config)
+    {
+      return request_handler::OK;
+    }
+    
+
+
+    /*
 		static_handler::static_handler(std::string root)
 			:fileRoot(root)
 		{}
@@ -118,5 +126,9 @@ namespace http{
   //std::cout << "type: " << reply_.headers[1].value << std::endl; // Debugging
 		  return true;
 		}
-	}
-}
+    */
+
+
+
+  } // namespace server
+} // namespace http

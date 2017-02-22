@@ -12,9 +12,13 @@ namespace http{
       reply_.headers[1].name = "Content-Type";
       reply_.headers[1].value = "text/plain";
       return true;
+      }
     */
 
-
-   }
+    Status Init(const std::string& uri_prefix, const NginxConfig& config)
+    {
+      return request_handler::OK;
+    }
+   
   }
 }

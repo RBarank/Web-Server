@@ -13,7 +13,7 @@
 #include <unordered_map>
 
 
-const int MAX_REQUEST_SIZE = 8192;
+//const int MAX_REQUEST_SIZE = 8192; // already defined in request.hpp
 
 namespace http {
   namespace server {
