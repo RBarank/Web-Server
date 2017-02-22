@@ -13,7 +13,7 @@ namespace http{
     
 
 
-    /*
+    
 		static_handler::static_handler(std::string root)
 			:fileRoot(root)
 		{}
@@ -57,7 +57,11 @@ namespace http{
 		  return true;
 		} 
 
+		Status static_handler::HandleRequest(const Request& request, Response* response){
+			
+		}
 
+		/*
 		bool static_handler::handle_request(const request& request_, reply& reply_){
 			// filepath beings after /static/ so at the 8th char
             
