@@ -16,18 +16,18 @@ namespace http{
     */
 
 
-    request_handler::Status EchoHandler::HandleRequest(const Request& request, Response* response){
+    RequestHandler::Status EchoHandler::HandleRequest(const Request& request, Response* response){
       
       response->SetStatus(Response::ok);
       response->AddHeader("Content-Length", std::to_string(request.raw_request().size()));
       response->AddHeader("Content-Type", "text/plain");
       response->SetBody(request.raw_request());
-      return request_handler::OK;
+      return RequestHandler::OK;
     }
 
-    request_handler::Status EchoHandler::Init(const std::string& uri_prefix, const NginxConfig& config)
+    RequestHandler::Status EchoHandler::Init(const std::string& uri_prefix, const NginxConfig& config)
     {
-      return request_handler::OK;
+      return RequestHandler::OK;
     }
    
   }

@@ -11,7 +11,7 @@
 namespace http {
   namespace server {
 
-    class StaticHandler : public request_handler
+    class StaticHandler : public RequestHandler
     {
       std::string uri_prefix_;
       std::string root_path_;

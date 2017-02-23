@@ -6,7 +6,7 @@
 namespace http{
   namespace server{
     
-    request_handler::Status StaticHandler::Init(const std::string& uri_prefix, const NginxConfig& config)
+    RequestHandler::Status StaticHandler::Init(const std::string& uri_prefix, const NginxConfig& config)
     {
       uri_prefix_ = uri_prefix;
       for (const auto& statement : config.statements_){
@@ -14,7 +14,7 @@ namespace http{
 	  root_path_ = statement->tokens_[1];
 	}
       }
-      return request_handler::OK;
+      return RequestHandler::OK;
     }
 
     bool StaticHandler::url_decode(const std::string& in, std::string& out)
@@ -57,7 +57,7 @@ namespace http{
     } 
     
 
-    request_handler::Status StaticHandler::HandleRequest(const Request& request, Response* response){
+    RequestHandler::Status StaticHandler::HandleRequest(const Request& request, Response* response){
       // filepath beings after /static/ so at the 8th char
       
       size_t secondSlash = request.uri().substr(1).find_first_of("/");
@@ -68,7 +68,7 @@ namespace http{
       if (!url_decode(filepath, request_path))
 	{
 	  *response = Response::stock_response(Response::bad_request);
-	  return request_handler::NOT_OK;
+	  return RequestHandler::NOT_OK;
 	}
       
       // Request path must be absolute and not contain "..".
@@ -76,7 +76,7 @@ namespace http{
 	  || (request_path.find("..") != std::string::npos))
 	  {
 	    *response = Response::stock_response(Response::bad_request);
-	    return request_handler::NOT_OK;
+	    return RequestHandler::NOT_OK;
 	  }
       
       // If path ends in slash (i.e. is a directory) then add "index.html".
@@ -95,7 +95,7 @@ namespace http{
       else
 	{
 	  *response = Response::stock_response(Response::bad_request);
-	  return request_handler::NOT_OK;
+	  return RequestHandler::NOT_OK;
 	}
       
       // Open the file to send back.
@@ -107,7 +107,7 @@ namespace http{
       if (!is)
 	{
 	  *response = Response::stock_response(Response::not_found);
-	  return request_handler::NOT_OK;
+	  return RequestHandler::NOT_OK;
 	}
       
       // Fill out the reply to be sent to the client.
@@ -129,7 +129,7 @@ namespace http{
       response->AddHeader("Content-Length", std::to_string(content.size()));
       response->AddHeader("Content-Type", "text/plain"); 
       //std::cout << "type: " << response.headers[1].value << std::endl; // Debugging
-      return request_handler::OK;
+      return RequestHandler::OK;
     }
   } // namespace server
 } // namespace http

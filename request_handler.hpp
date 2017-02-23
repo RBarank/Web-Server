@@ -18,7 +18,7 @@ namespace http {
 
     // Represents the parent of all request handlers. Implementations should expect to
     // be long lived and created at server constrution.
-    class request_handler {
+    class RequestHandler {
      public:
       enum Status {
         OK = 0,
@@ -29,34 +29,34 @@ namespace http {
       // failure condition.
       // uri_prefix is the value in the config file that this handler will run for.
       // config is the contents of the child block for this handler ONLY.
-      virtual request_handler::Status Init(const std::string& uri_prefix,
+      virtual RequestHandler::Status Init(const std::string& uri_prefix,
                           const NginxConfig& config) = 0;
 
       // Handles an HTTP request, and generates a response. Returns a response code
       // indicating success or failure condition. If ResponseCode is not OK, the
       // contents of the response object are undefined, and the server will return
       // HTTP code 500.
-      virtual request_handler::Status HandleRequest(const Request& request,
+      virtual RequestHandler::Status HandleRequest(const Request& request,
                                    Response* response) = 0;
     
       // Creates a request handler of the specified type
-      static request_handler* CreateByName(const std::string& type);
+      static RequestHandler* CreateByName(const std::string& type);
 
     protected:
       std::string uri_prefix_; // TODO: make this a vector if we have handlers that handle multiple uri's
     };
     
-    extern std::map<std::string, request_handler* (*)(void)>* request_handler_builders;
+    extern std::map<std::string, RequestHandler* (*)(void)>* request_handler_builders;
     template<typename T>
     class RequestHandlerRegisterer {
     public:
       RequestHandlerRegisterer(const std::string& type) {
 	if (request_handler_builders == nullptr) {
-	  request_handler_builders = new std::map<std::string, request_handler* (*)(void)>;
+	  request_handler_builders = new std::map<std::string, RequestHandler* (*)(void)>;
 	}
 	(*request_handler_builders)[type] = RequestHandlerRegisterer::Create;
       }
-      static request_handler* Create() {
+      static RequestHandler* Create() {
 	return new T;
       }
     };

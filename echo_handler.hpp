@@ -11,7 +11,7 @@
 namespace http {
   namespace server {
 
-    class EchoHandler : public request_handler
+    class EchoHandler : public RequestHandler
     {
     public: 
       //echo_handler(){}

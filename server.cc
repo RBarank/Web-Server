@@ -68,7 +68,7 @@ namespace http {
 	      std::string uri_prefix = statement->tokens_[1];
 	      std::string handler_name = statement->tokens_[2];
 	      
-	      std::unique_ptr<request_handler> handler(request_handler::CreateByName(handler_name));
+	      std::unique_ptr<RequestHandler> handler(RequestHandler::CreateByName(handler_name));
 	      
 	      // create by name will return a nullptr if it can't find a handler with this name or there is some error
 	      if (handler == nullptr)

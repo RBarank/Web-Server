@@ -4,7 +4,7 @@
 namespace http {
   namespace server {
 
-    std::map<std::string, http::server::request_handler* (*)(void)>* request_handler_builders = nullptr;
+    std::map<std::string, http::server::RequestHandler* (*)(void)>* request_handler_builders = nullptr;
 
     /*
     const std::string ECHO_URL = "/echo";
@@ -18,7 +18,7 @@ namespace http {
 	return NULL;
     }*/
 
-    request_handler* request_handler::CreateByName(const std::string& type) 
+    RequestHandler* RequestHandler::CreateByName(const std::string& type) 
     {
       const auto type_and_builder = request_handler_builders->find(type);
       if (type_and_builder == request_handler_builders->end()) 
