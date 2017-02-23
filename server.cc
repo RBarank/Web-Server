@@ -18,7 +18,8 @@ namespace http {
     {
     	
       if (!get_config_info(config)){
-	  	throw boost::system::errc::make_error_code(boost::system::errc::invalid_argument);
+	printf("get_config_info failed!\n");
+	throw boost::system::errc::make_error_code(boost::system::errc::invalid_argument);
 	  }
 
       // Open the acceptor with the option to reuse the address (i.e. SO_REUSEADDR).
@@ -72,6 +73,7 @@ namespace http {
 	      // create by name will return a nullptr if it can't find a handler with this name or there is some error
 	      if (handler == nullptr)
 		{
+		  printf("handler is a nullptr!\n");
 		  return false;
 		}
 	      

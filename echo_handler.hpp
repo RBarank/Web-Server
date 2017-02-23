@@ -11,7 +11,7 @@
 namespace http {
   namespace server {
 
-    class echo_handler : public request_handler
+    class EchoHandler : public request_handler
     {
     public: 
       //echo_handler(){}
@@ -34,7 +34,7 @@ namespace http {
                                    Response* response);
     };
 
-    REGISTER_REQUEST_HANDLER(echo_handler);
+    REGISTER_REQUEST_HANDLER(EchoHandler);
     
   } // namespace server
 } // namespace http

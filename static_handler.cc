@@ -6,7 +6,7 @@
 namespace http{
   namespace server{
     
-    request_handler::Status static_handler::Init(const std::string& uri_prefix, const NginxConfig& config)
+    request_handler::Status StaticHandler::Init(const std::string& uri_prefix, const NginxConfig& config)
     {
       uri_prefix_ = uri_prefix;
       for (const auto& statement : config.statements_){
@@ -17,7 +17,7 @@ namespace http{
       return request_handler::OK;
     }
 
-    bool static_handler::url_decode(const std::string& in, std::string& out)
+    bool StaticHandler::url_decode(const std::string& in, std::string& out)
     {
       out.clear();
       out.reserve(in.size());
@@ -57,7 +57,7 @@ namespace http{
     } 
     
 
-    request_handler::Status static_handler::HandleRequest(const Request& request, Response* response){
+    request_handler::Status StaticHandler::HandleRequest(const Request& request, Response* response){
       // filepath beings after /static/ so at the 8th char
       
       size_t secondSlash = request.uri().substr(1).find_first_of("/");

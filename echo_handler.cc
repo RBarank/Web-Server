@@ -16,7 +16,7 @@ namespace http{
     */
 
 
-    request_handler::Status echo_handler::HandleRequest(const Request& request, Response* response){
+    request_handler::Status EchoHandler::HandleRequest(const Request& request, Response* response){
       
       response->SetStatus(Response::ok);
       response->AddHeader("Content-Length", std::to_string(request.raw_request().size()));
@@ -25,7 +25,7 @@ namespace http{
       return request_handler::OK;
     }
 
-    request_handler::Status echo_handler::Init(const std::string& uri_prefix, const NginxConfig& config)
+    request_handler::Status EchoHandler::Init(const std::string& uri_prefix, const NginxConfig& config)
     {
       return request_handler::OK;
     }
