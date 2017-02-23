@@ -127,7 +127,7 @@ namespace http{
       // response.headers[1].name = "Content-Type";
       // response.headers[1].value = mime_types::extension_to_type(extension);
       response->AddHeader("Content-Length", std::to_string(content.size()));
-      response->AddHeader("Content-Type", "text/plain"); 
+      response->AddHeader("Content-Type", mime_types::extension_to_type(extension)); 
       //std::cout << "type: " << response.headers[1].value << std::endl; // Debugging
       return RequestHandler::OK;
     }

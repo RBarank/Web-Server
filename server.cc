@@ -17,20 +17,28 @@ namespace http {
 		portno_(-1)
     {
     	
+    printf("WE GOT HERE\n");
+    	
       if (!get_config_info(config)){
 	printf("get_config_info failed!\n");
 	throw boost::system::errc::make_error_code(boost::system::errc::invalid_argument);
 	  }
 
       // Open the acceptor with the option to reuse the address (i.e. SO_REUSEADDR).
+      //printf("WE GOT HERE");
       boost::asio::ip::tcp::resolver resolver(io_service_);
+      //printf("WE GOT HERE1");
       boost::asio::ip::tcp::endpoint endpoint = *resolver.resolve({address, std::to_string(portno_)});
+      //printf("WE GOT HERE2");
       acceptor_.open(endpoint.protocol());
+      //printf("WE GOT HERE3");
       acceptor_.set_option(boost::asio::ip::tcp::acceptor::reuse_address(true));
+      //printf("WE GOT HERE4");
       acceptor_.bind(endpoint);
       acceptor_.listen();
       
-      //do_accept(pathMap);
+
+      do_accept();
     }
     
     bool server::get_config_info(const NginxConfig& config)
@@ -68,7 +76,8 @@ namespace http {
 	      std::string uri_prefix = statement->tokens_[1];
 	      std::string handler_name = statement->tokens_[2];
 	      
-	      std::unique_ptr<RequestHandler> handler(RequestHandler::CreateByName(handler_name));
+	      //std::unique_ptr<RequestHandler> handler(RequestHandler::CreateByName(handler_name));
+	      RequestHandler* handler = RequestHandler::CreateByName(handler_name);
 	      
 	      // create by name will return a nullptr if it can't find a handler with this name or there is some error
 	      if (handler == nullptr)
@@ -86,7 +95,8 @@ namespace http {
 		    return false;
 		    }*/
       
-	      uri_to_handler_map[uri_prefix] = std::move(handler);
+	      //uri_to_handler_map[uri_prefix] = std::move(handler);
+			uri_to_handler_map[uri_prefix] = handler;
  
 	    }
 	}
@@ -109,11 +119,12 @@ namespace http {
       }
     }
     
-    void server::do_accept(const std::unordered_map<std::string, std::string>& pathMap)
+    void server::do_accept()
     {
+    	printf("WE GOT HERE\n");
       try {
 	acceptor_.async_accept(socket_,
-			       [this, &pathMap](boost::system::error_code ec)
+			       [this](boost::system::error_code ec)
 			       {
 				 // Check whether the server was stopped by a signal before this
 				 // completion handler had a chance to run.
@@ -123,9 +134,9 @@ namespace http {
 				   }
 				 if (!ec)
 				   {
-				     std::make_shared<connection>(std::move(socket_), pathMap)->start();
+				     std::make_shared<connection>(std::move(socket_), uri_to_handler_map)->start();
 				   }
-				 do_accept(pathMap);
+				 do_accept();
 			       });
       } catch (boost::system::error_code const &e) {
 	throw e;

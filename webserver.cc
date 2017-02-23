@@ -36,7 +36,7 @@ int main(int argc, char* argv[])
     try
     {
         http::server::server s("127.0.0.1", config);
-        //s.run();
+        s.run();
     }
     catch (std::exception& e)
     {

@@ -29,7 +29,8 @@ namespace http {
       connection& operator=(const connection&) = delete;
       
       /// Construct a connection with the given socket.
-      explicit connection(boost::asio::ip::tcp::socket socket, const std::unordered_map<std::string, std::string>& pathMap);
+      //explicit connection(boost::asio::ip::tcp::socket socket, const std::unordered_map<std::string, std::unique_ptr<RequestHandler>>& pathMap);
+      explicit connection(boost::asio::ip::tcp::socket socket, const std::unordered_map<std::string, RequestHandler*>& pathMap);
       
       /// Start the first asynchronous operation for the connection.
       void start();
@@ -52,7 +53,7 @@ namespace http {
       /// Socket for the connection.
       boost::asio::ip::tcp::socket socket_;
 
-      std::unordered_map<std::string, std::string> pathMap_;
+      std::unordered_map<std::string, RequestHandler*> pathMap_;
       
       /// Buffer for incoming data.
       //char request_buffer[MAX_REQUEST_SIZE];

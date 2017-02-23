@@ -32,7 +32,7 @@ public:
 
 private:
   /// Perform an asynchronous accept operation.
-  void do_accept(const std::unordered_map<std::string, std::string>& pathMap);
+  void do_accept();
 
   /// Wait for a request to stop the server.
   // void do_await_stop();
@@ -48,7 +48,8 @@ private:
 
   int portno_;
   // TODO: make this a map to request handlers
-  std::map<std::string, std::unique_ptr<RequestHandler>> uri_to_handler_map;
+  //std::unordered_map<std::string, std::unique_ptr<RequestHandler>> uri_to_handler_map;
+  std::unordered_map<std::string, RequestHandler*> uri_to_handler_map;
 };
 
 } // namespace server

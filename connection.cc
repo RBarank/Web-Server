@@ -7,11 +7,13 @@
 #include <string>
 #include "mime-types.hpp"
 #include <iostream>
+#include <unordered_map>
+#include <cstring>
 
 namespace http {
 namespace server {
 
-connection::connection(boost::asio::ip::tcp::socket socket, const std::unordered_map<std::string, std::string>& pathMap)
+connection::connection(boost::asio::ip::tcp::socket socket, const std::unordered_map<std::string, RequestHandler*>& pathMap)
   : socket_(std::move(socket)), pathMap_(pathMap)
 {
 
@@ -38,16 +40,42 @@ void connection::do_read()
 {
   auto self(shared_from_this());
 
+  printf("WE GOT HERE!!\n");
   // Clear content buffer before every read
   memset(request_buffer, 0, MAX_REQUEST_SIZE);
+  // printf("WE GOT HEREgoog\n");
   
   socket_.async_read_some(boost::asio::buffer(request_buffer),
 			  [this, self](boost::system::error_code ec, std::size_t bytes)
 			  {
 			    //size_t request_buffer_size = bytes;
-			    //std::string bufferString(request_buffer);
+			    std::string bufferString(request_buffer);
 
-			    //TODO: call parse method of request
+          std::unique_ptr<Request> currentRequest(Request::Parse(bufferString));
+
+          printf("WE GOT HEREmsft\n");
+          int secondSlash = currentRequest->uri().substr(1).find_first_of("/");
+          std::string request_base;
+          if(secondSlash == -1)
+              request_base = currentRequest->uri();
+          else
+            request_base = currentRequest->uri().substr(0,secondSlash + 1);
+          
+          Response* resp = new Response;
+
+          // for ( auto it = pathMap_.begin(); it != pathMap_.end(); ++it )
+          //   std::cout << " " << it->first << std::endl;
+
+          std::cout << currentRequest->uri() << std::endl;
+          pathMap_[request_base]->HandleRequest(*currentRequest, resp);
+
+          printf("WE GOT HEREamazballs\n");
+          std::string respString = resp->ToString();
+          boost::asio::write(socket_, boost::asio::buffer(respString, respString.size()));
+			
+
+
+          //TODO: call parse method of request
 			    //parseRequest();
 			    /*
 			    if (pathMap_.find(request_.base) != pathMap_.end()){
@@ -61,7 +89,10 @@ void connection::do_read()
 			    else
 			      reply_ = Response::stock_reply(Response::bad_request);
 			    */
-			    do_write();
+
+			    //do_write();
+
+
 			    
 			  }); 
   
