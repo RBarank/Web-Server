@@ -3,10 +3,10 @@ STD_FLAGS = -std=c++11 -g -Wall -Werror -pthread -lboost_system
 COV_FLAGS = -isystem $(GTEST_DIR)/include -fprofile-arcs -ftest-coverage libgtest.a $(GTEST_DIR)/src/gtest_main.cc
 
 all:
-	g++ config_parser.cc connection.cc server.cc reply.cc webserver.cc mime-types.cc request_handler.cc echo_handler.cc static_handler.cc -o webserver $(STD_FLAGS)
+	g++ config_parser.cc connection.cc server.cc response.cc request.cc webserver.cc mime-types.cc request_handler.cc echo_handler.cc static_handler.cc -o webserver $(STD_FLAGS)
 
 run:
-	g++ config_parser.cc connection.cc server.cc reply.cc webserver.cc mime-types.cc request_handler.cc echo_handler.cc static_handler.cc -o webserver $(STD_FLAGS)
+	g++ config_parser.cc connection.cc server.cc response.cc request.cc webserver.cc mime-types.cc request_handler.cc echo_handler.cc static_handler.cc -o webserver $(STD_FLAGS)
 	./webserver config_file
 
 clean:
@@ -22,16 +22,16 @@ test:
 	g++ -std=c++11 -isystem ${GTEST_DIR}/include -I${GTEST_DIR} -pthread -c ${GTEST_DIR}/src/gtest-all.cc
 	ar -rv libgtest.a gtest-all.o
 	g++ config_parser_test.cc config_parser.cc -o config_parser_test $(STD_FLAGS) $(COV_FLAGS)
-	g++ server_test.cc server.cc connection.cc reply.cc mime-types.cc request_handler.cc echo_handler.cc static_handler.cc -o server_test $(STD_FLAGS) $(COV_FLAGS)
-	g++ connection_test.cc connection.cc reply.cc mime-types.cc request_handler.cc echo_handler.cc static_handler.cc -o connection_test $(STD_FLAGS) $(COV_FLAGS)
-	g++ reply.cc reply_test.cc -o reply_test $(STD_FLAGS) $(COV_FLAGS)
+	g++ server_test.cc server.cc connection.cc response.cc request.cc mime-types.cc request_handler.cc echo_handler.cc static_handler.cc -o server_test $(STD_FLAGS) $(COV_FLAGS)
+	g++ connection_test.cc connection.cc response.cc request.cc mime-types.cc request_handler.cc echo_handler.cc static_handler.cc -o connection_test $(STD_FLAGS) $(COV_FLAGS)
+	g++ response.cc request.cc reply_test.cc -o reply_test $(STD_FLAGS) $(COV_FLAGS)
 	./server_test && ./connection_test && ./config_parser_test &&./reply_test
 
 integration:
 	python integration.py
 
 coverage: test
-	gcov -r server.cc connection.cc config_parser.cc reply.cc
+	gcov -r server.cc connection.cc config_parser.cc response.cc request.cc
 
 clean-coverage:
 	rm *gcov *gcda *gcno

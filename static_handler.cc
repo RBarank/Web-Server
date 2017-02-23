@@ -67,7 +67,7 @@ namespace http{
       std::string request_path;
       if (!url_decode(filepath, request_path))
 	{
-	  response = Response::stock_reply(Response::bad_request);
+	  *response = Response::stock_response(Response::bad_request);
 	  return request_handler::NOT_OK;
 	}
       
@@ -75,7 +75,7 @@ namespace http{
       if (request_path.empty() || request_path[0] != '/'
 	  || (request_path.find("..") != std::string::npos))
 	  {
-	    response = Response::stock_reply(Response::bad_request);
+	    *response = Response::stock_response(Response::bad_request);
 	    return request_handler::NOT_OK;
 	  }
       
@@ -94,36 +94,40 @@ namespace http{
 	}
       else
 	{
-	  response = Response::stock_reply(Response::bad_request);
+	  *response = Response::stock_response(Response::bad_request);
 	  return request_handler::NOT_OK;
 	}
       
       // Open the file to send back.
-      std::string full_path = fileRoot + request_path;
+      std::string full_path = root_path_ + request_path;
       full_path = full_path.substr(1);
       //std::cout << "filepath: " << pathMap_[request_.base] << std::endl;
       //std::cout << "full path: " << full_path << std::endl;
       std::ifstream is(full_path.c_str(), std::ios::in | std::ios::binary);
       if (!is)
 	{
-	  response = Response::stock_reply(Response::not_found);
+	  *response = Response::stock_response(Response::not_found);
 	  return request_handler::NOT_OK;
 	}
       
       // Fill out the reply to be sent to the client.
-      response.status = Response::ok;
+      response->SetStatus(Response::ok);
       char buf[512];
+      std::string content;
       while (is.read(buf, sizeof(buf)).gcount() > 0)
 	{
-	  response.content.append(buf, is.gcount());
+	  content.append(buf, is.gcount());
 	  memset(buf, 0, sizeof(buf));
 	}
+	  response->SetBody(content); 
       //std::cout << "content: " << response.content << std::endl; // Debugging
-      response.headers.resize(2);
-      response.headers[0].name = "Content-Length";
-      response.headers[0].value = std::to_string(response.content.size());
-      response.headers[1].name = "Content-Type";
-      response.headers[1].value = mime_types::extension_to_type(extension);  
+      // response.headers.resize(2);
+      // response.headers[0].name = "Content-Length";
+      // response.headers[0].value = std::to_string(response.content.size());
+      // response.headers[1].name = "Content-Type";
+      // response.headers[1].value = mime_types::extension_to_type(extension);
+      response->AddHeader("Content-Length", std::to_string(content.size()));
+      response->AddHeader("Content-Type", "text/plain"); 
       //std::cout << "type: " << response.headers[1].value << std::endl; // Debugging
       return request_handler::OK;
     }

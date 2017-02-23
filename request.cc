@@ -2,9 +2,9 @@
 
 namespace http{
   namespace server{
-    static unique_ptr<Request> Request::Parse(const std::string& raw_request){
+    std::unique_ptr<Request> Request::Parse(const std::string& raw_request){
       //std::cout << "request begin\n" << request_.content << "response end" << std::endl;
-      unique_ptr<Request> req = std::make_unique<Request>();
+      std::unique_ptr<Request> req = std::make_unique<Request>();
       req.raw_request_ = raw_request;
       // use boost tokenizer to parse request
       //const std::string req_str(request_.content);

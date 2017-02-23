@@ -15,6 +15,7 @@ namespace http {
     {
       std::string uri_prefix_;
       std::string root_path_;
+      bool url_decode(const std::string& in, std::string& out);
     public:
       //static_handler(std::string root);
       //      virtual ~static_handler() {}

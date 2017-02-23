@@ -42,7 +42,6 @@ namespace http {
       Headers headers_;
       std::string body_;
       ResponseCode response_code_;
-      
     };
     
   }

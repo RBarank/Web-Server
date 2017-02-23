@@ -1,41 +1,41 @@
-#include "response.h"
+#include "response.hpp"
 
 namespace http{
   namespace server{
     namespace status_strings {
       
       const std::string ok =
-	"200 OK";
+	"HTTP/1.1 200 OK";
       const std::string created =
-	"201 Created";
+	"HTTP/1.1 201 Created";
       const std::string accepted =
-	"202 Accepted";
+	"HTTP/1.1 202 Accepted";
       const std::string no_content =
-	"204 No Content";
+	"HTTP/1.1 204 No Content";
       const std::string multiple_choices =
-	"300 Multiple Choices";
+	"HTTP/1.1 300 Multiple Choices";
       const std::string moved_permanently =
-	"301 Moved Permanently";
+	"HTTP/1.1 301 Moved Permanently";
       const std::string moved_temporarily =
-	"302 Moved Temporarily";
+	"HTTP/1.1 302 Moved Temporarily";
       const std::string not_modified =
-	"304 Not Modified";
+	"HTTP/1.1 304 Not Modified";
       const std::string bad_request =
-	"400 Bad Request";
+	"HTTP/1.1 400 Bad Request";
       const std::string unauthorized =
-	"401 Unauthorized";
+	"HTTP/1.1 401 Unauthorized";
       const std::string forbidden =
-	"403 Forbidden";
+	"HTTP/1.1 403 Forbidden";
       const std::string not_found =
-	"404 Not Found";
+	"HTTP/1.1 404 Not Found";
       const std::string internal_server_error =
-	"500 Internal Server Error";
+	"HTTP/1.1 500 Internal Server Error";
       const std::string not_implemented =
-	"501 Not Implemented";
+	"HTTP/1.1 501 Not Implemented";
       const std::string bad_gateway =
-	"502 Bad Gateway";
+	"HTTP/1.1 502 Bad Gateway";
       const std::string service_unavailable =
-	"503 Service Unavailable";
+	"HTTP/1.1 503 Service Unavailable";
       
       std::string response_code_to_string(Response::ResponseCode status)
       {
@@ -84,7 +84,7 @@ namespace http{
       response_code_ = response_code;
     }
     void Response::AddHeader(const std::string& header_name, const std::string& header_value){
-      headers_.push_back(std:make_pair<header_name, header_value>);
+      headers_.push_back(std::make_pair(header_name, header_value));
     }
     void Response::SetBody(const std::string& body){
       body_ = body;
@@ -92,23 +92,23 @@ namespace http{
     
     std::string Response::ToString(){
       const std::string CRLF = "\r\n";
-      std::string response_str = version_ + " " + status_strings::response_code_to_string(response_code_) + CRLF;
+      std::string response_str = status_strings::response_code_to_string(response_code_) + CRLF;
       for (auto header : headers_)
 	{
 	  response_str += header.first + ": " + header.second + CRLF;
 	}
       response_str += CRLF; // there is an extra CRLF between last header and body of response
       response_str += body_;
-      return outputResponse;
+      return response_str;
     }
     
     Response Response::stock_response(Response::ResponseCode status)
     {
       Response resp;
       resp.response_code_ = status;
-      resp.body_ = status_strings::response_code_to_string(response_code_);
-      resp.Headers_.push_back(std::make_pair("Content-Length", std::to_string(resp.body_.size())));
-      resp.Headers_.push_back(std::make_pair("Content-Type", "text/html"));            
+      resp.body_ = status_strings::response_code_to_string(status);
+      resp.headers_.push_back(std::make_pair("Content-Length", std::to_string(resp.body_.size())));
+      resp.headers_.push_back(std::make_pair("Content-Type", "text/html"));            
       return resp;
     }
   }
