@@ -4,7 +4,6 @@
 
 #include "config_parser.h"
 #include "request_handler.hpp"
-#include "reply.hpp"
 
 #include <boost/asio.hpp>
 #include <string>
