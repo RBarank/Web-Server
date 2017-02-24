@@ -6,7 +6,7 @@ namespace http{
   namespace server{
 
 
-TEST(ReplyTest2, EmptyResponse) 
+TEST(ResponseTest2, EmptyResponse) 
 {
   Response test_response;
   EXPECT_NO_THROW(test_response.SetStatus(Response::ok));
@@ -15,137 +15,137 @@ TEST(ReplyTest2, EmptyResponse)
   EXPECT_NO_THROW(test_response.ToString());
 }
 
-TEST(StockReply, BadRequest) 
+TEST(StockResponse, BadRequest) 
 {
   Response test_response;
   EXPECT_NO_THROW(test_response = Response::stock_response(Response::bad_request));
   EXPECT_NO_THROW(test_response.ToString());
 }
 
-    /*
-TEST(StockReply, OK) 
+
+TEST(StockResponse, OK) 
 {
-  reply test_reply;
-  test_reply = reply::stock_reply(reply::ok);
-  EXPECT_EQ(test_reply.status, reply::ok);
-  EXPECT_NO_THROW(test_reply.to_buffers());
+  Response test_response;
+  test_response = Response::stock_response(Response::ok);
+  //EXPECT_EQ(test_response.status, Response::ok);
+  EXPECT_NO_THROW(test_response.ToString());
 
 }
 
-TEST(StockReply, BadGateway) 
+TEST(StockResponse, BadGateway) 
 {
-  reply test_reply;
-  test_reply = reply::stock_reply(reply::bad_gateway);
-  EXPECT_EQ(test_reply.status, reply::bad_gateway);
-  EXPECT_NO_THROW(test_reply.to_buffers());
+  Response test_response;
+  test_response = Response::stock_response(Response::bad_gateway);
+  //EXPECT_EQ(test_response.status, Response::bad_gateway);
+  EXPECT_NO_THROW(test_response.ToString());
 
 }
 
-TEST(StockReply, NotModified) 
+TEST(StockResponse, NotModified) 
 {
-  reply test_reply;
-  test_reply = reply::stock_reply(reply::not_modified);
-  EXPECT_EQ(test_reply.status, reply::not_modified);
-  EXPECT_NO_THROW(test_reply.to_buffers());
+  Response test_response;
+  test_response = Response::stock_response(Response::not_modified);
+  //EXPECT_EQ(test_response.status, Response::not_modified);
+  EXPECT_NO_THROW(test_response.ToString());
 
 }
 
-TEST(StockReply, NotFound) 
+TEST(StockResponse, NotFound) 
 {
-  reply test_reply;
-  test_reply = reply::stock_reply(reply::not_found);
-  EXPECT_EQ(test_reply.status, reply::not_found);
-  EXPECT_NO_THROW(test_reply.to_buffers());
+  Response test_response;
+  test_response = Response::stock_response(Response::not_found);
+  //EXPECT_EQ(test_response.status, Response::not_found);
+  EXPECT_NO_THROW(test_response.ToString());
 }
 
-TEST(StockReply, Created) 
+TEST(StockResponse, Created) 
 {
-  reply test_reply;
-  test_reply = reply::stock_reply(reply::created);
-  EXPECT_EQ(test_reply.status, reply::created);
-  EXPECT_NO_THROW(test_reply.to_buffers());
+  Response test_response;
+  test_response = Response::stock_response(Response::created);
+  //EXPECT_EQ(test_response.status, Response::created);
+  EXPECT_NO_THROW(test_response.ToString());
 }
 
-TEST(StockReply, Accepted) 
+TEST(StockResponse, Accepted) 
 {
-  reply test_reply;
-  test_reply = reply::stock_reply(reply::accepted);
-  EXPECT_EQ(test_reply.status, reply::accepted);
-  EXPECT_NO_THROW(test_reply.to_buffers());
+  Response test_response;
+  test_response = Response::stock_response(Response::accepted);
+  //EXPECT_EQ(test_response.status, Response::accepted);
+  EXPECT_NO_THROW(test_response.ToString());
 }
 
-TEST(StockReply, NoContent) 
+TEST(StockResponse, NoContent) 
 {
-  reply test_reply;
-  test_reply = reply::stock_reply(reply::no_content);
-  EXPECT_EQ(test_reply.status, reply::no_content);
-  EXPECT_NO_THROW(test_reply.to_buffers());
+  Response test_response;
+  test_response = Response::stock_response(Response::no_content);
+  //EXPECT_EQ(test_response.status, Response::no_content);
+  EXPECT_NO_THROW(test_response.ToString());
 }
 
-TEST(StockReply, MultipleChoices) 
+TEST(StockResponse, MultipleChoices) 
 {
-  reply test_reply;
-  test_reply = reply::stock_reply(reply::multiple_choices);
-  EXPECT_EQ(test_reply.status, reply::multiple_choices);
-  EXPECT_NO_THROW(test_reply.to_buffers());
+  Response test_response;
+  test_response = Response::stock_response(Response::multiple_choices);
+  //EXPECT_EQ(test_response.status, Response::multiple_choices);
+  EXPECT_NO_THROW(test_response.ToString());
 }
 
-TEST(StockReply, Forbidden) 
+TEST(StockResponse, Forbidden) 
 {
-  reply test_reply;
-  test_reply = reply::stock_reply(reply::forbidden);
-  EXPECT_EQ(test_reply.status, reply::forbidden);
-  EXPECT_NO_THROW(test_reply.to_buffers());
+  Response test_response;
+  test_response = Response::stock_response(Response::forbidden);
+  //EXPECT_EQ(test_response.status, Response::forbidden);
+  EXPECT_NO_THROW(test_response.ToString());
 }
 
-TEST(StockReply, MovedPerm) 
+TEST(StockResponse, MovedPerm) 
 {
-  reply test_reply;
-  test_reply = reply::stock_reply(reply::moved_permanently);
-  EXPECT_EQ(test_reply.status, reply::moved_permanently);
-  EXPECT_NO_THROW(test_reply.to_buffers());
+  Response test_response;
+  test_response = Response::stock_response(Response::moved_permanently);
+  //EXPECT_EQ(test_response.status, Response::moved_permanently);
+  EXPECT_NO_THROW(test_response.ToString());
 }
 
-TEST(StockReply, MovedTemp) 
+TEST(StockResponse, MovedTemp) 
 {
-  reply test_reply;
-  test_reply = reply::stock_reply(reply::moved_temporarily);
-  EXPECT_EQ(test_reply.status, reply::moved_temporarily);
-  EXPECT_NO_THROW(test_reply.to_buffers());
+  Response test_response;
+  test_response = Response::stock_response(Response::moved_temporarily);
+  //EXPECT_EQ(test_response.status, Response::moved_temporarily);
+  EXPECT_NO_THROW(test_response.ToString());
 }
 
-TEST(StockReply, Unauthorized) 
+TEST(StockResponse, Unauthorized) 
 {
-  reply test_reply;
-  test_reply = reply::stock_reply(reply::unauthorized);
-  EXPECT_EQ(test_reply.status, reply::unauthorized);
-  EXPECT_NO_THROW(test_reply.to_buffers());
+  Response test_response;
+  test_response = Response::stock_response(Response::unauthorized);
+  //EXPECT_EQ(test_response.status, Response::unauthorized);
+  EXPECT_NO_THROW(test_response.ToString());
 }
 
-TEST(StockReply, InternalError) 
+TEST(StockResponse, InternalError) 
 {
-  reply test_reply;
-  test_reply = reply::stock_reply(reply::internal_server_error);
-  EXPECT_EQ(test_reply.status, reply::internal_server_error);
-  EXPECT_NO_THROW(test_reply.to_buffers());
+  Response test_response;
+  test_response = Response::stock_response(Response::internal_server_error);
+  //EXPECT_EQ(test_response.status, Response::internal_server_error);
+  EXPECT_NO_THROW(test_response.ToString());
 }
 
-TEST(StockReply, NotImplemented) 
+TEST(StockResponse, NotImplemented) 
 {
-  reply test_reply;
-  test_reply = reply::stock_reply(reply::not_implemented);
-  EXPECT_EQ(test_reply.status, reply::not_implemented);
-  EXPECT_NO_THROW(test_reply.to_buffers());
+  Response test_response;
+  test_response = Response::stock_response(Response::not_implemented);
+  //EXPECT_EQ(test_response.status, Response::not_implemented);
+  EXPECT_NO_THROW(test_response.ToString());
 }
 
-TEST(StockReply, ServiceUnavailable) 
+TEST(StockResponse, ServiceUnavailable) 
 {
-  reply test_reply;
-  test_reply = reply::stock_reply(reply::service_unavailable);
-  EXPECT_EQ(test_reply.status, reply::service_unavailable);
-  EXPECT_NO_THROW(test_reply.to_buffers());
+  Response test_response;
+  test_response = Response::stock_response(Response::service_unavailable);
+  //EXPECT_EQ(test_response.status, Response::service_unavailable);
+  EXPECT_NO_THROW(test_response.ToString());
 }
-    */
+    
 
   } // namespace server
 } // namespace http
