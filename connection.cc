@@ -40,7 +40,7 @@ void connection::do_read()
 {
   auto self(shared_from_this());
 
-  printf("WE GOT HERE!!\n");
+  printf("IN CONNECTION::DO_READ\n");
   // Clear content buffer before every read
   memset(request_buffer, 0, MAX_REQUEST_SIZE);
   // printf("WE GOT HEREgoog\n");
@@ -53,14 +53,18 @@ void connection::do_read()
 
           std::unique_ptr<Request> currentRequest(Request::Parse(bufferString));
 
-          printf("WE GOT HEREmsft\n");
+          printf("IN CONNECTION::DO_READ ASYNC_READ_SOME\n");
           int secondSlash = currentRequest->uri().substr(1).find_first_of("/");
           std::string request_base;
           if(secondSlash == -1)
-              request_base = currentRequest->uri();
-          else
+	    {
+              request_base = "/";//currentRequest->uri();
+	    }
+	  else
+	    {
             request_base = currentRequest->uri().substr(0,secondSlash + 1);
-          
+	    }          
+
           Response* resp = new Response;
 
           // for ( auto it = pathMap_.begin(); it != pathMap_.end(); ++it )

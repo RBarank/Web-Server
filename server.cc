@@ -17,7 +17,7 @@ namespace http {
 		portno_(-1)
     {
     	
-    printf("WE GOT HERE\n");
+    printf("IN SERVER CONSTRUCTOR\n");
     	
       if (!get_config_info(config)){
 	printf("get_config_info failed!\n");

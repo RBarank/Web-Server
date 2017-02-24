@@ -24,8 +24,8 @@ test:
 	g++ config_parser_test.cc config_parser.cc -o config_parser_test $(STD_FLAGS) $(COV_FLAGS)
 	g++ server_test.cc server.cc connection.cc response.cc request.cc mime-types.cc request_handler.cc echo_handler.cc static_handler.cc -o server_test $(STD_FLAGS) $(COV_FLAGS)
 	g++ connection_test.cc connection.cc response.cc request.cc mime-types.cc request_handler.cc echo_handler.cc static_handler.cc -o connection_test $(STD_FLAGS) $(COV_FLAGS)
-	g++ response.cc request.cc reply_test.cc -o reply_test $(STD_FLAGS) $(COV_FLAGS)
-	./server_test && ./connection_test && ./config_parser_test &&./reply_test
+	g++ response.cc request.cc response_test.cc -o response_test $(STD_FLAGS) $(COV_FLAGS)
+	./server_test && ./connection_test && ./config_parser_test &&./response_test
 
 integration:
 	python integration.py
