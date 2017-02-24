@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "request.hpp"
-#include "reply.hpp"
 #include "mime-types.hpp"
 #include "config_parser.h"
 #include "response.hpp"
