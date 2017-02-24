@@ -2,9 +2,11 @@
 #include "connection.hpp"
 #include <boost/asio.hpp>
 
+
+
 boost::asio::io_service io_service_;
 boost::asio::ip::tcp::socket socket_(io_service_);
-std::unordered_map<std::string, std::string> test_map;
+std::unordered_map<std::string, http::server::RequestHandler*> test_map;
 
 void startConnection(http::server::connection& test_connection)
 {
