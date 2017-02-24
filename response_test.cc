@@ -1,30 +1,28 @@
 #include "gtest/gtest.h"
-#include "reply.hpp"
+#include "response.hpp"
 #include <string>
 
 namespace http{
   namespace server{
 
 
-TEST(ReplyTest2, EmptyReply) 
+TEST(ReplyTest2, EmptyResponse) 
 {
-  reply test_reply;
-  EXPECT_EQ(test_reply.content, "");
-  EXPECT_EQ(test_reply.headers.size(), 0);
-  EXPECT_NO_THROW(test_reply.to_buffers());
+  Response test_response;
+  EXPECT_NO_THROW(test_response.SetStatus(Response::ok));
+  EXPECT_NO_THROW(test_response.SetBody("Testing"));
+  EXPECT_NO_THROW(test_response.AddHeader("Header 1", "Value 1"));
+  EXPECT_NO_THROW(test_response.ToString());
 }
 
 TEST(StockReply, BadRequest) 
 {
-  reply test_reply;
-  test_reply = reply::stock_reply(reply::bad_request);
-  EXPECT_EQ(test_reply.status, reply::bad_request);
-  EXPECT_EQ(test_reply.content,
-	    "<html><head><title>Bad Request</title></head><body><h1>400 Bad Request</h1></body></html>");
-  EXPECT_NO_THROW(test_reply.to_buffers());
+  Response test_response;
+  EXPECT_NO_THROW(test_response = Response::stock_response(Response::bad_request));
+  EXPECT_NO_THROW(test_response.ToString());
 }
 
- 
+    /*
 TEST(StockReply, OK) 
 {
   reply test_reply;
@@ -147,7 +145,7 @@ TEST(StockReply, ServiceUnavailable)
   EXPECT_EQ(test_reply.status, reply::service_unavailable);
   EXPECT_NO_THROW(test_reply.to_buffers());
 }
-
+    */
 
   } // namespace server
 } // namespace http
