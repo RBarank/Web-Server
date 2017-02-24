@@ -3,6 +3,20 @@ Team Razzle-Dazzle
 UCLA CS 130: Software Engineering
 Winter 2017
 
+Source Code Layout:
+  1. The server is primarily run by two classes, namely server and connection. The server class takes in a semi-processed config file in the form of child blocks. The server constructor parses these blocks to pull out the port number and initialize a map of requesst handlers requested by the config file. It then starts up the server on the desired port, and initializes a connection, that processes everything that is sent to the server over the socket.
+  
+  2. The server constructs a map from uri_prefixes to RequestHandler pointers of the correct type. 
+  
+  2. All request handlers share a common API and inherit from a RequestHandler class that defines this API. Handlers are created on basis of a prefix matching done between the handler names in the config file and the names of the handlers we have available. 
+
+Instructions:
+  Build:
+    -Run "make" to build.
+    -Run "make run" to build and run in one go.
+  Tests:
+    -Run "make test" to run tests.
+
 Parser for nginx config files inspired by https://github.com/fatiherikli/nginxparser.
 
 Includes code from googletest-1.7.0. See https://code.google.com/p/googletest/
