@@ -13,3 +13,4 @@ echo_handler_test
 request_handler_test
 static_handler_test
 response_test
+request_test

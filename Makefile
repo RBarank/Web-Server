@@ -16,7 +16,7 @@ clean-emacs:
 	rm *~
 
 clean-tests:
-	rm -f config_parser_test server_test connection_test response_test request_handler_test echo_handler_test static_handler_test
+	rm -f config_parser_test server_test connection_test response_test request_handler_test echo_handler_test static_handler_test request_test
 
 test:
 	g++ -std=c++11 -isystem ${GTEST_DIR}/include -I${GTEST_DIR} -pthread -c ${GTEST_DIR}/src/gtest-all.cc
@@ -25,7 +25,8 @@ test:
 	g++ server_test.cc server.cc config_parser.cc connection.cc response.cc request.cc mime-types.cc request_handler.cc echo_handler.cc static_handler.cc -o server_test $(STD_FLAGS) $(COV_FLAGS)
 	g++ connection_test.cc connection.cc response.cc request.cc mime-types.cc request_handler.cc echo_handler.cc static_handler.cc -o connection_test $(STD_FLAGS) $(COV_FLAGS)
 	g++ response.cc request.cc response_test.cc -o response_test $(STD_FLAGS) $(COV_FLAGS)
-	./server_test && ./connection_test && ./config_parser_test &&./response_test
+	g++ response.cc request.cc request_test.cc -o request_test $(STD_FLAGS) $(COV_FLAGS)
+	./server_test && ./connection_test && ./config_parser_test &&./response_test && ./request_test
 
 integration:
 	python integration.py
