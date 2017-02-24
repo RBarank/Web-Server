@@ -50,6 +50,7 @@ private:
   // TODO: make this a map to request handlers
   //std::unordered_map<std::string, std::unique_ptr<RequestHandler>> uri_to_handler_map;
   std::unordered_map<std::string, RequestHandler*> uri_to_handler_map;
+    std::unordered_map<std::string, std::string> uri_to_handler_name;
 };
 
 } // namespace server

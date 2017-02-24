@@ -1,4 +1,4 @@
-#include "StatusHandler.hpp"
+#include "status_handler.hpp"
 #include "server_info.hpp"
 #include <vector>
 
@@ -51,19 +51,19 @@ namespace http{
     
     }
 
-    request_handler::Status StatusHandler::HandleRequest(const Request& request, Response* response){
+    RequestHandler::Status StatusHandler::HandleRequest(const Request& request, Response* response){
         response->SetStatus(Response::ok);
         
         std::string body = setBody();
         response->AddHeader("Content-Length", std::to_string(body.size()));
         response->AddHeader("Content-Type", "text/plain");
         response->SetBody(body);
-        return request_handler::OK;
+        return RequestHandler::OK;
     }
 
-    request_handler::Status StatusHandler::Init(const std::string& uri_prefix, const NginxConfig& config)
+    RequestHandler::Status StatusHandler::Init(const std::string& uri_prefix, const NginxConfig& config)
     {
-        return request_handler::OK;
+        return RequestHandler::OK;
     }
    
   }

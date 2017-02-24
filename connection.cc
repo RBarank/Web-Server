@@ -9,12 +9,13 @@
 #include <iostream>
 #include <unordered_map>
 #include <cstring>
+#include "server_info.hpp"
 
 namespace http {
 namespace server {
 
-connection::connection(boost::asio::ip::tcp::socket socket, const std::unordered_map<std::string, RequestHandler*>& pathMap)
-  : socket_(std::move(socket)), pathMap_(pathMap)
+connection::connection(boost::asio::ip::tcp::socket socket, const std::unordered_map<std::string, RequestHandler*>& pathMap, const std::unordered_map<std::string, std::string>& nameMap)
+  : socket_(std::move(socket)), pathMap_(pathMap), nameMap_(nameMap)
 {
 
 }
@@ -40,7 +41,7 @@ void connection::do_read()
 {
   auto self(shared_from_this());
 
-  printf("IN CONNECTION::DO_READ\n");
+  // printf("IN CONNECTION::DO_READ\n");
   // Clear content buffer before every read
   memset(request_buffer, 0, MAX_REQUEST_SIZE);
   // printf("WE GOT HEREgoog\n");
@@ -57,14 +58,14 @@ void connection::do_read()
           int secondSlash = currentRequest->uri().substr(1).find_first_of("/");
           std::string request_base;
           if(secondSlash == -1)
-	    {
-              request_base = "/";//currentRequest->uri();
-	    }
-	  else
-	    {
-            request_base = currentRequest->uri().substr(0,secondSlash + 1);
-	    }          
-
+          {
+              request_base = currentRequest->uri();
+          }
+          else
+          {
+              request_base = currentRequest->uri().substr(0,secondSlash + 1);
+          }
+            
           Response* resp = new Response;
 
           // for ( auto it = pathMap_.begin(); it != pathMap_.end(); ++it )
@@ -72,8 +73,27 @@ void connection::do_read()
 
           std::cout << currentRequest->uri() << std::endl;
           pathMap_[request_base]->HandleRequest(*currentRequest, resp);
-
-          printf("WE GOT HEREamazballs\n");
+                  
+                  RequestInfo req_info_;
+                  req_info_.url = currentRequest->uri();
+                  req_info_.rc = resp->ret_response_code();
+                  // request
+                  // url - >currentRequest->uri()
+                  // response code
+                  
+                  
+                  //request_base -> uri prefix
+                  //
+                  HandlerInfo handler_info_;
+                  handler_info_.type_of_handler = nameMap_[request_base];
+                  handler_info_.url_prefix = request_base;
+                  
+                  ServerInfo::getInstance().append_request(req_info_);
+                  ServerInfo::getInstance().append_handler(handler_info_);
+                  
+                  
+                  
+//          printf("WE GOT HEREamazballs\n");
           std::string respString = resp->ToString();
           boost::asio::write(socket_, boost::asio::buffer(respString, respString.size()));
 			

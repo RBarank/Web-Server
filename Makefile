@@ -3,10 +3,9 @@ STD_FLAGS = -std=c++11 -g -Wall -Werror -pthread -lboost_system
 COV_FLAGS = -isystem $(GTEST_DIR)/include -fprofile-arcs -ftest-coverage libgtest.a $(GTEST_DIR)/src/gtest_main.cc
 
 all:
-	g++ config_parser.cc connection.cc server.cc response.cc request.cc webserver.cc mime-types.cc request_handler.cc echo_handler.cc static_handler.cc -o webserver $(STD_FLAGS)
+	g++ config_parser.cc connection.cc server.cc response.cc request.cc webserver.cc mime-types.cc request_handler.cc echo_handler.cc static_handler.cc server_info.cc status_handler.cc -o webserver $(STD_FLAGS)
 
-run:
-	g++ config_parser.cc connection.cc server.cc response.cc request.cc webserver.cc mime-types.cc request_handler.cc echo_handler.cc static_handler.cc -o webserver $(STD_FLAGS)
+run:	all
 	./webserver config_file
 
 clean:

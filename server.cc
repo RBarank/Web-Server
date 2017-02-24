@@ -97,7 +97,7 @@ namespace http {
       
 	      //uri_to_handler_map[uri_prefix] = std::move(handler);
 			uri_to_handler_map[uri_prefix] = handler;
- 
+            uri_to_handler_name[uri_prefix] = handler_name;
 	    }
 	}
       // if the port number is uninitialized or the handler map is empty, the server should not start
@@ -134,7 +134,7 @@ namespace http {
 				   }
 				 if (!ec)
 				   {
-				     std::make_shared<connection>(std::move(socket_), uri_to_handler_map)->start();
+				     std::make_shared<connection>(std::move(socket_), uri_to_handler_map, uri_to_handler_name)->start();
 				   }
 				 do_accept();
 			       });

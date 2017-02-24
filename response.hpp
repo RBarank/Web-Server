@@ -35,7 +35,7 @@ namespace http {
       void SetBody(const std::string& body);
       std::string ToString();
       static Response stock_response(ResponseCode status);
-
+        ResponseCode ret_response_code() {return response_code_;}
     private:
       
       using Headers = std::vector<std::pair<std::string, std::string>>;

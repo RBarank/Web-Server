@@ -4,7 +4,8 @@
 
 namespace http{
     namespace server{
-        ServerInfo& ServerInfo::getInstance() {
+        ServerInfo& ServerInfo::getInstance()
+        {
             static ServerInfo instance;
             return instance;
         }
@@ -25,6 +26,14 @@ namespace http{
             tmp.type_of_handler = type_of_handler;
             tmp.url_prefix = url_prefix;
             handler_info.push_back(tmp);
+        }
+        void ServerInfo::append_request(RequestInfo ri)
+        {
+            request_info.push_back(ri);
+        }
+        void ServerInfo::append_handler(HandlerInfo hi)
+        {
+            handler_info.push_back(hi);
         }
     }
 }

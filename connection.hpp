@@ -30,7 +30,7 @@ namespace http {
       
       /// Construct a connection with the given socket.
       //explicit connection(boost::asio::ip::tcp::socket socket, const std::unordered_map<std::string, std::unique_ptr<RequestHandler>>& pathMap);
-      explicit connection(boost::asio::ip::tcp::socket socket, const std::unordered_map<std::string, RequestHandler*>& pathMap);
+        explicit connection(boost::asio::ip::tcp::socket socket, const std::unordered_map<std::string, RequestHandler*>& pathMap, const std::unordered_map<std::string, std::string>& nameMap);
       
       /// Start the first asynchronous operation for the connection.
       void start();
@@ -54,7 +54,7 @@ namespace http {
       boost::asio::ip::tcp::socket socket_;
 
       std::unordered_map<std::string, RequestHandler*> pathMap_;
-      
+        std::unordered_map<std::string, std::string> nameMap_;
       /// Buffer for incoming data.
       //char request_buffer[MAX_REQUEST_SIZE];
       
