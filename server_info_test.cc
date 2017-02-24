@@ -1,34 +1,41 @@
 #include "gtest/gtest.h"
-#include "server.hpp"
+#include "server_info.hpp"
 #include <string>
+#include <vector>
+#include "response.hpp"
 
-std::unordered_map<std::string, std::string> test_map;
 
-
-TEST(ServerTest, BadAddr) 
+TEST(ServerInfoTest, all) 
 {
-  EXPECT_ANY_THROW(http::server::server test_server(".0.0.1", "8000", test_map));
-  EXPECT_ANY_THROW(http::server::server test_server("..0.1", "8000", test_map));
-  EXPECT_ANY_THROW(http::server::server test_server("999.0.0.1", "8000", test_map));
-  EXPECT_ANY_THROW(http::server::server test_server("1234567.0.", "8000", test_map));
+    EXPECT_EQ(http::server::ServerInfo::getInstance().get_number_of_requests() , 0);
+    http::server::ServerInfo::getInstance().append_request("a", http::server::Response::accepted);
+    EXPECT_EQ(http::server::ServerInfo::getInstance().get_number_of_requests() , 1);
+    http::server::ServerInfo::getInstance().append_request("a", http::server::Response::ok);
+    EXPECT_EQ(http::server::ServerInfo::getInstance().get_number_of_requests() , 2);
+    
+    http::server::ServerInfo::getInstance().append_handler("echo", "/root");
+    EXPECT_EQ(http::server::ServerInfo::getInstance().get_number_of_requests() , 2);
+    
+    std::vector<http::server::RequestInfo> requests = http::server::ServerInfo::getInstance().ret_request_info();
+    
+    for (int i = 0; i < requests.size(); i++)
+    {
+        EXPECT_EQ(requests[i].url, "a");
+        if (i == 0)
+        {
+            EXPECT_EQ(requests[i].rc, http::server::Response::accepted);
+        }
+        else
+        {
+            EXPECT_EQ(requests[i].rc, http::server::Response::ok);
+        }
+    }
+    
+    std::vector<http::server::HandlerInfo> handlers = http::server::ServerInfo::getInstance().ret_handler_info();
+    
+    for (int i = 0; i < handlers.size(); i++)
+    {
+        EXPECT_EQ(handlers[i].type_of_handler, "echo");
+        EXPECT_EQ(handlers[i].url_prefix, "/root");
+    }
 }
-
-TEST(ServerTest, BadPortNo) 
-{
-  EXPECT_ANY_THROW(http::server::server test_server("127.0.0.1", "blah", test_map));
-  EXPECT_ANY_THROW(http::server::server test_server("127.0.0.1", "", test_map));
-  EXPECT_ANY_THROW(http::server::server test_server("127.0.0.1", "-98", test_map));
-}
-
-TEST(ServerTest, GoodConfigs) 
-{
-  EXPECT_NO_THROW(http::server::server test_server("127.0.0.1", "8080", test_map));
-  EXPECT_NO_THROW(http::server::server test_server("127.0.0.1", "3033", test_map));
-}
-
-/*TEST(ServerTest2, RunTest)
-{
-  http::server::server test_server("127.0.0.1", "3033", test_map);
-  EXPECT_NO_THROW(test_server.run());
-}*/
-

@@ -36,10 +36,18 @@ coverage: test
 clean-coverage:
 	rm *gcov *gcda *gcno
 
-handler_test:
+old_handler_test:
 	g++ -std=c++11 -isystem ${GTEST_DIR}/include -pthread request_handler_test.cc request_handler.cc echo_handler.cc static_handler.cc response.cc mime-types.cc ${GTEST_DIR}/src/gtest_main.cc libgtest.a -o request_handler_test -lboost_system
 	./request_handler_test
 	g++ -std=c++11 -isystem ${GTEST_DIR}/include -pthread echo_handler_test.cc echo_handler.cc response.cc ${GTEST_DIR}/src/gtest_main.cc libgtest.a -o echo_handler_test -lboost_system
 	./echo_handler_test
 	g++ -std=c++11 -isystem ${GTEST_DIR}/include -pthread static_handler_test.cc static_handler.cc response.cc mime-types.cc ${GTEST_DIR}/src/gtest_main.cc libgtest.a -o static_handler_test -lboost_system
 	./static_handler_test
+
+handler_test:
+	g++ -std=c++0x -isystem ${GTEST_DIR}/include -pthread server_info_test.cc server_info.cc response.cc ${GTEST_DIR}/src/gtest_main.cc libgtest.a -o server_info_test -lboost_system
+	./server_info_test
+	g++ -std=c++0x -isystem ${GTEST_DIR}/include -pthread status_handler.cc status_handler_test.cc request_handler.cc request.cc response.cc ${GTEST_DIR}/src/gtest_main.cc server_info.cc libgtest.a -o status_handler_test -lboost_system
+	./status_handler_test
+	g++ -std=c++0x -isystem ${GTEST_DIR}/include -pthread not_found_handler.cc not_found_handler_test.cc request_handler.cc request.cc response.cc ${GTEST_DIR}/src/gtest_main.cc server_info.cc libgtest.a -o not_found_handler_test -lboost_system
+	./not_found_handler_test

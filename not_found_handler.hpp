@@ -10,7 +10,7 @@
 namespace http {
   namespace server {
 
-    class NotFoundHandler : public request_handler
+    class NotFoundHandler : public RequestHandler
     {
     public:
       virtual Status Init(const std::string& uri_prefix,

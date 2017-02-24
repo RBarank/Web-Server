@@ -25,11 +25,3 @@ TEST(ConnectionTest, constructor_tests) {
     EXPECT_ANY_THROW(startConnection(test_connection));
     EXPECT_NO_THROW(stopConnection(test_connection));
 }
-
-
-// TEST(ConnectionTest2, ClosedSocket) 
-// {
-//     http::server::connection test_connection(std::move(socket_));
-//     EXPECT_ANY_THROW(test_connection.do_read());
-//     EXPECT_ANY_THROW(test_connection.do_write());
-// }
