@@ -10,7 +10,7 @@
 namespace http {
   namespace server {
 
-    class status_handler : public request_handler
+    class StatusHandler : public RequestHandler
     {
     public:
       virtual Status Init(const std::string& uri_prefix,
@@ -19,7 +19,7 @@ namespace http {
                                    Response* response);
     };
 
-    
+    REGISTER_REQUEST_HANDLER(StatusHandler);
   } // namespace server
 } // namespace http
 
