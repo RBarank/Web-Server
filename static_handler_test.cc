@@ -66,9 +66,3 @@ namespace http {
             ASSERT_TRUE(test.HandleRequest(*currentRequest, &res_) == RequestHandler::Status::OK);
         }
     }
-}
-
-
-
-
-

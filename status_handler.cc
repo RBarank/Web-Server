@@ -24,7 +24,7 @@ namespace http{
         std::vector<RequestInfo> request_info = ServerInfo::getInstance().ret_request_info();
         
         ret += "Handlers :\n";
-        for (int i =0 ; i <handler_info.size();i++)
+        for (size_t i =0 ; i <handler_info.size();i++)
         {
             ret += "Type of handler : ";
             ret += handler_info[i].type_of_handler;
@@ -36,7 +36,7 @@ namespace http{
         ret += "\n";
         
         ret += "Requests :\n";
-        for (int i =0 ; i <request_info.size();i++)
+        for (size_t i =0 ; i <request_info.size();i++)
         {
             ret += "URL : ";
             ret += request_info[i].url;

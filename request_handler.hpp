@@ -21,7 +21,8 @@ namespace http {
      public:
       enum Status {
         OK = 0,
-        NOT_OK = 1
+        NOT_OK = 1,
+        FILE_NOT_FOUND = 2
       };
       
       // Initializes the handler. Returns a response code indicating success or

@@ -115,9 +115,8 @@ namespace http{
       std::ifstream is(full_path.c_str(), std::ios::in | std::ios::binary);
       if (!is)
 	{
-//        std :: cout << "Did it here4" << std::endl;
-	  *response = Response::stock_response(Response::not_found);
-	  return RequestHandler::NOT_OK;
+	  //*response = Response::stock_response(Response::not_found);
+	  return RequestHandler::FILE_NOT_FOUND;
 	}
       
       // Fill out the reply to be sent to the client.
