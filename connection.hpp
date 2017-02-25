@@ -5,7 +5,7 @@
 #include <array>
 #include <memory>
 #include <boost/asio.hpp>
-#include "reply.hpp"
+#include "response.hpp"
 #include "request.hpp"
 #include "request_handler.hpp"
 #include "echo_handler.hpp"
@@ -13,7 +13,7 @@
 #include <unordered_map>
 
 
-//const int MAX_REQUEST_SIZE = 8192;
+//const int MAX_REQUEST_SIZE = 8192; // already defined in request.hpp
 
 namespace http {
   namespace server {
@@ -29,7 +29,8 @@ namespace http {
       connection& operator=(const connection&) = delete;
       
       /// Construct a connection with the given socket.
-      explicit connection(boost::asio::ip::tcp::socket socket, const std::unordered_map<std::string, std::string>& pathMap);
+      //explicit connection(boost::asio::ip::tcp::socket socket, const std::unordered_map<std::string, std::unique_ptr<RequestHandler>>& pathMap);
+        explicit connection(boost::asio::ip::tcp::socket socket, const std::unordered_map<std::string, RequestHandler*>& pathMap, const std::unordered_map<std::string, std::string>& nameMap);
       
       /// Start the first asynchronous operation for the connection.
       void start();
@@ -52,14 +53,14 @@ namespace http {
       /// Socket for the connection.
       boost::asio::ip::tcp::socket socket_;
 
-      std::unordered_map<std::string, std::string> pathMap_;
-      
+      std::unordered_map<std::string, RequestHandler*> pathMap_;
+        std::unordered_map<std::string, std::string> nameMap_;
       /// Buffer for incoming data.
       //char request_buffer[MAX_REQUEST_SIZE];
       
       /// The reply to be sent back to the client.
-      reply reply_;
-      request request_;
+      Response reply_;
+      char request_buffer[MAX_REQUEST_SIZE];
       // request_handler* request_handler_;
     };
 

@@ -1,3 +1,6 @@
+#ifndef CONFIG_PARSER_H
+#define CONFIG_PARSER_H
+
 // An nginx config file parser.
 
 #include <iostream>
@@ -60,18 +63,5 @@ class NginxConfigParser {
   TokenType ParseToken(std::istream* input, std::string* value);
 };
 
-class GetConfigInfo {
-public:
-    GetConfigInfo(NginxConfig config) { isPossible = getPortNumber(config);}
-    int portNumber() { if (isPossible) return port_number; else return -1; }
-    std::unordered_map<std::string, std::string> getPathMap(NginxConfig config);
-private:
-    int port_number;
-    bool isPossible;
-    bool getPortNumber(NginxConfig config);
-    std::unordered_map<std::string, std::string> m_path_instr_map;
-};
 
-
-
-
+#endif // CONFIG_PARSER_H

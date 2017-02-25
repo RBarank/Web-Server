@@ -20,29 +20,9 @@ int main(int argc, char* argv[])
     NginxConfig config;
     config_parser.Parse(argv[1], &config);
     
-    std::string config_string = config.ToString().c_str();
-    //std::cout << config_string << std::endl;
-    
-    GetConfigInfo port_stuff = GetConfigInfo(config);
-    int port_number = port_stuff.portNumber();
-    if (port_number == -1)
-    {
-        std::cout << "Config file improperly formatted" << std::endl;
-        return 1;
-    }
-    
-//    std::cout << port_number << std::endl;
-    std::unordered_map<std::string, std::string> pathMapRoot = port_stuff.getPathMap(config);
-//    
-//    std::unordered_map<std::string, std::string>::iterator it = pathMapRoot.begin();
-//    while (it != pathMapRoot.end()) {
-//        std::cout << it->first << " : " << it->second << "\n";
-//        it++;
-//    }
-  
     try
     {
-        http::server::server s("127.0.0.1", std::to_string(port_number), pathMapRoot);
+        http::server::server s("127.0.0.1", config);
         s.run();
     }
     catch (std::exception& e)

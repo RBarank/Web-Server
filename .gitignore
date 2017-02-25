@@ -1,4 +1,4 @@
-webserver.dSYM
+*.dSYM
 *~
 server_test
 config_parser_test
@@ -12,3 +12,8 @@ libgtest.a
 echo_handler_test
 request_handler_test
 static_handler_test
+response_test
+request_test
+not_found_handler_test
+server_info_test
+status_handler_test

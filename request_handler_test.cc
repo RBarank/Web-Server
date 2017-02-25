@@ -1,26 +1,22 @@
 #include "gtest/gtest.h"
 #include "request_handler.hpp"
-#include "echo_handler.hpp"
 #include "static_handler.hpp"
 #include <string>
 
+namespace http {
+  namespace server {
 
-TEST(request_handle_, URL)
+TEST(CreateByName, CreateNonExistentName)
 {
-    std::string echo_str = "/echo", empty = "";
-    EXPECT_NO_THROW(http::server::request_handler::generateHandler(echo_str, empty));
+  EXPECT_EQ(RequestHandler::CreateByName("NonExistentHandler"), nullptr);
+}
+
+TEST(CreateByName, CreateExistingName)
+{
+  EXPECT_NO_THROW(RequestHandler::CreateByName("StaticHandler"));
 }
 
 
-TEST(request_handle_, static_)
-{
-    std::string static_str = "/static", root = "/test";
-    EXPECT_NO_THROW(http::server::request_handler::generateHandler(static_str, root));
-}
 
-
-TEST(request_handle_, null_)
-{
-    std::string rnd_str = "LOL", empty = "";
-    EXPECT_EQ(http::server::request_handler::generateHandler(rnd_str, empty),nullptr);
-}
+  } // namespace server
+} // namespace http

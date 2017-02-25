@@ -1,19 +1,16 @@
-team "Razzle-Dazzle";
+# This is a comment.
 
-server {
-    listen   3000;
+port 3000;  # This is also a comment.
 
-    path /echo {
-          action echo;             
-    }
-
-    path /static {
-          action static;
-          root /test_folder;
-   }
-   
-    path /static2 {
-        action static;
-        root /test_folder2;
-    }
+path /static StaticHandler {
+  root /test_folder;
 }
+
+path /echo EchoHandler {}
+
+# Default response handler if no handlers match.
+default NotFoundHandler {}
+
+path /status StatusHandler {}
+
+path /404 NotFoundHandler {}

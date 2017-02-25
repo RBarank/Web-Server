@@ -8,64 +8,143 @@ const int MAX_PORT_NO = 65535;
 const int MIN_PORT_NO = 1;
 
 namespace http {
-    namespace server {
+  namespace server {
         
-        server::server(const std::string& address, const std::string& port, const std::unordered_map<std::string, std::string>& pathMap)
-        : io_service_(),
+    server::server(const std::string& address, const NginxConfig& config)
+      : io_service_(),
         acceptor_(io_service_),
-        socket_(io_service_)
+        socket_(io_service_),
+		portno_(-1)
+    {
+    	
+    printf("IN SERVER CONSTRUCTOR\n");
+    	
+      if (!get_config_info(config)){
+	printf("get_config_info failed!\n");
+	throw boost::system::errc::make_error_code(boost::system::errc::invalid_argument);
+	  }
+
+      // Open the acceptor with the option to reuse the address (i.e. SO_REUSEADDR).
+      //printf("WE GOT HERE");
+      boost::asio::ip::tcp::resolver resolver(io_service_);
+      //printf("WE GOT HERE1");
+      boost::asio::ip::tcp::endpoint endpoint = *resolver.resolve({address, std::to_string(portno_)});
+      //printf("WE GOT HERE2");
+      acceptor_.open(endpoint.protocol());
+      //printf("WE GOT HERE3");
+      acceptor_.set_option(boost::asio::ip::tcp::acceptor::reuse_address(true));
+      //printf("WE GOT HERE4");
+      acceptor_.bind(endpoint);
+      acceptor_.listen();
+      
+
+      do_accept();
+    }
+    
+    bool server::get_config_info(const NginxConfig& config)
+    {
+
+      for (const auto& statement : config.statements_)
+	{
+	  if (statement->tokens_[0] == "port" && statement->tokens_.size() == 2)
+	    {
+	      std::string port_string = statement->tokens_[1];
+	      if (port_string.length() > 5)
+		{
+		  return false;
+		}
+	      for (unsigned i = 0; i < port_string.length(); i++)
+		{
+		  if (!isdigit(port_string[i]))
+		    {
+		      return false;
+		    }
+		}
+
+	      portno_ = std::stoi(port_string);
+
+	      // port number not in valid range   
+	      if(portno_ < MIN_PORT_NO || portno_ > MAX_PORT_NO)
+		{
+		  return false;
+		}
+	    }
+	  else if (statement->tokens_[0] == "path" && statement->tokens_.size() == 3)
+	    {
+	      // TODO: check for multiple paths mapping to handler with the same name
+
+	      std::string uri_prefix = statement->tokens_[1];
+	      std::string handler_name = statement->tokens_[2];
+	      
+	      //std::unique_ptr<RequestHandler> handler(RequestHandler::CreateByName(handler_name));
+	      RequestHandler* handler = RequestHandler::CreateByName(handler_name);
+	      
+	      // create by name will return a nullptr if it can't find a handler with this name or there is some error
+	      if (handler == nullptr)
         {
-            int port_number = std::stoi(port);
-            if (port_number < MIN_PORT_NO || port_number > MAX_PORT_NO)
-            {
-                throw boost::system::errc::make_error_code(boost::system::errc::invalid_argument);
-            }
-            
-            // Open the acceptor with the option to reuse the address (i.e. SO_REUSEADDR).
-            boost::asio::ip::tcp::resolver resolver(io_service_);
-            boost::asio::ip::tcp::endpoint endpoint = *resolver.resolve({address, port});
-            acceptor_.open(endpoint.protocol());
-            acceptor_.set_option(boost::asio::ip::tcp::acceptor::reuse_address(true));
-            acceptor_.bind(endpoint);
-            acceptor_.listen();
-            
-            do_accept(pathMap);
+		  printf("handler is a nullptr!\n");
+		  return false;
         }
+	      
+	      // TODO: check return status of init and handle errors
+	      
+	      handler->Init(uri_prefix, *(statement->child_block_)); // get rid of this and replace with below
+	      /* Status handler_init_status = handler.Init(uri_prefix, statement->child_block_);
+	      if (handler_init_status == TODO_BAD_STATUS)
+		  {
+		    return false;
+		    }*/
+      
+	      //uri_to_handler_map[uri_prefix] = std::move(handler);
+			uri_to_handler_map[uri_prefix] = handler;
+            uri_to_handler_name[uri_prefix] = handler_name;
+	    }
+	}
+      // if the port number is uninitialized or the handler map is empty, the server should not start
+      // we need to to do this check in case we don't come across any config blocks with "port" or "path" terms
+      if (portno_ == -1 || uri_to_handler_map.empty())
+	{
+	  return false;
+	}
+
+      return true;
+    }
         
-        void server::run()
-        {
-            try {
-                io_service_.run();
-            } catch (boost::system::error_code const &e) {
-                throw e;
-            }
-        }
-        
-        void server::do_accept(const std::unordered_map<std::string, std::string>& pathMap)
-        {
-            try {
-                acceptor_.async_accept(socket_,
-                                       [this, &pathMap](boost::system::error_code ec)
-                                       {
-                                           // Check whether the server was stopped by a signal before this
-                                           // completion handler had a chance to run.
-                                           if (!acceptor_.is_open())
-                                           {
-                                               return;
-                                           }
-                                           if (!ec)
-                                           {
-                                               std::make_shared<connection>(std::move(socket_), pathMap)->start();
-                                           }
-                                           do_accept(pathMap);
-                                       });
-            } catch (boost::system::error_code const &e) {
-                throw e;
-            }
-            
-        }
-        
-    } // namespace server
+    void server::run()
+    {
+      try {
+	io_service_.run();
+      } catch (boost::system::error_code const &e) {
+	throw e;
+      }
+    }
+    
+    void server::do_accept()
+    {
+    	printf("WE GOT HERE\n");
+      try {
+	acceptor_.async_accept(socket_,
+			       [this](boost::system::error_code ec)
+			       {
+				 // Check whether the server was stopped by a signal before this
+				 // completion handler had a chance to run.
+				 if (!acceptor_.is_open())
+				   {
+				     return;
+				   }
+				 if (!ec)
+				   {
+				     std::make_shared<connection>(std::move(socket_), uri_to_handler_map, uri_to_handler_name)->start();
+				   }
+				 do_accept();
+			       });
+      } catch (boost::system::error_code const &e) {
+	throw e;
+      }
+      
+    }
+    
+  } // namespace server
 } // namespace http
 
 
