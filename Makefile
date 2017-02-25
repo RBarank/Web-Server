@@ -34,7 +34,7 @@ coverage: test
 	gcov -r server.cc connection.cc config_parser.cc response.cc request.cc
 
 clean-coverage:
-	rm *gcov *gcda *gcno
+	rm -rf *gcov *gcda *gcno *.dSYM
 
 old_handler_test:
 	g++ -std=c++11 -isystem ${GTEST_DIR}/include -pthread request_handler_test.cc request_handler.cc echo_handler.cc static_handler.cc response.cc mime-types.cc ${GTEST_DIR}/src/gtest_main.cc libgtest.a -o request_handler_test -lboost_system
@@ -53,3 +53,8 @@ handler_test:
 	./not_found_handler_test
 	g++ -std=c++0x -isystem ${GTEST_DIR}/include -pthread echo_handler.cc echo_handler_test.cc request_handler.cc request.cc response.cc ${GTEST_DIR}/src/gtest_main.cc server_info.cc libgtest.a -o echo_handler_test -lboost_system -fprofile-arcs -ftest-coverage
 	./echo_handler_test
+
+
+tt:
+	g++ -std=c++0x -isystem ${GTEST_DIR}/include -pthread static_handler.cc static_handler_test.cc config_parser.cc request_handler.cc request.cc response.cc ${GTEST_DIR}/src/gtest_main.cc server_info.cc mime-types.cc libgtest.a -o static_handler_test -lboost_system
+	./static_handler_test

@@ -101,13 +101,14 @@ namespace http{
 	}
       else
 	{
-//        std :: cout << "Did it here3" << std::endl;
+    //std :: cout << "Did it here3" << std::endl;
 	  *response = Response::stock_response(Response::bad_request);
 	  return RequestHandler::NOT_OK;
 	}
       
       // Open the file to send back.
       std::string full_path = root_path_ + request_path;
+//        std::cout << root_path_ << "\n" ;
       full_path = full_path.substr(1);
       //std::cout << "filepath: " << pathMap_[request_.base] << std::endl;
       //std::cout << "full path: " << full_path << std::endl;

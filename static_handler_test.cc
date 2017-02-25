@@ -1,7 +1,7 @@
 #include "gtest/gtest.h"
 #include "static_handler.hpp"
 #include <vector>
-
+#include "config_parser.h"
 
 namespace http {
     namespace server{
@@ -26,13 +26,12 @@ namespace http {
         }
         
         
-        
-        
         TEST(StaticHandler, INIT) {
             StaticHandler test;
             NginxConfig config;
             ASSERT_TRUE(test.Init("", config) == RequestHandler::Status::OK);
         }
+        
         
         TEST(StaticHandler, WrongHandleRequestTests) {
             StaticHandler test;
@@ -42,10 +41,7 @@ namespace http {
             Response res_;
             ASSERT_TRUE(test.HandleRequest(request_, &res_) == RequestHandler::Status::NOT_OK);
             
-            
             std::vector<std::string> testStrings {"echo", "/static/popo", "not%f" , "not_%%%%found" , "static/test.jpg" , "/.."};
-            
-            
             for (int i = 0; i < testStrings.size(); i++)
             {
                 std::string bufferString = ret_bufferString(testStrings[i]);
@@ -54,15 +50,20 @@ namespace http {
             }
         }
         
+        
         TEST(StaticHandler, RightHandleRequestTests) {
             StaticHandler test;
+            NginxConfigParser config_parser;
             NginxConfig config;
-            //root_path_ -> /test_folder
-            NginxConfigStatement tmp;
-            tmp.tokens_.push_back("root");
-            tmp.tokens_.push_back("/test_folder");
-            config.statements_.push_back(&tmp);
+            config_parser.Parse("test_file/static_test", &config);
             
+            Response res_;
+            ASSERT_TRUE(test.Init("", config) == RequestHandler::Status::OK);
+            
+            std::string bufferString = ret_bufferString("static/test.jpg");
+            std::unique_ptr<Request> currentRequest(Request::Parse(bufferString));
+            
+            ASSERT_TRUE(test.HandleRequest(*currentRequest, &res_) == RequestHandler::Status::OK);
         }
     }
 }
