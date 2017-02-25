@@ -11,23 +11,23 @@ Source Code Layout:
   3. All request handlers share a common API and inherit from a RequestHandler class that defines this API. Handlers are created on basis of a prefix matching done between the handler names in the config file and the names of the handlers we have available. 
 
   4. Handlers:
-	  -EchoHandler: Echo's back the sent request into the body of the response in plain text.
-		-StaticHandler: Used for serving files. Fetches files on the basis of prefix called. Each prefix matches to a source directory. There is a separate instance of each StaticHandler for each source directory.
-		-StatusHandler: Returns in plain text data about the previous requests received by the server.
-		-NotFoundHandler: Sets response to a 404 Not Found with a standard HTML.
+	-EchoHandler: Echo's back the sent request into the body of the response in plain text.
+	-StaticHandler: Used for serving files. Fetches files on the basis of prefix called. Each prefix matches to a source directory. There is a separate instance of each StaticHandler for each source directory.
+	-StatusHandler: Returns in plain text data about the previous requests received by the server.
+	-NotFoundHandler: Sets response to a 404 Not Found with a standard HTML.
 			
 			
 Instructions:
 	- Fork our repository. Make any contributions.
 	
   Build:
-    -Run "make" to build.
-    -Run "make run" to build and run in one go.
+	-Run "make" to build.
+	-Run "make run" to build and run in one go.
   Tests:
-    -Run "make test" to run tests.
-		-Run "make handler_test" to run tests on handlers.
-		-Run "make integration" to run integration tests.
-		-Run "make coverage" to run gcov for test coverage.
+	-Run "make test" to run tests.
+	-Run "make handler_test" to run tests on handlers.
+	-Run "make integration" to run integration tests.
+	-Run "make coverage" to run gcov for test coverage.
 
 Parser for nginx config files inspired by https://github.com/fatiherikli/nginxparser.
 
