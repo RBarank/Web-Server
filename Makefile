@@ -24,9 +24,8 @@ test:
 	g++ connection_test.cc connection.cc server_info.cc response.cc request.cc mime-types.cc request_handler.cc echo_handler.cc static_handler.cc -o connection_test $(STD_FLAGS) $(COV_FLAGS)
 	g++ response.cc request.cc response_test.cc -o response_test $(STD_FLAGS) $(COV_FLAGS)
 	g++ response.cc request.cc request_test.cc -o request_test $(STD_FLAGS) $(COV_FLAGS)
-	g++ request_handler_test.cc request_handler.cc static_handler.cc response.cc request.cc mime-types.cc -o request_handler_test $(STD_FLAGS) $(COV_FLAGS)
 	g++ config_parser_test.cc config_parser.cc -o config_parser_test $(STD_FLAGS) $(COV_FLAGS)
-	./server_test && ./connection_test && ./config_parser_test &&./response_test && ./request_test && ./request_handler_test
+	./server_test && ./connection_test && ./config_parser_test &&./response_test && ./request_test
 
 integration:
 	python integration.py
@@ -54,8 +53,8 @@ handler_test:
 	./not_found_handler_test
 	g++ -std=c++0x -isystem ${GTEST_DIR}/include -pthread echo_handler.cc echo_handler_test.cc request_handler.cc request.cc response.cc ${GTEST_DIR}/src/gtest_main.cc server_info.cc libgtest.a -o echo_handler_test -lboost_system -fprofile-arcs -ftest-coverage
 	./echo_handler_test
-
-
-tt:
-	g++ -std=c++0x -isystem ${GTEST_DIR}/include -pthread static_handler.cc static_handler_test.cc config_parser.cc request_handler.cc request.cc response.cc ${GTEST_DIR}/src/gtest_main.cc server_info.cc mime-types.cc libgtest.a -o static_handler_test -lboost_system
+	g++ -std=c++0x -isystem ${GTEST_DIR}/include -pthread static_handler.cc static_handler_test.cc config_parser.cc request_handler.cc request.cc response.cc ${GTEST_DIR}/src/gtest_main.cc server_info.cc mime-types.cc libgtest.a -o static_handler_test -lboost_system -fprofile-arcs -ftest-coverage
 	./static_handler_test
+	g++ request_handler_test.cc request_handler.cc static_handler.cc response.cc request.cc mime-types.cc -o request_handler_test $(STD_FLAGS) $(COV_FLAGS)
+	./request_handler_test
+
