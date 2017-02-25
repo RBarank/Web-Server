@@ -15,10 +15,6 @@ namespace http {
             NginxConfig config;
             ASSERT_TRUE(test.Init("", config) == RequestHandler::Status::OK);
             Request request_;
-//            request_.method = "GET";
-//            request_.uri = "/static/test.jpg";
-//            request_.base = "/static";
-//            Response res_;
             ASSERT_TRUE(test.HandleRequest(request_, &res_) == RequestHandler::Status::NOT_OK);
         }
     }

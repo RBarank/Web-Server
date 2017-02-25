@@ -15,7 +15,7 @@ clean-emacs:
 	rm *~
 
 clean-tests:
-	rm -f config_parser_test server_test connection_test response_test request_handler_test echo_handler_test static_handler_test request_test
+	rm -f config_parser_test server_test connection_test response_test request_handler_test echo_handler_test static_handler_test request_test response_test
 
 test:
 	g++ -std=c++11 -isystem ${GTEST_DIR}/include -I${GTEST_DIR} -pthread -c ${GTEST_DIR}/src/gtest-all.cc
@@ -45,11 +45,11 @@ old_handler_test:
 	./static_handler_test
 
 handler_test:
-	g++ -std=c++0x -isystem ${GTEST_DIR}/include -pthread server_info_test.cc server_info.cc response.cc ${GTEST_DIR}/src/gtest_main.cc libgtest.a -o server_info_test -lboost_system
+	g++ -std=c++0x -isystem ${GTEST_DIR}/include -pthread server_info_test.cc server_info.cc response.cc ${GTEST_DIR}/src/gtest_main.cc libgtest.a -o server_info_test -lboost_system -fprofile-arcs -ftest-coverage
 	./server_info_test
-	g++ -std=c++0x -isystem ${GTEST_DIR}/include -pthread status_handler.cc status_handler_test.cc request_handler.cc request.cc response.cc ${GTEST_DIR}/src/gtest_main.cc server_info.cc libgtest.a -o status_handler_test -lboost_system
+	g++ -std=c++0x -isystem ${GTEST_DIR}/include -pthread status_handler.cc status_handler_test.cc request_handler.cc request.cc response.cc ${GTEST_DIR}/src/gtest_main.cc server_info.cc libgtest.a -o status_handler_test -lboost_system -fprofile-arcs -ftest-coverage
 	./status_handler_test
-	g++ -std=c++0x -isystem ${GTEST_DIR}/include -pthread not_found_handler.cc not_found_handler_test.cc request_handler.cc request.cc response.cc ${GTEST_DIR}/src/gtest_main.cc server_info.cc libgtest.a -o not_found_handler_test -lboost_system
+	g++ -std=c++0x -isystem ${GTEST_DIR}/include -pthread not_found_handler.cc not_found_handler_test.cc request_handler.cc request.cc response.cc ${GTEST_DIR}/src/gtest_main.cc server_info.cc libgtest.a -o not_found_handler_test -lboost_system -fprofile-arcs -ftest-coverage
 	./not_found_handler_test
-	g++ -std=c++0x -isystem ${GTEST_DIR}/include -pthread echo_handler.cc echo_handler_test.cc request_handler.cc request.cc response.cc ${GTEST_DIR}/src/gtest_main.cc server_info.cc libgtest.a -o echo_handler_test -lboost_system
+	g++ -std=c++0x -isystem ${GTEST_DIR}/include -pthread echo_handler.cc echo_handler_test.cc request_handler.cc request.cc response.cc ${GTEST_DIR}/src/gtest_main.cc server_info.cc libgtest.a -o echo_handler_test -lboost_system -fprofile-arcs -ftest-coverage
 	./echo_handler_test
