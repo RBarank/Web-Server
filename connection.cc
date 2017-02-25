@@ -52,7 +52,7 @@ void connection::do_read()
 			    //size_t request_buffer_size = bytes;
 			    std::string bufferString(request_buffer);
 
-          std::unique_ptr<Request> currentRequest(Request::Parse(bufferString));
+                  std::unique_ptr<Request> currentRequest(Request::Parse(bufferString));
 
           printf("IN CONNECTION::DO_READ ASYNC_READ_SOME\n");
           int secondSlash = currentRequest->uri().substr(1).find_first_of("/");

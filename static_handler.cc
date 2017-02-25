@@ -59,14 +59,20 @@ namespace http{
 
     RequestHandler::Status StaticHandler::HandleRequest(const Request& request, Response* response){
       // filepath beings after /static/ so at the 8th char
-      
+//        std :: cout << "URI : " << request.uri() << request.uri().length() << std::endl;
+        if (request.uri().length() == 0)
+        {
+            *response = Response::stock_response(Response::bad_request);
+            return RequestHandler::NOT_OK;
+        }
       size_t secondSlash = request.uri().substr(1).find_first_of("/");
       std::string request_base = request.uri().substr(0,secondSlash + 1);
       std::string filepath = request.uri().substr(request_base.length());
-      
+        
       std::string request_path;
       if (!url_decode(filepath, request_path))
 	{
+//        std :: cout << "Did it here" << std::endl;
 	  *response = Response::stock_response(Response::bad_request);
 	  return RequestHandler::NOT_OK;
 	}
@@ -75,6 +81,7 @@ namespace http{
       if (request_path.empty() || request_path[0] != '/'
 	  || (request_path.find("..") != std::string::npos))
 	  {
+//          std :: cout << "Did it here2" << std::endl;
 	    *response = Response::stock_response(Response::bad_request);
 	    return RequestHandler::NOT_OK;
 	  }
@@ -94,12 +101,14 @@ namespace http{
 	}
       else
 	{
+    //std :: cout << "Did it here3" << std::endl;
 	  *response = Response::stock_response(Response::bad_request);
 	  return RequestHandler::NOT_OK;
 	}
       
       // Open the file to send back.
       std::string full_path = root_path_ + request_path;
+//        std::cout << root_path_ << "\n" ;
       full_path = full_path.substr(1);
       //std::cout << "filepath: " << pathMap_[request_.base] << std::endl;
       //std::cout << "full path: " << full_path << std::endl;
