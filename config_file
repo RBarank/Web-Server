@@ -12,3 +12,5 @@ path /echo EchoHandler {}
 default NotFoundHandler {}
 
 path /status StatusHandler {}
+
+path /404 NotFoundHandler {}

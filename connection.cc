@@ -72,8 +72,12 @@ void connection::do_read()
           //   std::cout << " " << it->first << std::endl;
 
           std::cout << currentRequest->uri() << std::endl;
-          pathMap_[request_base]->HandleRequest(*currentRequest, resp);
-                  
+          RequestHandler::Status ret = pathMap_[request_base]->HandleRequest(*currentRequest, resp);
+          
+          if(ret == RequestHandler::Status::FILE_NOT_FOUND){
+            request_base = "/404";
+            pathMap_[request_base]->HandleRequest(*currentRequest, resp);
+          }
                   RequestInfo req_info_;
                   req_info_.url = currentRequest->uri();
                   req_info_.rc = resp->ret_response_code();
