@@ -1,4 +1,4 @@
-webserver.dSYM
+*.dSYM
 *~
 server_test
 config_parser_test

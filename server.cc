@@ -81,10 +81,10 @@ namespace http {
 	      
 	      // create by name will return a nullptr if it can't find a handler with this name or there is some error
 	      if (handler == nullptr)
-		{
+        {
 		  printf("handler is a nullptr!\n");
 		  return false;
-		}
+        }
 	      
 	      // TODO: check return status of init and handle errors
 	      

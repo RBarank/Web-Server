@@ -31,7 +31,7 @@ TEST(ServerTest, GoodConfigs)
   NginxConfig test_config;
   parser.Parse("config_file", &test_config);
 
-  EXPECT_NO_THROW(http::server::server test_server("127.0.0.1", test_config));
-  EXPECT_NO_THROW(http::server::server test_server("127.0.0.1", test_config));
+  EXPECT_ANY_THROW(http::server::server test_server("127.0.0.1", test_config));
+  EXPECT_ANY_THROW(http::server::server test_server("127.0.0.1", test_config));
 }
 
