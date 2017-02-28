@@ -4,60 +4,82 @@
 #include <iostream>
 
 namespace http{
-  namespace server{
+namespace server{
     
-    RequestHandler::Status ProxyHandler::Init(const std::string& uri_prefix, const NginxConfig& config)
+RequestHandler::Status ProxyHandler::Init(const std::string& uri_prefix, const NginxConfig& config)
+{
+    uri_prefix_ = uri_prefix;
+    bool remote_host_found = false;
+    bool remote_port_found = false;
+    
+
+    if (config.statements_.size != 2)
+        return RequestHandler::Status::NOT_OK;
+    else
     {
-      uri_prefix_ = uri_prefix;
-      for (const auto& statement : config.statements_){
-	if (statement->tokens_[0] == "root" && statement->tokens_.size() == 2){
-	  root_path_ = statement->tokens_[1];
-	}
-      }
-      return RequestHandler::OK;
+        for (const auto& statement : config.statements_)
+        {
+            if (statement->tokens_[0] == "remote_host" && statement->tokens_.size() == 2)
+            {
+	        remote_host_ = statement->tokens_[1];
+                remote_host_found = true;
+	    }
+            else if (statement->tokens_[0] == "remote_port" && statement->tokens_.size() == 2)
+            {
+	        remote_port_ = std::stoi(statement->tokens_[1]);
+                remote_port_found = true;
+	    }
+            else 
+                return RequestHandler::Status::NOT_OK;
+        }
     }
+    if (remote_host_found && remote_port_found)
+    	return RequestHandler::Status::OK;
+    else
+	return RequestHandler::Status::NOT_OK;
+}
 
-    bool ProxyHandler::url_decode(const std::string& in, std::string& out)
+bool ProxyHandler::url_decode(const std::string& in, std::string& out)
+{
+    out.clear();
+    out.reserve(in.size());
+    for (std::size_t i = 0; i < in.size(); ++i)
     {
-      out.clear();
-      out.reserve(in.size());
-      for (std::size_t i = 0; i < in.size(); ++i)
+	if (in[i] == '%')
 	{
-	  if (in[i] == '%')
+	    if (i + 3 <= in.size())
 	    {
-	      if (i + 3 <= in.size())
+		int value = 0;
+		std::istringstream is(in.substr(i + 1, 2));
+		if (is >> std::hex >> value)
 		{
-		  int value = 0;
-		  std::istringstream is(in.substr(i + 1, 2));
-		  if (is >> std::hex >> value)
-		    {
-		      out += static_cast<char>(value);
-		      i += 2;
-		    }
-		  else
-		    {
-		      return false;
-		    }
+		    out += static_cast<char>(value);
+		    i += 2;
 		}
-	      else
+		else
 		{
-		  return false;
+		    return false;
 		}
 	    }
-	  else if (in[i] == '+')
+	    else
 	    {
-	      out += ' ';
-	    }
-	  else
-	    {
-	      out += in[i];
+		return false;
 	    }
 	}
-      return true;
-    } 
+	else if (in[i] == '+')
+	{
+	    out += ' ';
+	}
+	else
+	{
+	    out += in[i];
+	}
+    }
+    return true;
+} 
     
 
-    RequestHandler::Status ProxyHandler::HandleRequest(const Request& request, Response* response){
+RequestHandler::Status ProxyHandler::HandleRequest(const Request& request, Response* response){
       // filepath beings after /static/ so at the 8th char
 //        std :: cout << "URI : " << request.uri() << request.uri().length() << std::endl;
         if (request.uri().length() == 0)

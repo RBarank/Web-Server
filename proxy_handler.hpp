@@ -14,7 +14,8 @@ namespace http {
     class ProxyHandler : public RequestHandler
     {
       std::string uri_prefix_;
-      std::string root_path_;
+      std::string remote_host_;
+      int remote_port_;
       bool url_decode(const std::string& in, std::string& out);
     public:
       //static_handler(std::string root);
@@ -32,7 +33,7 @@ namespace http {
       // contents of the response object are undefined, and the server will return
       // HTTP code 500.
       virtual Status HandleRequest(const Request& request, Response* response);
-
+      
     };
     
 
