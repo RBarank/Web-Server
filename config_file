@@ -17,4 +17,5 @@ path /404 NotFoundHandler {}
 
 path / ProxyHandler {
     remote_host http://www.ucla.edu;
+    remote_port 80;
 }

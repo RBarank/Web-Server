@@ -25,7 +25,7 @@ namespace http {
       std::string response_headers, response_body, response_status, rest;
       Headers headers_;
 
-      int remote_port_;
+      std::string remote_port_;
       bool url_decode(const std::string& in, std::string& out);
       bool parse_remote_url(std::string remote_host_url);
       bool parse_remote_response(std::string remote_response);
