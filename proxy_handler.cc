@@ -1,7 +1,11 @@
 #include "proxy_handler.hpp"
+#include <boost/lexical_cast.hpp>
 #include <fstream>
 #include <sstream>
 #include <iostream>
+
+using boost::asio::ip::tcp;
+
 
 namespace http{
 namespace server{
@@ -10,10 +14,8 @@ RequestHandler::Status ProxyHandler::Init(const std::string& uri_prefix, const N
 {
     uri_prefix_ = uri_prefix;
     bool remote_host_found = false;
-    bool remote_port_found = false;
-    
 
-    if (config.statements_.size != 2)
+    if (config.statements_.size() != 1)
         return RequestHandler::Status::NOT_OK;
     else
     {
@@ -21,22 +23,87 @@ RequestHandler::Status ProxyHandler::Init(const std::string& uri_prefix, const N
         {
             if (statement->tokens_[0] == "remote_host" && statement->tokens_.size() == 2)
             {
-	        remote_host_ = statement->tokens_[1];
-                remote_host_found = true;
-	    }
-            else if (statement->tokens_[0] == "remote_port" && statement->tokens_.size() == 2)
-            {
-	        remote_port_ = std::stoi(statement->tokens_[1]);
-                remote_port_found = true;
+	        remote_host_whole_url = statement->tokens_[1];
+                remote_host_found = parse_remote_url(remote_host_whole_url);
+		if(remote_host_found == true)
+		    return RequestHandler::Status::OK;
+                else
+		    return RequestHandler::Status::NOT_OK; 
 	    }
             else 
                 return RequestHandler::Status::NOT_OK;
         }
-    }
-    if (remote_host_found && remote_port_found)
-    	return RequestHandler::Status::OK;
-    else
 	return RequestHandler::Status::NOT_OK;
+    }
+}
+
+bool ProxyHandler::parse_remote_url(std::string remote_host_url)
+{
+    std::size_t slash_found = remote_host_url.find("//");
+    if(slash_found == std::string::npos)
+	return false;
+    protocol_ = remote_host_url.substr(0, slash_found-1);
+
+    std::size_t host_found = remote_host_url.find('/', slash_found + 2);
+    if(host_found != std::string::npos) 
+    {
+        host_url_ = remote_host_url.substr(slash_found + 2, host_found - slash_found - 2);
+	path_ = remote_host_url.substr(host_found);
+    }
+    else 
+    {
+        host_url_ = remote_host_url.substr(slash_found + 2);
+	path_ = "";
+    }
+
+    return true;	
+}
+
+bool ProxyHandler::parse_remote_response(std::string remote_response)
+{
+    std::size_t status_found = remote_response.find("\r\n");
+    if(status_found == std::string::npos)
+	return false;
+    response_status = remote_response.substr(0, status_found + 1);
+    rest = remote_response.substr(status_found + 2);        
+
+    std::size_t header_found = rest.find("\r\n\r\n");
+    if(header_found == std::string::npos)
+	return false;
+    response_headers = rest.substr(0, header_found + 3);
+    response_body = rest.substr(header_found + 4);
+
+    read_header(response_headers);  
+
+    return true;
+    	
+}
+
+bool ProxyHandler::read_header(std::string headers)
+{
+  std::string temp_headers = headers;
+  std::string line;
+  while(temp_headers.size() > 0 && temp_headers != "\r" && temp_headers != "\n")
+  {
+    std::size_t header_found = temp_headers.find("\r\n", 0);
+    if (header_found != std::string::npos){
+        line = temp_headers.substr(0, header_found+1);
+	temp_headers = temp_headers.substr(header_found+2);
+    }
+    std::stringstream ssHeader(line);
+
+    std::string headerName;
+    std::getline(ssHeader, headerName, ':');
+
+    ssHeader >> std::ws; 
+    std::string value;
+    std::getline(ssHeader, value, '\r');
+    
+    std::pair<std::string, std::string> header_pair(headerName, value);
+    this->headers_.push_back(header_pair);
+  }
+  return 1;
+	
 }
 
 bool ProxyHandler::url_decode(const std::string& in, std::string& out)
@@ -79,88 +146,94 @@ bool ProxyHandler::url_decode(const std::string& in, std::string& out)
 } 
     
 
-RequestHandler::Status ProxyHandler::HandleRequest(const Request& request, Response* response){
-      // filepath beings after /static/ so at the 8th char
-//        std :: cout << "URI : " << request.uri() << request.uri().length() << std::endl;
-        if (request.uri().length() == 0)
-        {
-            *response = Response::stock_response(Response::bad_request);
-            return RequestHandler::NOT_OK;
-        }
-      size_t secondSlash = request.uri().substr(1).find_first_of("/");
-      std::string request_base = request.uri().substr(0,secondSlash + 1);
-      std::string filepath = request.uri().substr(request_base.length());
-        
-      std::string request_path;
-      if (!url_decode(filepath, request_path))
-	{
-//        std :: cout << "Did it here" << std::endl;
-	  *response = Response::stock_response(Response::bad_request);
-	  return RequestHandler::NOT_OK;
-	}
-      
-      // Request path must be absolute and not contain "..".
-      if (request_path.empty() || request_path[0] != '/'
-	  || (request_path.find("..") != std::string::npos))
-	  {
-//          std :: cout << "Did it here2" << std::endl;
-	    *response = Response::stock_response(Response::bad_request);
-	    return RequestHandler::NOT_OK;
-	  }
-      
-      // If path ends in slash (i.e. is a directory) then add "index.html".
-      if (request_path[request_path.size() - 1] == '/')
-	  {
-	    request_path += "index.html";
-	  }
-      
-      std::size_t last_slash_pos = request_path.find_last_of("/");
-      std::size_t last_dot_pos = request_path.find_last_of(".");
-      std::string extension;
-      if (last_dot_pos != std::string::npos && last_dot_pos > last_slash_pos)
-	{
-	  extension = request_path.substr(last_dot_pos + 1);
-	}
-      else
-	{
-    //std :: cout << "Did it here3" << std::endl;
-	  *response = Response::stock_response(Response::bad_request);
-	  return RequestHandler::NOT_OK;
-	}
-      
-      // Open the file to send back.
-      std::string full_path = root_path_ + request_path;
-//        std::cout << root_path_ << "\n" ;
-      full_path = full_path.substr(1);
-      //std::cout << "filepath: " << pathMap_[request_.base] << std::endl;
-      //std::cout << "full path: " << full_path << std::endl;
-      std::ifstream is(full_path.c_str(), std::ios::in | std::ios::binary);
-      if (!is)
-	{
-	  //*response = Response::stock_response(Response::not_found);
-	  return RequestHandler::FILE_NOT_FOUND;
-	}
-      
-      // Fill out the reply to be sent to the client.
-      response->SetStatus(Response::ok);
-      char buf[512];
-      std::string content;
-      while (is.read(buf, sizeof(buf)).gcount() > 0)
-	{
-	  content.append(buf, is.gcount());
-	  memset(buf, 0, sizeof(buf));
-	}
-	  response->SetBody(content); 
-      //std::cout << "content: " << response.content << std::endl; // Debugging
-      // response.headers.resize(2);
-      // response.headers[0].name = "Content-Length";
-      // response.headers[0].value = std::to_string(response.content.size());
-      // response.headers[1].name = "Content-Type";
-      // response.headers[1].value = mime_types::extension_to_type(extension);
-      response->AddHeader("Content-Length", std::to_string(content.size()));
-      response->AddHeader("Content-Type", mime_types::extension_to_type(extension)); 
-      //std::cout << "type: " << response.headers[1].value << std::endl; // Debugging
-      return RequestHandler::OK;
+RequestHandler::Status ProxyHandler::HandleRequest(const Request& request, Response* response)
+{
+    std::string request_uri = request.uri();
+    boost::asio::io_service io_service;
+    tcp::resolver resolver(io_service);
+    tcp::resolver::query query(host_url_, "80");
+    tcp::resolver::iterator endpoint_iterator = resolver.resolve(query);
+    tcp::resolver::iterator iter = endpoint_iterator;
+    tcp::resolver::iterator end;
+
+    while (iter != end)
+    {
+      tcp::endpoint endpoint = *iter++;
+      std::cout << endpoint << std::endl;
     }
-  } // namespace server
+
+    tcp::socket socket(io_service);
+    boost::asio::connect(socket, endpoint_iterator);
+
+    std::cout << "Successfully connected!\n";
+
+    std::string request_string = std::string("GET ") + path_ + request_uri.substr(uri_prefix_.size()-1) + " HTTP/1.1\r\n" + "Host: " + host_url_ + ":" + "80";
+
+
+
+
+    // if (remote_port_ != "http") {
+    //     request_string += ":" + (remote_port_); // Port number
+    // }
+    request_string += std::string("\r\nConnection: keep-alive\r\n") +
+                      "Accept: text/html\r\n" +
+                      "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8\r\n" +
+                      "Accept-Encoding: gzip, deflate, sdch\r\n" +
+                      "Accept-Language: en-US,en;q=0.8\r\n" +
+                      "\r\n";
+                           
+                          
+    std::cout << request_string<<std::endl;
+
+     // Send the response back to the client and then we're done
+    socket.write_some(boost::asio::buffer(request_string, request_string.size()));
+
+    std::string remote_response;
+
+    while(1) {
+      
+        boost::array<char, 4096> buf;
+        boost::system::error_code error;
+
+        size_t len = socket.read_some(boost::asio::buffer(buf), error);
+
+        //std::cout << "Got here!\n";
+        if (error == boost::asio::error::eof) {
+            std::cout <<"Exited cleanly\n";
+            break; // Connection closed cleanly by peer.
+        }
+        else if (error)
+            throw boost::system::system_error(error); // Some other error.
+
+
+        
+        //remote_response += std::string(std::begin(buf), std::end(buf));
+        std::cout.write(buf.data(), len);
+        remote_response += std::string(buf.data(), len);
+
+        
+    }
+
+    bool remote_response_status;
+    remote_response_status = parse_remote_response(remote_response);
+    if (remote_response_status == false)
+        return RequestHandler::Status::NOT_OK;
+    
+    //std::cout << remote_response << std::endl;
+    //std::unique_ptr<Request> response_as_request = Request::Parse(remote_response);
+
+
+    response->SetStatus(Response::ResponseCode::ok);
+    for (std::vector<std::pair<std::string, std::string>>::const_iterator it = headers_.begin(); it != headers_.end(); it++)
+    {
+        response->AddHeader(it->first, it->second);
+    }
+    //response->AddHeader("Content-Type", "text/html");
+    //response->AddHeader("Content-Encoding", "gzip");
+    //response->SetBody(request.raw_request());
+    response->SetBody(response_body);
+    return Status::OK;
+}
+
+} // namespace server
 } // namespace http
