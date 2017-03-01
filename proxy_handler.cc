@@ -26,7 +26,7 @@ RequestHandler::Status ProxyHandler::Init(const std::string& uri_prefix, const N
 	        remote_host_whole_url = statement->tokens_[1];
                 remote_host_found = parse_remote_url(remote_host_whole_url);
 		if(remote_host_found == true)
-		    return RequestHandler::Status::OK;
+		{    return RequestHandler::Status::OK;}
                 else
 		{    return RequestHandler::Status::NOT_OK;}  
 	    }
@@ -205,7 +205,7 @@ RequestHandler::Status ProxyHandler::HandleRequest(const Request& request, Respo
 
         
     }
-	std::cout<<"out of loop";
+
     bool remote_response_status;
     remote_response_status = parse_remote_response(remote_response);
     if (remote_response_status == false)
