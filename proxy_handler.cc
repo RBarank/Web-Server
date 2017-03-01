@@ -28,10 +28,10 @@ RequestHandler::Status ProxyHandler::Init(const std::string& uri_prefix, const N
 		if(remote_host_found == true)
 		    return RequestHandler::Status::OK;
                 else
-		    return RequestHandler::Status::NOT_OK; 
+		{    return RequestHandler::Status::NOT_OK;}  
 	    }
             else 
-                return RequestHandler::Status::NOT_OK;
+                {return RequestHandler::Status::NOT_OK;}
         }
 	return RequestHandler::Status::NOT_OK;
     }
@@ -205,7 +205,7 @@ RequestHandler::Status ProxyHandler::HandleRequest(const Request& request, Respo
 
         
     }
-
+	std::cout<<"out of loop";
     bool remote_response_status;
     remote_response_status = parse_remote_response(remote_response);
     if (remote_response_status == false)
@@ -223,6 +223,26 @@ RequestHandler::Status ProxyHandler::HandleRequest(const Request& request, Respo
     headers_.clear();
 
     return Status::OK;
+}
+std::string ProxyHandler::getPrefix()
+{
+	return uri_prefix_;
+}
+std::string ProxyHandler::getWholeURL()
+{
+	return remote_host_whole_url;
+}
+std::string ProxyHandler::getProtocol()
+{
+	return protocol_;
+}
+std::string ProxyHandler::getHostURL()
+{
+	return host_url_;
+}
+std::string ProxyHandler::getPath()
+{
+	return path_;
 }
 
 } // namespace server
