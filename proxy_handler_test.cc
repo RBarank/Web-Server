@@ -27,7 +27,7 @@ namespace http {
 		};
         
 		//test the init function, check if variables are set correctly
-        TEST_F(ProxyHandlerTest, INIT) 
+		TEST_F(ProxyHandlerTest, INIT) 
 		{
 			parseConfig("remote_host http://www.ucla.edu;");
 			auto init_status = proxy_handler.Init("/", out_config);
@@ -37,7 +37,7 @@ namespace http {
 			EXPECT_EQ(proxy_handler.getProtocol(),"http"); 
 			EXPECT_EQ(proxy_handler.getHostURL(),"www.ucla.edu"); 
 			EXPECT_EQ(proxy_handler.getPath(),""); 
-        }
+		}
 		//set status as NOT_OK if there's no protocol in config
 		TEST_F(ProxyHandlerTest, NoProtocol)
 		{
