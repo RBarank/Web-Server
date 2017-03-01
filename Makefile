@@ -36,7 +36,15 @@ coverage: test
 clean-coverage:
 	rm -rf *gcov *gcda *gcno *.dSYM
 
+proxy_handler_test:
+	g++ -std=c++11 -isystem ${GTEST_DIR}/include -I${GTEST_DIR} -pthread -c ${GTEST_DIR}/src/gtest-all.cc
+	ar -rv libgtest.a gtest-all.o
+	g++ -std=c++0x -isystem ${GTEST_DIR}/include -pthread proxy_handler_test.cc proxy_handler.cc request_handler.cc response.cc request.cc config_parser.cc ${GTEST_DIR}/src/gtest_main.cc libgtest.a -o proxy_handler_test -lboost_system -fprofile-arcs -ftest-coverage
+	./proxy_handler_test
+
 handler_test:
+	g++ -std=c++11 -isystem ${GTEST_DIR}/include -I${GTEST_DIR} -pthread -c ${GTEST_DIR}/src/gtest-all.cc
+	ar -rv libgtest.a gtest-all.o
 	g++ -std=c++0x -isystem ${GTEST_DIR}/include -pthread server_info_test.cc server_info.cc response.cc ${GTEST_DIR}/src/gtest_main.cc libgtest.a -o server_info_test -lboost_system -fprofile-arcs -ftest-coverage
 	./server_info_test
 	g++ -std=c++0x -isystem ${GTEST_DIR}/include -pthread status_handler.cc status_handler_test.cc request_handler.cc request.cc response.cc ${GTEST_DIR}/src/gtest_main.cc server_info.cc libgtest.a -o status_handler_test -lboost_system -fprofile-arcs -ftest-coverage
@@ -49,4 +57,6 @@ handler_test:
 	./static_handler_test
 	g++ request_handler_test.cc request_handler.cc static_handler.cc response.cc request.cc mime-types.cc -o request_handler_test $(STD_FLAGS) $(COV_FLAGS)
 	./request_handler_test
+	g++ -std=c++0x -isystem ${GTEST_DIR}/include -pthread proxy_handler_test.cc proxy_handler.cc request_handler.cc response.cc request.cc config_parser.cc ${GTEST_DIR}/src/gtest_main.cc libgtest.a -o proxy_handler_test -lboost_system -fprofile-arcs -ftest-coverage
+	./proxy_handler_test
 

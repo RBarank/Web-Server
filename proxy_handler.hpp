@@ -46,6 +46,13 @@ namespace http {
       // contents of the response object are undefined, and the server will return
       // HTTP code 500.
       virtual Status HandleRequest(const Request& request, Response* response);
+
+      std::string getPrefix();
+      std::string getWholeURL();
+      std::string getProtocol();
+      std::string getHostURL();
+      std::string getPath();
+	
       
     };
     
