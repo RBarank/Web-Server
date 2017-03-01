@@ -72,6 +72,7 @@ void connection::do_read()
           //   std::cout << " " << it->first << std::endl;
 
           std::cout << currentRequest->uri() << std::endl;
+	  std::cout << request_base << std::endl;
           RequestHandler::Status ret = pathMap_[request_base]->HandleRequest(*currentRequest, resp);
           
           if(ret == RequestHandler::Status::FILE_NOT_FOUND){

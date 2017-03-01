@@ -170,22 +170,16 @@ RequestHandler::Status ProxyHandler::HandleRequest(const Request& request, Respo
     std::string request_string = std::string("GET ") + path_ + request_uri.substr(uri_prefix_.size()-1) + " HTTP/1.1\r\n" + "Host: " + host_url_ + ":" + "80";
 
 
-
-
-    // if (remote_port_ != "http") {
-    //     request_string += ":" + (remote_port_); // Port number
-    // }
     request_string += std::string("\r\nConnection: keep-alive\r\n") +
                       "Accept: text/html\r\n" +
                       "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8\r\n" +
                       "Accept-Encoding: gzip, deflate, sdch\r\n" +
                       "Accept-Language: en-US,en;q=0.8\r\n" +
                       "\r\n";
-                           
-                          
+                                     
     std::cout << request_string<<std::endl;
 
-     // Send the response back to the client and then we're done
+    // Write request to remote server
     socket.write_some(boost::asio::buffer(request_string, request_string.size()));
 
     std::string remote_response;
@@ -195,9 +189,9 @@ RequestHandler::Status ProxyHandler::HandleRequest(const Request& request, Respo
         boost::array<char, 4096> buf;
         boost::system::error_code error;
 
+	//read the response from remote server
         size_t len = socket.read_some(boost::asio::buffer(buf), error);
 
-        //std::cout << "Got here!\n";
         if (error == boost::asio::error::eof) {
             std::cout <<"Exited cleanly\n";
             break; // Connection closed cleanly by peer.
@@ -205,9 +199,7 @@ RequestHandler::Status ProxyHandler::HandleRequest(const Request& request, Respo
         else if (error)
             throw boost::system::system_error(error); // Some other error.
 
-
-        
-        //remote_response += std::string(std::begin(buf), std::end(buf));
+	
         std::cout.write(buf.data(), len);
         remote_response += std::string(buf.data(), len);
 
@@ -218,10 +210,6 @@ RequestHandler::Status ProxyHandler::HandleRequest(const Request& request, Respo
     remote_response_status = parse_remote_response(remote_response);
     if (remote_response_status == false)
         return RequestHandler::Status::NOT_OK;
-    
-    //std::cout << remote_response << std::endl;
-    //std::unique_ptr<Request> response_as_request = Request::Parse(remote_response);
-
 
     response->SetStatus(Response::ResponseCode::ok);
     for (std::vector<std::pair<std::string, std::string>>::const_iterator it = headers_.begin(); it != headers_.end(); it++)
@@ -232,6 +220,8 @@ RequestHandler::Status ProxyHandler::HandleRequest(const Request& request, Respo
     //response->AddHeader("Content-Encoding", "gzip");
     //response->SetBody(request.raw_request());
     response->SetBody(response_body);
+    headers_.clear();
+
     return Status::OK;
 }
 
