@@ -55,25 +55,42 @@ void connection::do_read()
                   std::unique_ptr<Request> currentRequest(Request::Parse(bufferString));
 
           printf("IN CONNECTION::DO_READ ASYNC_READ_SOME\n");
-          int secondSlash = currentRequest->uri().substr(1).find_first_of("/");
+          //int secondSlash = currentRequest->uri().substr(1).find_first_of("/");
           std::string request_base;
-          if(secondSlash == -1)
-          {
-              request_base = currentRequest->uri();
-          }
-          else
-          {
-              request_base = currentRequest->uri().substr(0,secondSlash + 1);
-          }
+          //if(secondSlash == -1)
+          //{
+          //    request_base = currentRequest->uri();
+          //}
+          //else
+          //{
+          //    request_base = currentRequest->uri().substr(0,secondSlash + 1);
+          //}
             
           Response* resp = new Response;
+          RequestHandler* handler;
+	  
+          std::string temp_path = currentRequest->uri();
+          while(temp_path.length() > 0) {
+      		for(auto& handlerPair: pathMap_) {	
+		    if (temp_path == handlerPair.first) {
+           	        handler = handlerPair.second;
+			break;
+       		    }
+     	        }
+     	  	std::size_t slash_found = temp_path.find_last_of("/");
+     	 	if (slash_found == 0 && temp_path == "/")
+          	    break;
+      	  	temp_path = temp_path.substr(0, slash_found);
+      	  	if (slash_found == 0)
+                    temp_path = "/";
+         }
 
           // for ( auto it = pathMap_.begin(); it != pathMap_.end(); ++it )
           //   std::cout << " " << it->first << std::endl;
 
           std::cout << currentRequest->uri() << std::endl;
-	  std::cout << request_base << std::endl;
-          RequestHandler::Status ret = pathMap_[request_base]->HandleRequest(*currentRequest, resp);
+	  //std::cout << request_base << std::endl;
+          RequestHandler::Status ret = handler->HandleRequest(*currentRequest, resp);
           
           if(ret == RequestHandler::Status::FILE_NOT_FOUND){
             request_base = "/404";
