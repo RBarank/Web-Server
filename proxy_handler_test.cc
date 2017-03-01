@@ -1,68 +1,86 @@
 #include "gtest/gtest.h"
-#include "static_handler.hpp"
+#include "proxy_handler.hpp"
 #include <vector>
 #include "config_parser.h"
+#include "request_handler.hpp"
+#include "response.hpp"
+#include "request.hpp"
+
+
+//the gibberish on the command line when testing HandleRequest function is the content of the website dumped to the terminal 
 
 namespace http {
     namespace server{
-        
-        std::string ret_bufferString(std::string type) {
-            std::string bufferString = "";
-            
-            bufferString+= "GET /";
-            bufferString+= type;
-            bufferString+= " HTTP/1.1\n";
-            bufferString+= "Host: localhost:3000\n";
-            bufferString+= "Connection: keep-alive\n";
-            bufferString+= "Cache-Control: max-age=0\n";
 
-            bufferString+= "Upgrade-Insecure-Requests: 1\n";
-            bufferString+= "User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/56.0.2924.87 Safari/537.36\n";
-            bufferString+= "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8\n";
-            bufferString+= "Accept-Encoding: gzip, deflate, sdch, br\n";
-            bufferString+= "Accept-Language: en-US,en;q=0.8\n\n\n";
-            
-            return bufferString;
-        }
+		//added a fixture for common variables 
+		class ProxyHandlerTest:public::testing::Test
+		{
+		protected:
+			bool parseConfig(const std::string config_string)
+			{
+				std::stringstream config_stream(config_string);
+				return parser.Parse(&config_stream, &out_config);
+			}
+			NginxConfigParser parser;
+			NginxConfig out_config;
+			ProxyHandler proxy_handler;
+		};
         
-        
-        TEST(StaticHandler, INIT) {
-            StaticHandler test;
-            NginxConfig config;
-            ASSERT_TRUE(test.Init("", config) == RequestHandler::Status::OK);
-        }
-        
-        
-        TEST(StaticHandler, WrongHandleRequestTests) {
-            StaticHandler test;
-            NginxConfig config;
-            ASSERT_TRUE(test.Init("", config) == RequestHandler::Status::OK);
-            Request request_;
-            Response res_;
-            ASSERT_TRUE(test.HandleRequest(request_, &res_) == RequestHandler::Status::NOT_OK);
-            
-            std::vector<std::string> testStrings {"echo", "/static/popo", "not%f" , "not_%%%%found" , "static/test.jpg" , "/.."};
-            for (int i = 0; i < testStrings.size(); i++)
-            {
-                std::string bufferString = ret_bufferString(testStrings[i]);
-                std::unique_ptr<Request> currentRequest(Request::Parse(bufferString));
-                ASSERT_TRUE(test.HandleRequest(*currentRequest, &res_) == RequestHandler::Status::NOT_OK);
-            }
-        }
-        
-        
-        TEST(StaticHandler, RightHandleRequestTests) {
-            StaticHandler test;
-            NginxConfigParser config_parser;
-            NginxConfig config;
-            config_parser.Parse("test_file/static_test", &config);
-            
-            Response res_;
-            ASSERT_TRUE(test.Init("", config) == RequestHandler::Status::OK);
-            
-            std::string bufferString = ret_bufferString("static/test.jpg");
-            std::unique_ptr<Request> currentRequest(Request::Parse(bufferString));
-            
-            ASSERT_TRUE(test.HandleRequest(*currentRequest, &res_) == RequestHandler::Status::OK);
-        }
-    }
+		//test the init function, check if variables are set correctly
+		TEST_F(ProxyHandlerTest, INIT) 
+		{
+			parseConfig("remote_host http://www.ucla.edu;");
+			auto init_status = proxy_handler.Init("/", out_config);
+			EXPECT_EQ(init_status, RequestHandler::Status::OK);
+			EXPECT_EQ(proxy_handler.getPrefix(), "/");
+			EXPECT_EQ(proxy_handler.getWholeURL(),"http://www.ucla.edu"); 
+			EXPECT_EQ(proxy_handler.getProtocol(),"http"); 
+			EXPECT_EQ(proxy_handler.getHostURL(),"www.ucla.edu"); 
+			EXPECT_EQ(proxy_handler.getPath(),""); 
+		}
+		//set status as NOT_OK if there's no protocol in config
+		TEST_F(ProxyHandlerTest, NoProtocol)
+		{
+			parseConfig("remote_host www.ucla.edu;");
+			auto init_status = proxy_handler.Init("/", out_config);
+			EXPECT_EQ(init_status, RequestHandler::Status::NOT_OK);
+		}
+		//illegal config with wrong keyword
+		TEST_F(ProxyHandlerTest, IllegalConfig)
+		{
+			parseConfig("host http://www.ucla.edu;");
+			auto init_status = proxy_handler.Init("/", out_config);
+			EXPECT_EQ(init_status, RequestHandler::Status::NOT_OK);
+		}
+		//illegal config with too many statements
+		TEST_F(ProxyHandlerTest, TooManyStatements)
+		{
+			parseConfig("remote_host http://www.ucla.edu;remote_host2 http://www.google.com");
+			auto init_status = proxy_handler.Init("/", out_config);
+			EXPECT_EQ(init_status, RequestHandler::Status::NOT_OK);
+		}
+
+		//test HandleRequest function
+		//this unit test might fail if there is no or has weak internet connection
+		TEST_F(ProxyHandlerTest, HandleRequest)
+		{	
+			Response response;
+			std::string raw_request = "GET / HTTP/1.1\r\n\r\n";
+			std::unique_ptr<Request> req(new Request);
+			req->set_raw_request(raw_request);
+			req->set_method("GET");
+			req->set_uri("/");
+			req->set_version("HTTP/1.1");
+
+			parseConfig("remote_host http://www.ucla.edu;");
+
+			EXPECT_EQ(out_config.statements_[0]->tokens_[1],"http://www.ucla.edu");
+			EXPECT_EQ(out_config.statements_[0]->tokens_[0],"remote_host");
+			auto init_status = proxy_handler.Init("/", out_config);
+			EXPECT_EQ(init_status, RequestHandler::Status::OK);
+
+			auto status = proxy_handler.HandleRequest(*req, &response);
+			EXPECT_EQ(status, RequestHandler::Status::OK);	
+		}
+   }//server
+}//http
