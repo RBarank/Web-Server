@@ -15,6 +15,7 @@ Source Code Layout:
 	-StaticHandler: Used for serving files. Fetches files on the basis of prefix called. Each prefix matches to a source directory. There is a separate instance of each StaticHandler for each source directory.
 	-StatusHandler: Returns in plain text data about the previous requests received by the server.
 	-NotFoundHandler: Sets response to a 404 Not Found with a standard HTML.
+	-ProxyHandler: Issue requests and parse the responses 
 			
 			
 Instructions:
