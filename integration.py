@@ -19,15 +19,15 @@ def multi_thread_check():
 	connection1 = Telnet('localhost', 3000)
 	connection1.write(req.split('Accept')[0])
 
-	# connection2 = Telnet('localhost', 3000)
-	# connection2.write(req)
-	res2 = ""#connection2.read_all()
+	connection2 = Telnet('localhost', 3000)
+	connection2.write(req)
+	res2 = connection2.read_all()
 
 	connection1.write("Accept: */*\r\n\r\n")
 	res1 = connection1.read_all()
 
-	# print res1
-	# print res2
+	print res1
+	print res2
 
 # print "Building binary"
 # subprocess.call(["make"])

@@ -3,6 +3,8 @@
 #include <string>
 #include <stdio.h>
 #include <stdlib.h>
+#include <thread>
+
 
 const int MAX_PORT_NO = 65535;
 const int MIN_PORT_NO = 1;
@@ -14,7 +16,8 @@ namespace http {
       : io_service_(),
         acceptor_(io_service_),
         socket_(io_service_),
-		portno_(-1)
+		portno_(-1),
+      n_threads(4)
     {
     	
     printf("IN SERVER CONSTRUCTOR\n");
@@ -112,11 +115,14 @@ namespace http {
         
     void server::run()
     {
-      try {
-	io_service_.run();
-      } catch (boost::system::error_code const &e) {
-	throw e;
-      }
+        std::vector<std::shared_ptr<std::thread>> thread_pool;
+        for(int index = 0; index < n_threads; index++){
+            std::shared_ptr<std::thread> thread_(new std::thread(boost::bind(&boost::asio::io_service::run, &io_service_)));
+            thread_pool.push_back(thread_);
+        }
+        for(int index = 0; index < n_threads ; index++){
+            thread_pool[index] -> join();
+        }
     }
     
     void server::do_accept()
