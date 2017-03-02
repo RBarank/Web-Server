@@ -70,7 +70,7 @@ bool ProxyHandler::parse_remote_response(std::string remote_response)
     std::size_t status_found = remote_response.find("\r\n");
     if(status_found == std::string::npos)
 	return false;
-    response_status = remote_response.substr(0, status_found + 1);
+    response_status = remote_response.substr(0, status_found + 2);
     rest = remote_response.substr(status_found + 2);        
 
     std::size_t header_found = rest.find("\r\n\r\n");
@@ -211,7 +211,12 @@ RequestHandler::Status ProxyHandler::HandleRequest(const Request& request, Respo
     if (remote_response_status == false)
         return RequestHandler::Status::NOT_OK;
 
-    response->SetStatus(Response::ResponseCode::ok);
+    std::cout<< response_status<<std::endl;
+    if (response_status == "HTTP/1.1 302 Found\r\n")
+	response->SetStatus(Response::ResponseCode::moved_temporarily);
+    else if (response_status == "HTTP/1.1 200 OK\r\n")
+    	response->SetStatus(Response::ResponseCode::ok);
+
     for (std::vector<std::pair<std::string, std::string>>::const_iterator it = headers_.begin(); it != headers_.end(); it++)
     {
         response->AddHeader(it->first, it->second);
