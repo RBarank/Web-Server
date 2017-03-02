@@ -30,8 +30,7 @@ public:
 
   /// Run the server's io_service loop.
   void run();
-
-
+    
 private:
   /// Perform an asynchronous accept operation.
   void do_accept();
@@ -53,9 +52,10 @@ private:
   //std::unordered_map<std::string, std::unique_ptr<RequestHandler>> uri_to_handler_map;
   std::unordered_map<std::string, RequestHandler*> uri_to_handler_map;
     std::unordered_map<std::string, std::string> uri_to_handler_name;
-    
+
+    void setThreads(const NginxConfig& config);
     int n_threads;
-//    std::vector<std::thread> threads;
+    std::vector<std::shared_ptr<std::thread>> threads_;
 
 };
 

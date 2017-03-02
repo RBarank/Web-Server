@@ -3,7 +3,6 @@
 #include <string>
 #include <stdio.h>
 #include <stdlib.h>
-#include <thread>
 
 
 const int MAX_PORT_NO = 65535;
@@ -16,8 +15,7 @@ namespace http {
       : io_service_(),
         acceptor_(io_service_),
         socket_(io_service_),
-		portno_(-1),
-      n_threads(4)
+		portno_(-1)
     {
     	
     printf("IN SERVER CONSTRUCTOR\n");
@@ -27,6 +25,8 @@ namespace http {
 	throw boost::system::errc::make_error_code(boost::system::errc::invalid_argument);
 	  }
 
+        setThreads(config);
+        
       // Open the acceptor with the option to reuse the address (i.e. SO_REUSEADDR).
       //printf("WE GOT HERE");
       boost::asio::ip::tcp::resolver resolver(io_service_);
@@ -112,16 +112,29 @@ namespace http {
 
       return true;
     }
+      
+      void server::setThreads(const NginxConfig& config)
+      {
+          for (const auto& statement : config.statements_)
+          {
+              if (statement->tokens_[0] == "threads" && statement->tokens_.size() == 2)
+              {
+                  //std::cout << statement->tokens_[1] << "\n";
+                  n_threads = std::stoi(statement->tokens_[1]);
+                  return ;
+              }
+          }
+          n_threads = 4;
+      }
         
     void server::run()
     {
-        std::vector<std::shared_ptr<std::thread>> thread_pool;
-        for(int index = 0; index < n_threads; index++){
+        for(int i = 0; i < n_threads; i++){
             std::shared_ptr<std::thread> thread_(new std::thread(boost::bind(&boost::asio::io_service::run, &io_service_)));
-            thread_pool.push_back(thread_);
+            threads_.push_back(thread_);
         }
-        for(int index = 0; index < n_threads ; index++){
-            thread_pool[index] -> join();
+        for(int i = 0; i < n_threads ; i++){
+            threads_[i] -> join();
         }
     }
     
