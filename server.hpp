@@ -4,8 +4,10 @@
 
 #include "config_parser.h"
 #include "request_handler.hpp"
-
+#include <vector>
+#include <thread>
 #include <boost/asio.hpp>
+#include <boost/bind.hpp>
 #include <string>
 #include <unordered_map>
 
@@ -28,8 +30,7 @@ public:
 
   /// Run the server's io_service loop.
   void run();
-
-
+    
 private:
   /// Perform an asynchronous accept operation.
   void do_accept();
@@ -51,6 +52,11 @@ private:
   //std::unordered_map<std::string, std::unique_ptr<RequestHandler>> uri_to_handler_map;
   std::unordered_map<std::string, RequestHandler*> uri_to_handler_map;
     std::unordered_map<std::string, std::string> uri_to_handler_name;
+
+    void setThreads(const NginxConfig& config);
+    int n_threads;
+    std::vector<std::shared_ptr<std::thread>> threads_;
+
 };
 
 } // namespace server

@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+
 const int MAX_PORT_NO = 65535;
 const int MIN_PORT_NO = 1;
 
@@ -24,6 +25,8 @@ namespace http {
 	throw boost::system::errc::make_error_code(boost::system::errc::invalid_argument);
 	  }
 
+        setThreads(config);
+        
       // Open the acceptor with the option to reuse the address (i.e. SO_REUSEADDR).
       //printf("WE GOT HERE");
       boost::asio::ip::tcp::resolver resolver(io_service_);
@@ -109,14 +112,30 @@ namespace http {
 
       return true;
     }
+      
+      void server::setThreads(const NginxConfig& config)
+      {
+          for (const auto& statement : config.statements_)
+          {
+              if (statement->tokens_[0] == "threads" && statement->tokens_.size() == 2)
+              {
+                  //std::cout << statement->tokens_[1] << "\n";
+                  n_threads = std::stoi(statement->tokens_[1]);
+                  return ;
+              }
+          }
+          n_threads = 4;
+      }
         
     void server::run()
     {
-      try {
-	io_service_.run();
-      } catch (boost::system::error_code const &e) {
-	throw e;
-      }
+        for(int i = 0; i < n_threads; i++){
+            std::shared_ptr<std::thread> thread_(new std::thread(boost::bind(&boost::asio::io_service::run, &io_service_)));
+            threads_.push_back(thread_);
+        }
+        for(int i = 0; i < n_threads ; i++){
+            threads_[i] -> join();
+        }
     }
     
     void server::do_accept()

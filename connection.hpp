@@ -47,7 +47,8 @@ namespace http {
       /// Perform an asynchronous write operation.
       void do_write();
 
-      
+        void handle_read();
+        
       void parseRequest();
 
       /// Socket for the connection.
@@ -62,6 +63,7 @@ namespace http {
       Response reply_;
       char request_buffer[MAX_REQUEST_SIZE];
       // request_handler* request_handler_;
+        boost::asio::streambuf buffer_;
     };
 
     typedef std::shared_ptr<connection> connection_ptr;

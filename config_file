@@ -15,8 +15,12 @@ path /status StatusHandler {}
 
 path /404 NotFoundHandler {}
 
+
+threads 8;
+
 #url for remote host should be in the form "http://url"
 path / ProxyHandler {
     remote_host http://www.ucla.edu;
     remote_port 80;
 }
+

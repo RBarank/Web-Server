@@ -1,21 +1,54 @@
 import subprocess
 from multiprocessing import Process
-import urllib2
 from time import sleep
 import requests
+from telnetlib import Telnet
+
 
 def threadExec():
 	subprocess.call(["./webserver", "config_file"])
 
+
+def multi_thread_check():
+	req = ["GET /echo HTTP/1.1", "Host: localhost:3000", "Connection: keep-alive", "Upgrade-Insecure-Requests: 1"]
+	req += ["User-Agent: telnet", "Accept: */*"]
+	req = "\r\n".join(req)
+	req += "\r\n\r\n"
+	# print req
+
+	print "Starting connection1 with half request"
+	connection1 = Telnet('localhost', 3000)
+	connection1.write(req.split('Accept')[0])
+
+	print "Starting connection2 with full request"
+	connection2 = Telnet('localhost', 3000)
+	connection2.write(req)
+	res2 = connection2.read_all()
+
+	print "Completing the request of connection1"
+	connection1.write("Accept: */*\r\n\r\n")
+	res1 = connection1.read_all()
+
+	print res1
+	print res2
+
+	if res1 != res2:
+		print "Same requests are giving different responses"
+		exit(4)
+	else:
+	 	print "Multi threading tests passed."
+	 	print "The two connections give the same response."
+
+
 print "Building binary"
-subprocess.call(["make"])
+
 
 serverProcess = Process(target=threadExec)
 serverProcess.start()
 
 sleep(5)
 
-req = requests.get('http://localhost:3000')
+req = requests.get('http://localhost:3000/echo')
 
 if req.status_code != 200:
 	print "Error: Wrong Status Code."
@@ -34,6 +67,8 @@ if req.headers['content-length'] != str(len(req.content)):
 	exit(3)
 else: 
 	print "Content Length Correct"
+
+multi_thread_check()
 
 print "Integration Test Passed!"
 

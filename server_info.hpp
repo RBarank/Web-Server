@@ -5,7 +5,7 @@
 #include "request.hpp"
 #include <string>
 #include <vector>
-
+#include <mutex>
 
 namespace http {
     namespace server {
@@ -31,11 +31,14 @@ namespace http {
             void append_handler(HandlerInfo hi);
             std::vector<RequestInfo> ret_request_info() {return request_info;}
             std::vector<HandlerInfo> ret_handler_info() {return handler_info;}
+            void lock();
+            void unlock();
             
         private:
             std::vector<RequestInfo> request_info;
             std::vector<HandlerInfo> handler_info;
             ServerInfo() {}
+            std::mutex mutex_;
         };
     }
 }
