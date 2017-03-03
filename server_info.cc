@@ -35,5 +35,13 @@ namespace http{
         {
             handler_info.push_back(hi);
         }
+        void ServerInfo::lock()
+        {
+            mutex_.lock();
+        }
+        void ServerInfo::unlock()
+        {
+            mutex_.unlock();
+        }
     }
 }
