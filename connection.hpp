@@ -27,7 +27,7 @@ namespace http {
     public:
       connection(const connection&) = delete;
       connection& operator=(const connection&) = delete;
-      
+      RequestHandler* GetRequestHandler(const std::string& path);
       /// Construct a connection with the given socket.
       //explicit connection(boost::asio::ip::tcp::socket socket, const std::unordered_map<std::string, std::unique_ptr<RequestHandler>>& pathMap);
         explicit connection(boost::asio::ip::tcp::socket socket, const std::unordered_map<std::string, RequestHandler*>& pathMap, const std::unordered_map<std::string, std::string>& nameMap);

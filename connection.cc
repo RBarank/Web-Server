@@ -55,32 +55,36 @@ void connection::do_read()
                   std::unique_ptr<Request> currentRequest(Request::Parse(bufferString));
 
           printf("IN CONNECTION::DO_READ ASYNC_READ_SOME\n");
-          int secondSlash = currentRequest->uri().substr(1).find_first_of("/");
+          //int secondSlash = currentRequest->uri().substr(1).find_first_of("/");
           std::string request_base;
-          if(secondSlash == -1)
-          {
-              request_base = currentRequest->uri();
-          }
-          else
-          {
-              request_base = currentRequest->uri().substr(0,secondSlash + 1);
-          }
+          //if(secondSlash == -1)
+          //{
+          //    request_base = currentRequest->uri();
+          //}
+          //else
+          //{
+          //    request_base = currentRequest->uri().substr(0,secondSlash + 1);
+          //}
             
           Response* resp = new Response;
+          RequestHandler* handler = GetRequestHandler(currentRequest->uri());        
+                   
 
           // for ( auto it = pathMap_.begin(); it != pathMap_.end(); ++it )
           //   std::cout << " " << it->first << std::endl;
 
           std::cout << currentRequest->uri() << std::endl;
-          RequestHandler::Status ret = pathMap_[request_base]->HandleRequest(*currentRequest, resp);
+	  //std::cout << request_base << std::endl;
+          if (handler != nullptr){  
+              RequestHandler::Status ret = handler->HandleRequest(*currentRequest, resp);
           
-          if(ret == RequestHandler::Status::FILE_NOT_FOUND){
-            request_base = "/404";
-            pathMap_[request_base]->HandleRequest(*currentRequest, resp);
-          }
-                  RequestInfo req_info_;
-                  req_info_.url = currentRequest->uri();
-                  req_info_.rc = resp->ret_response_code();
+              if(ret == RequestHandler::Status::FILE_NOT_FOUND){
+                  request_base = "/404";
+                  pathMap_[request_base]->HandleRequest(*currentRequest, resp);
+              }
+              RequestInfo req_info_;
+              req_info_.url = currentRequest->uri();
+              req_info_.rc = resp->ret_response_code();
                   // request
                   // url - >currentRequest->uri()
                   // response code
@@ -88,13 +92,13 @@ void connection::do_read()
                   
                   //request_base -> uri prefix
                   //
-                  HandlerInfo handler_info_;
-                  handler_info_.type_of_handler = nameMap_[request_base];
-                  handler_info_.url_prefix = request_base;
+              HandlerInfo handler_info_;
+              handler_info_.type_of_handler = nameMap_[request_base];
+              handler_info_.url_prefix = request_base;
                   
-                  ServerInfo::getInstance().append_request(req_info_);
-                  ServerInfo::getInstance().append_handler(handler_info_);
-                  
+              ServerInfo::getInstance().append_request(req_info_);
+              ServerInfo::getInstance().append_handler(handler_info_);
+          }        
                   
                   
 //          printf("WE GOT HEREamazballs\n");
@@ -164,7 +168,27 @@ void connection::do_write()
 	});
 }
 
-
+RequestHandler* connection::GetRequestHandler(const std::string& path)
+{
+    std::string temp_path = path;
+    while(temp_path.length() > 0) {
+      	for(auto& handlerPair: pathMap_) {	
+            //std::cout<< temp_path<<std::endl;
+            //std::cout<< handlerPair.first<<std::endl;
+	    if (temp_path == handlerPair.first) {
+		        
+                return handlerPair.second;
+            }
+     	}
+     	std::size_t slash_found = temp_path.find_last_of("/");
+     	if (slash_found == 0 && temp_path == "/")
+            break;
+      	temp_path = temp_path.substr(0, slash_found);
+      	if (slash_found == 0)
+            temp_path = "/";
+    }
+    return nullptr;
+}
 
 } // namespace server
 } // namespace http

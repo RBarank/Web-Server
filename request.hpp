@@ -26,6 +26,13 @@ namespace http {
       using Headers = std::vector<std::pair<std::string, std::string>>;
       Headers headers() const;
 
+	void set_raw_request(std::string raw_request);
+	void set_method(std::string method);
+	void set_uri(std::string uri);
+	void set_version(std::string version);
+	void set_body(std::string body);
+	void set_headers(Headers headers);
+
     private:
 
       std::string raw_request_;
