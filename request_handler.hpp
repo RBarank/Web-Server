@@ -22,7 +22,8 @@ namespace http {
       enum Status {
         OK = 0,
         NOT_OK = 1,
-        FILE_NOT_FOUND = 2
+        FILE_NOT_FOUND = 2,
+        PROXY_ERROR = 3
       };
       
       // Initializes the handler. Returns a response code indicating success or

@@ -70,5 +70,31 @@ namespace http{
     std::string Request::body() const {
       return body_;
     }
+
+
+	void Request::set_raw_request(std::string raw_request)
+	{
+		raw_request_ = raw_request;
+	}
+	void Request::set_method(std::string method)
+	{
+		method_ = method;
+	}
+	void Request::set_uri(std::string uri)
+	{
+		uri_= uri;
+	}
+	void Request::set_version(std::string version)
+	{
+		version_ = version;
+	}
+	void Request::set_body(std::string body)
+	{
+		body_ = body;
+	}
+	void Request::set_headers(Headers headers)
+	{
+		headers_ = headers;
+	}
   }
 }

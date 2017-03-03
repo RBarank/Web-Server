@@ -46,11 +46,9 @@ void connection::do_read()
   // Clear content buffer before every read
   memset(request_buffer, 0, MAX_REQUEST_SIZE);
   // printf("WE GOT HEREgoog\n");
-  
     
     boost::asio::async_read_until(socket_, buffer_, "\r\n\r\n",
                                   boost::bind(&connection::handle_read, shared_from_this()));
-  
 }
 
 void connection::handle_read()
