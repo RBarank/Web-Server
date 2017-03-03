@@ -29,16 +29,19 @@ def multi_thread_check():
 	connection1.write("Accept: */*\r\n\r\n")
 	res1 = connection1.read_all()
 
+	print res1
+	print res2
+
 	if res1 != res2:
 		print "Same requests are giving different responses"
 		exit(4)
 	else:
-		print "Multi threading tests passed."
-		print "The two connections give the same response."
+	 	print "Multi threading tests passed."
+	 	print "The two connections give the same response."
 
 
 print "Building binary"
-subprocess.call(["make"])
+
 
 serverProcess = Process(target=threadExec)
 serverProcess.start()
@@ -77,19 +80,3 @@ subprocess.call(["make", "clean"])
 
 serverProcess.terminate()
 exit(0)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

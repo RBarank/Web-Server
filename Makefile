@@ -27,7 +27,7 @@ test:
 	g++ config_parser_test.cc config_parser.cc -o config_parser_test $(STD_FLAGS) $(COV_FLAGS)
 	./server_test && ./connection_test && ./config_parser_test &&./response_test && ./request_test
 
-integration:
+integration: all
 	python integration.py
 
 coverage: test
