@@ -156,8 +156,8 @@ RequestHandler::Status ProxyHandler::HandleRequest(const Request& request, Respo
 {
   std::string host_url = host_url_;
   std::string path = path_;
-  response_status = "HTTP/1.1 302 Found\r\n";
-  while(response_status == "HTTP/1.1 302 Found\r\n")
+  response_status = "HTTP/1.1 302";
+  while(response_status == "HTTP/1.1 302")
   {
     std::string request_uri = request.uri();
     boost::asio::io_service io_service;
@@ -206,7 +206,7 @@ RequestHandler::Status ProxyHandler::HandleRequest(const Request& request, Respo
             throw boost::system::system_error(error); // Some other error.
 
 	
-        std::cout.write(buf.data(), len);
+        //std::cout.write(buf.data(), len);
         remote_response += std::string(buf.data(), len);
 
         
@@ -218,7 +218,7 @@ RequestHandler::Status ProxyHandler::HandleRequest(const Request& request, Respo
         return RequestHandler::Status::NOT_OK;
 
     std::cout<< response_status<<std::endl;
-    if (response_status == "HTTP/1.1 302 Found\r\n"){
+    if (response_status.substr(0,12) == "HTTP/1.1 302"){
         for (std::vector<std::pair<std::string, std::string>>::const_iterator it = headers_.begin(); it != headers_.end(); it++)
         {
             if(it->first == "Location")
@@ -239,6 +239,7 @@ RequestHandler::Status ProxyHandler::HandleRequest(const Request& request, Respo
 	        path = "";
             }
         }
+        response_status = "HTTP/1.1 302";
     }
     else if (response_status == "HTTP/1.1 200 OK\r\n")
     {
