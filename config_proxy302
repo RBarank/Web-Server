@@ -1,7 +1,7 @@
 port 8082;
 
 path / ProxyHandler {
-    remote_host http://www.ucla.edu;
+    remote_host http://ucla.edu;
     remote_port 80;
 }
 
