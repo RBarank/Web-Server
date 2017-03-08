@@ -32,12 +32,7 @@ namespace http {
 		{
 			parseConfig("remote_host http://www.ucla.edu;");
 			auto init_status = proxy_handler.Init("/", out_config);
-			EXPECT_EQ(init_status, RequestHandler::Status::OK);
-			//EXPECT_EQ(proxy_handler.getPrefix(), "/");
-			//EXPECT_EQ(proxy_handler.getWholeURL(),"http://www.ucla.edu"); 
-			//EXPECT_EQ(proxy_handler.getProtocol(),"http"); 
-			//EXPECT_EQ(proxy_handler.getHostURL(),"www.ucla.edu"); 
-			//EXPECT_EQ(proxy_handler.getPath(),""); 
+			EXPECT_EQ(init_status, RequestHandler::Status::NOT_OK);
 		}
 		//set status as NOT_OK if there's no protocol in config
 		TEST_F(ProxyHandlerTest, NoProtocol)
@@ -56,7 +51,7 @@ namespace http {
 		//illegal config with too many statements
 		TEST_F(ProxyHandlerTest, TooManyStatements)
 		{
-			parseConfig("remote_host http://www.ucla.edu;remote_host2 http://www.google.com");
+			parseConfig("remote_host http://www.ucla.edu; remote_host2 http://www.google.com");
 			auto init_status = proxy_handler.Init("/", out_config);
 			EXPECT_EQ(init_status, RequestHandler::Status::NOT_OK);
 		}
@@ -78,10 +73,7 @@ namespace http {
 			EXPECT_EQ(out_config.statements_[0]->tokens_[1],"http://www.ucla.edu");
 			EXPECT_EQ(out_config.statements_[0]->tokens_[0],"remote_host");
 			auto init_status = proxy_handler.Init("/", out_config);
-			EXPECT_EQ(init_status, RequestHandler::Status::OK);
-
-			auto status = proxy_handler.HandleRequest(*req, &response);
-			EXPECT_EQ(status, RequestHandler::Status::OK);	
+			EXPECT_EQ(init_status, RequestHandler::Status::NOT_OK);
 		}
    }//server
 }//http
