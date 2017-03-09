@@ -27,6 +27,11 @@ Instructions:
   Tests:
 	-Run "make test" to run tests.
 	-Run "make coverage" to run gcov for test coverage.
+	
+  Deploy:
+  	-Run "make deploy" to create the docker image.
+	-Run "make push_depoy" to push the docker image to AWS and run the docker image.
+	( Please request pem file or push to your EC2 server).
 
 Parser for nginx config files inspired by https://github.com/fatiherikli/nginxparser.
 
