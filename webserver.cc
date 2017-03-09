@@ -22,7 +22,7 @@ int main(int argc, char* argv[])
     
     try
     {
-        http::server::server s("127.0.0.1", config);
+        http::server::server s("0.0.0.0", config);
         s.run();
     }
     catch (std::exception& e)

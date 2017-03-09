@@ -2,14 +2,14 @@ GTEST_DIR = googletest/googletest
 
 CXX = g++
 CXXFLAGS = -std=c++11 -g -Wall -Werror
-LDFLAGS = -pthread -lboost_system
+LDFLAGS = -static-libgcc -static-libstdc++ -pthread -Wl,-Bstatic -lboost_system 
 TEST_FLAGS = -fprofile-arcs -ftest-coverage libgtest.a -isystem $(GTEST_DIR)/include $(GTEST_DIR)/src/gtest_main.cc
 SRC = config_parser.cc connection.cc server.cc response.cc request.cc webserver.cc \
 	mime-types.cc request_handler.cc echo_handler.cc static_handler.cc  \
 	not_found_handler.cc server_info.cc status_handler.cc proxy_handler.cc
 
 
-.PHONY: all run test clean clean-tests clean-coverage clean-all
+.PHONY: all run test clean clean-tests clean-coverage clean-all deploy push_deploy
 
 
 all:
@@ -17,6 +17,24 @@ all:
 
 run: all
 	./webserver config_file
+
+push_deploy: 
+	docker save httpserver | bzip2 | ssh -i Razzle-Dazzlepair.pem ubuntu@ec2-35-161-79-255.us-west-2.compute.amazonaws.com 'bunzip2 | docker load && docker stop $$(docker ps -a -q) && docker run --rm -t -p 8080:8080 httpserver'
+
+deploy:
+	rm -rf deploy
+	mkdir deploy
+	docker build -t httpserver.build .
+	docker run --rm httpserver.build > binary.tar
+	tar -xvf binary.tar -C ./deploy
+	cp Dockerfile.run deploy/
+	cp deploy_config deploy/
+	cp -r test_file deploy/
+	cp -r test_folder deploy/
+	cp index.html deploy/
+	docker build -t httpserver -f deploy/Dockerfile.run ./deploy
+
+	rm -f binary.tar
 
 clean:
 	rm -f webserver

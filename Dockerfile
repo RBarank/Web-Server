@@ -10,5 +10,4 @@ COPY . /opt/webserver
 
 RUN make clean && make
 
-EXPOSE 3000:3000
-CMD ["./webserver", "config_file"]
+CMD tar -cf - webserver
