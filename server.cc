@@ -31,7 +31,8 @@ namespace http {
       //printf("WE GOT HERE");
       boost::asio::ip::tcp::resolver resolver(io_service_);
       //printf("WE GOT HERE1");
-      boost::asio::ip::tcp::endpoint endpoint = *resolver.resolve({address, std::to_string(portno_)});
+      //boost::asio::ip::tcp::endpoint endpoint = *resolver.resolve({address, std::to_string(portno_)});
+      boost::asio::ip::tcp::endpoint endpoint(boost::asio::ip::tcp::v4(), portno_);
       //printf("WE GOT HERE2");
       acceptor_.open(endpoint.protocol());
       //printf("WE GOT HERE3");

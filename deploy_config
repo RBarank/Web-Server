@@ -1,0 +1,24 @@
+# This is a comment.
+
+port 8080;  # This is also a comment.
+
+path /static StaticHandler {
+  root /test_folder;
+}
+
+path /echo EchoHandler {}
+
+# Default response handler if no handlers match.
+default NotFoundHandler {}
+
+path /status StatusHandler {}
+
+path /404 NotFoundHandler {}
+
+threads 8;
+
+#url for remote host should be in the form "http://url"
+path / ProxyHandler {
+    remote_host http://www.ucla.edu;
+    remote_port 80;
+}

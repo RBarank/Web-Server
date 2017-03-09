@@ -26,8 +26,6 @@ Instructions:
 	-Run "make run" to build and run in one go.
   Tests:
 	-Run "make test" to run tests.
-	-Run "make handler_test" to run tests on handlers.
-	-Run "make integration" to run integration tests.
 	-Run "make coverage" to run gcov for test coverage.
 
 Parser for nginx config files inspired by https://github.com/fatiherikli/nginxparser.

@@ -5,7 +5,6 @@
 #include <memory>
 #include <vector>
 #include <boost/asio.hpp>
-#include "header.hpp"
 
 const int MAX_REQUEST_SIZE = 8192;
 

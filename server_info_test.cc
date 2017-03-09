@@ -18,7 +18,7 @@ TEST(ServerInfoTest, all)
     
     std::vector<http::server::RequestInfo> requests = http::server::ServerInfo::getInstance().ret_request_info();
     
-    for (int i = 0; i < requests.size(); i++)
+    for (size_t i = 0; i < requests.size(); i++)
     {
         EXPECT_EQ(requests[i].url, "a");
         if (i == 0)
@@ -33,7 +33,7 @@ TEST(ServerInfoTest, all)
     
     std::vector<http::server::HandlerInfo> handlers = http::server::ServerInfo::getInstance().ret_handler_info();
     
-    for (int i = 0; i < handlers.size(); i++)
+    for (size_t i = 0; i < handlers.size(); i++)
     {
         EXPECT_EQ(handlers[i].type_of_handler, "echo");
         EXPECT_EQ(handlers[i].url_prefix, "/root");

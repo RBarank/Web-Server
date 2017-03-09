@@ -58,6 +58,8 @@ void connection::handle_read()
         ss << &buffer_;
         std::string bufferString = ss.str();
         std::cout << "Buffer string : " << bufferString << "\n";
+        if(bufferString == "")
+          return;
         std::unique_ptr<Request> currentRequest(Request::Parse(bufferString));
         printf("IN CONNECTION::DO_READ ASYNC_READ_SOME\n");
         std::string request_base;
