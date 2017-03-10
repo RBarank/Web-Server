@@ -163,6 +163,13 @@ namespace http {
       }
       
     }
+      
+      void server::kill()
+      {
+          acceptor_.close();
+          io_service_.stop();
+          std::cout << "Actually killing shit\n"; 
+      }
     
   } // namespace server
 } // namespace http
