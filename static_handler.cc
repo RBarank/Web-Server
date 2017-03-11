@@ -1,4 +1,5 @@
 #include "static_handler.hpp"
+#include "cpp-markdown/markdown.h"
 #include <fstream>
 #include <sstream>
 #include <iostream>
@@ -120,10 +121,32 @@ namespace http{
 	  content.append(buf, is.gcount());
 	  memset(buf, 0, sizeof(buf));
 	}
-	  response->SetBody(content); 
+
+      // Handle markdown files
+      if (extension == "md")
+	{
+	  std::string temp = ProcessMarkdown(content);
+	  content = temp;
+	  std::cout << "MARKDOWN" << std::endl;
+	}
+
+      response->SetBody(content); 
       response->AddHeader("Content-Length", std::to_string(content.size()));
       response->AddHeader("Content-Type", mime_types::extension_to_type(extension)); 
       return RequestHandler::OK;
     }
+
+
+    std::string StaticHandler::ProcessMarkdown(const std::string& content)
+    {
+      // Use the cpp-markdown library to handle markdown files
+      markdown::Document md_doc;
+      md_doc.read(content);
+      std::ostringstream oss;
+      md_doc.write(oss);
+
+      return oss.str();
+    }
+    
   } // namespace server
 } // namespace http

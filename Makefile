@@ -2,11 +2,12 @@ GTEST_DIR = googletest/googletest
 
 CXX = g++
 CXXFLAGS = -std=c++11 -g -Wall -Werror
-LDFLAGS = -static-libgcc -static-libstdc++ -pthread -Wl,-Bstatic -lboost_system 
+LDFLAGS = -static-libgcc -static-libstdc++ -pthread -Wl,-Bstatic -lboost_system -lboost_regex
 TEST_FLAGS = -fprofile-arcs -ftest-coverage libgtest.a -isystem $(GTEST_DIR)/include $(GTEST_DIR)/src/gtest_main.cc
 SRC = config_parser.cc connection.cc server.cc response.cc request.cc webserver.cc \
 	mime-types.cc request_handler.cc echo_handler.cc static_handler.cc  \
-	not_found_handler.cc server_info.cc status_handler.cc proxy_handler.cc
+	not_found_handler.cc server_info.cc status_handler.cc proxy_handler.cc \
+	cpp-markdown/markdown.cpp cpp-markdown/markdown-tokens.cpp
 
 
 .PHONY: all run test clean clean-tests clean-coverage clean-all deploy push_deploy
@@ -60,7 +61,7 @@ test:
 	$(CXX) status_handler.cc status_handler_test.cc request_handler.cc request.cc response.cc server_info.cc -o status_handler_test $(CXXFLAGS) $(LDFLAGS) $(TEST_FLAGS)
 	$(CXX) not_found_handler.cc not_found_handler_test.cc request_handler.cc request.cc response.cc -o not_found_handler_test $(CXXFLAGS) $(LDFLAGS) $(TEST_FLAGS)
 	$(CXX) echo_handler.cc echo_handler_test.cc request_handler.cc request.cc response.cc server_info.cc -o echo_handler_test $(CXXFLAGS) $(LDFLAGS) $(TEST_FLAGS)
-	$(CXX) static_handler.cc static_handler_test.cc config_parser.cc request_handler.cc request.cc response.cc server_info.cc mime-types.cc -o static_handler_test $(CXXFLAGS) $(LDFLAGS) $(TEST_FLAGS)
+	$(CXX) static_handler.cc static_handler_test.cc config_parser.cc request_handler.cc request.cc response.cc server_info.cc mime-types.cc cpp-markdown/markdown.cpp cpp-markdown/markdown-tokens.cpp -o static_handler_test $(CXXFLAGS) $(LDFLAGS) $(TEST_FLAGS)
 	$(CXX) request_handler_test.cc request_handler.cc static_handler.cc response.cc request.cc mime-types.cc -o request_handler_test $(CXXFLAGS) $(LDFLAGS) $(TEST_FLAGS)
 	$(CXX) proxy_handler_test.cc proxy_handler.cc request_handler.cc response.cc request.cc config_parser.cc server_info.cc -o proxy_handler_test $(CXXFLAGS) $(LDFLAGS) $(TEST_FLAGS)
 
