@@ -21,8 +21,9 @@ namespace http {
     printf("IN SERVER CONSTRUCTOR\n");
     	
       if (!get_config_info(config)){
-	printf("get_config_info failed!\n");
-	throw boost::system::errc::make_error_code(boost::system::errc::invalid_argument);
+	printf("Config file incorrect. Waiting for a correct config file!\n");
+	//throw boost::system::errc::make_error_code(boost::system::errc::invalid_argument);
+          return ;
 	  }
 
         setThreads(config);
