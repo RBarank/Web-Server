@@ -1,7 +1,0 @@
-#shouldn't work;
-
-team "Razzle-Dazzle";
-
-server {
-  listen   4245125;
-}

@@ -30,7 +30,6 @@ deploy:
 	tar -xvf binary.tar -C ./deploy
 	cp Dockerfile.run deploy/
 	cp deploy_config deploy/
-	cp -r test_file deploy/
 	cp -r test_folder deploy/
 	cp index.html deploy/
 	docker build -t httpserver -f deploy/Dockerfile.run ./deploy

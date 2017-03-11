@@ -1,9 +1,0 @@
-team "Razzle-Dazzle";
-
-server {
-    listen   3000;
-
-    path /static {
-          action static;
-    }
-}
