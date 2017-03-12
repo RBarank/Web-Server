@@ -130,7 +130,7 @@ namespace http{
       return resp;
     }
 
-    void Response::GzipBody()
+    void Response::ApplyGzip()
     {
       std::string compressedString;
       boost::iostreams::filtering_ostream compressingStream;

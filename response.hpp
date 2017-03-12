@@ -38,7 +38,7 @@ namespace http {
       static Response stock_response(ResponseCode status);
       ResponseCode ret_response_code() {return response_code_;}
       std::string body() const { return body_;};
-      void GzipBody();
+      void ApplyGzip();
     private:
       
       using Headers = std::vector<std::pair<std::string, std::string>>;

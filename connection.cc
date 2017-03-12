@@ -93,7 +93,7 @@ void connection::handle_read()
 	// if request accepts gzip encoding, pass response to the gzip-compression function
 	if (currentRequest->accept_gzip())
 	  {
-	    resp->GzipBody();
+	    resp->ApplyGzip();
 	  }
 
         

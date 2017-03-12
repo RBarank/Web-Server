@@ -9,9 +9,15 @@ namespace http{
       
       std::unique_ptr<Request> req(new Request);
       req->raw_request_ = raw_request;
-            
-      size_t split_by_line = raw_request.find("\r\n");
-      std::string request_line  = raw_request.substr(0, split_by_line);
+   
+      std::istringstream iss(raw_request);
+
+      std::string request_line;
+      std::getline(iss, request_line);
+      if (request_line[request_line.size()-1] == '\r')
+	{
+	  request_line.pop_back();
+	}
       
       size_t method_end = request_line.find(" ");
       req->method_ = request_line.substr(0, method_end);
@@ -20,26 +26,32 @@ namespace http{
       req->uri_ = request_line.substr(method_end+1, uri_end-method_end-1);
 
       req->version_ = request_line.substr(uri_end+1);
-
-      size_t end_of_headers = raw_request.find("\r\n\r\n");
-
-      size_t end_of_last_line;
-      size_t separator9;
+      
       std::string cur_header;
+      size_t separator;
       std::string header_name;
       std::string header_value;
-      while (split_by_line < end_of_headers)
+      while(std::getline(iss, cur_header))
 	{
-	  end_of_last_line = split_by_line;
-	  split_by_line = raw_request.find("\r\n", split_by_line+2);
-	  cur_header = raw_request.substr(end_of_last_line+2, split_by_line - end_of_last_line - 2);
-	  separator9 = cur_header.find(": ");
-	  header_name = cur_header.substr(0, separator9);
-	  header_value = cur_header.substr(separator9+2);
+	  if (cur_header[cur_header.size()-1] == '\r') // get rid of extra carriage returns
+	    {
+	      cur_header.pop_back();
+	    }
+	  if (cur_header == "") // break once we reach the empty line separating the headers and the body
+	    {
+	      break;
+	    }
+	  separator = cur_header.find(": ");
+	  header_name = cur_header.substr(0, separator);
+	  header_value = cur_header.substr(separator+2);
 	  req->headers_.push_back(std::make_pair(header_name, header_value));
 	}
       
-      req->body_ = raw_request.substr(split_by_line+4);
+      std::string body;
+      std::getline(iss, body);
+      req->body_ = body;
+
+
 
       return req;
     }
