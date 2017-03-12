@@ -88,6 +88,10 @@ void connection::handle_read()
             ServerInfo::getInstance().append_handler(handler_info_);
             ServerInfo::getInstance().unlock();
         }
+
+	// if request accepts gzip encoding, pass response to the gzip-compression function
+	std::string encoding = currentRequest->getHeader("Accept-Encoding: ");
+
         
         //          printf("WE GOT HEREamazballs\n");
         std::string respString = resp->ToString();
