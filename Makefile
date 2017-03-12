@@ -9,6 +9,11 @@ SRC = config_parser.cc connection.cc server.cc response.cc request.cc webserver.
 	not_found_handler.cc server_info.cc status_handler.cc proxy_handler.cc \
 	cpp-markdown/markdown.cpp cpp-markdown/markdown-tokens.cpp
 
+# TODO:
+# create variables representing dependencies for each cc file and those when compiling cc files for tests
+# create separate LDFLAGS for each cc file and use those LDFLAGS compiling cc files for tests
+# split make test into a separate target for each test file that builds and runs a test for one cc file
+
 
 .PHONY: all run test clean clean-tests clean-coverage clean-all deploy push_deploy
 

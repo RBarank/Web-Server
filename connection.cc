@@ -11,8 +11,6 @@
 #include <cstring>
 #include "server_info.hpp"
 #include <boost/bind.hpp>
-#include <boost/iostreams/filtering_stream.hpp>
-#include <boost/iostreams/filter/gzip.hpp>
 
 
 namespace http {
@@ -95,7 +93,7 @@ void connection::handle_read()
 	// if request accepts gzip encoding, pass response to the gzip-compression function
 	if (currentRequest->accept_gzip())
 	  {
-	    GzipResponse(resp);
+	    resp->GzipBody();
 	  }
 
         
@@ -140,20 +138,6 @@ RequestHandler* connection::GetRequestHandler(const std::string& path)
             temp_path = "/";
     }
     return nullptr;
-}
-
-void connection::GzipResponse(Response* response)
-{
-  std::string compressedString;
-  boost::iostreams::filtering_ostream compressingStream;
-  compressingStream.push(boost::iostreams::gzip_compressor(boost::iostreams::gzip_params(boost::iostreams::gzip::best_compression)));
-  compressingStream.push(boost::iostreams::back_inserter(compressedString));
-  compressingStream << response->body();
-  boost::iostreams::close(compressingStream);
-
-  response->SetBody(compressedString);
-  response->SetHeader("Content-Length", std::to_string(compressedString.size()));
-  response->AddHeader("Content-Encoding", "gzip");
 }
 
 } // namespace server
