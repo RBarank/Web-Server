@@ -93,7 +93,9 @@ void connection::handle_read()
 	// if request accepts gzip encoding, pass response to the gzip-compression function
 	if (currentRequest->accept_gzip())
 	  {
+	    std::cout << "ORIGINAL RESPONSE BODY: " << std::endl << resp->body() << std::endl;
 	    resp->ApplyGzip();
+	    std::cout << "COMPRESSED RESPONSE BODY: " << std::endl << resp->body() << std::endl;
 	  }
 
         
