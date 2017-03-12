@@ -33,6 +33,7 @@ namespace http {
       void set_headers(Headers headers);
       
       std::string get_header(const std::string header_name);
+      bool accept_gzip() const;
 
     private:
 

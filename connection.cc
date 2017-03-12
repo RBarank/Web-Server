@@ -93,8 +93,7 @@ void connection::handle_read()
         }
 
 	// if request accepts gzip encoding, pass response to the gzip-compression function
-	std::string encoding = currentRequest->get_header("Accept-Encoding");
-	if (encoding.find("gzip") != std::string::npos)
+	if (currentRequest->accept_gzip())
 	  {
 	    GzipResponse(resp);
 	  }

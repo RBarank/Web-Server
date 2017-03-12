@@ -102,6 +102,21 @@ namespace http{
 	}
       return "";
     }
-    
+
+    bool Request::accept_gzip() const
+    {
+      for (const auto& header : headers_)
+	{
+	  if (header.first == "Accept-Encoding")
+	    {
+	      if (header.second.find("gzip") != std::string::npos)
+		{
+		  return true;
+		}
+	      return false;
+	    }
+	}
+      return false;
+    }    
   }
 }
