@@ -51,6 +51,8 @@ namespace http {
         
       void parseRequest();
 
+      void GzipResponse(Response* response);
+
       /// Socket for the connection.
       boost::asio::ip::tcp::socket socket_;
 

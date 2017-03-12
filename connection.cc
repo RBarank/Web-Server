@@ -12,6 +12,7 @@
 #include "server_info.hpp"
 #include <boost/bind.hpp>
 
+
 namespace http {
 namespace server {
 
@@ -88,6 +89,13 @@ void connection::handle_read()
             ServerInfo::getInstance().append_handler(handler_info_);
             ServerInfo::getInstance().unlock();
         }
+
+	// if request accepts gzip encoding, pass response to the gzip-compression function
+	if (currentRequest->accept_gzip())
+	  {
+	    resp->ApplyGzip();
+	  }
+
         
         //          printf("WE GOT HEREamazballs\n");
         std::string respString = resp->ToString();

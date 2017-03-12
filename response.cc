@@ -1,4 +1,6 @@
 #include "response.hpp"
+#include <boost/iostreams/filtering_stream.hpp>
+#include <boost/iostreams/filter/gzip.hpp>
 
 namespace http{
   namespace server{
@@ -83,9 +85,25 @@ namespace http{
     void Response::SetStatus(const ResponseCode response_code){
       response_code_ = response_code;
     }
-    void Response::AddHeader(const std::string& header_name, const std::string& header_value){
+
+    void Response::AddHeader(const std::string& header_name, const std::string& header_value)
+    {
       headers_.push_back(std::make_pair(header_name, header_value));
     }
+
+    bool Response::SetHeader(const std::string header_name, const std::string header_value)
+    {
+      for (auto& header : headers_)
+	{
+	  if (header.first == header_name)
+	    {
+	      header.second = header_value;
+	      return true;
+	    }
+	}
+      return false;
+    }
+
     void Response::SetBody(const std::string& body){
       body_ = body;
     }
@@ -110,6 +128,20 @@ namespace http{
       resp.headers_.push_back(std::make_pair("Content-Length", std::to_string(resp.body_.size())));
       resp.headers_.push_back(std::make_pair("Content-Type", "text/html"));            
       return resp;
+    }
+
+    void Response::ApplyGzip()
+    {
+      std::string compressedString;
+      boost::iostreams::filtering_ostream compressingStream;
+      compressingStream.push(boost::iostreams::gzip_compressor(boost::iostreams::gzip_params(boost::iostreams::gzip::best_compression)));
+      compressingStream.push(boost::iostreams::back_inserter(compressedString));
+      compressingStream << body_;
+      boost::iostreams::close(compressingStream);
+
+      SetBody(compressedString);
+      SetHeader("Content-Length", std::to_string(compressedString.size()));
+      AddHeader("Content-Encoding", "gzip");      
     }
   }
 }
