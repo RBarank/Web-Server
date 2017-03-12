@@ -96,7 +96,6 @@ namespace http{
 	  if (header.first == header_name)
 	    {
 	      header.second = header_value;
-	      std::cout << "header first,second: " << header.first << "," << header.second << std::endl;
 	      return true;
 	    }
 	}
