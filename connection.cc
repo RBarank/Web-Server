@@ -66,6 +66,12 @@ void connection::handle_read()
         
         Response* resp = new Response;
         RequestHandler* handler = GetRequestHandler(currentRequest->uri());
+
+
+	// if request accepts gzip encoding, pass response to the gzip-compression function
+	std::string encoding = currentRequest->get_header("Accept-Encoding");
+	std::cout << std::endl << "ENCODING: " << encoding << std::endl;
+
         
         std::cout << currentRequest->uri() << std::endl;
         //std::cout << request_base << std::endl;
@@ -88,9 +94,6 @@ void connection::handle_read()
             ServerInfo::getInstance().append_handler(handler_info_);
             ServerInfo::getInstance().unlock();
         }
-
-	// if request accepts gzip encoding, pass response to the gzip-compression function
-	std::string encoding = currentRequest->getHeader("Accept-Encoding: ");
 
         
         //          printf("WE GOT HEREamazballs\n");
