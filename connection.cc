@@ -11,6 +11,9 @@
 #include <cstring>
 #include "server_info.hpp"
 #include <boost/bind.hpp>
+#include <boost/iostreams/filtering_stream.hpp>
+#include <boost/iostreams/filter/gzip.hpp>
+
 
 namespace http {
 namespace server {
@@ -66,12 +69,6 @@ void connection::handle_read()
         
         Response* resp = new Response;
         RequestHandler* handler = GetRequestHandler(currentRequest->uri());
-
-
-	// if request accepts gzip encoding, pass response to the gzip-compression function
-	std::string encoding = currentRequest->get_header("Accept-Encoding");
-	std::cout << std::endl << "ENCODING: " << encoding << std::endl;
-
         
         std::cout << currentRequest->uri() << std::endl;
         //std::cout << request_base << std::endl;
@@ -94,6 +91,13 @@ void connection::handle_read()
             ServerInfo::getInstance().append_handler(handler_info_);
             ServerInfo::getInstance().unlock();
         }
+
+	// if request accepts gzip encoding, pass response to the gzip-compression function
+	std::string encoding = currentRequest->get_header("Accept-Encoding");
+	if (encoding.find("gzip") != std::string::npos)
+	  {
+	    GzipResponse(resp);
+	  }
 
         
         //          printf("WE GOT HEREamazballs\n");
@@ -137,6 +141,20 @@ RequestHandler* connection::GetRequestHandler(const std::string& path)
             temp_path = "/";
     }
     return nullptr;
+}
+
+void connection::GzipResponse(Response* response)
+{
+  std::string compressedString;
+  boost::iostreams::filtering_ostream compressingStream;
+  compressingStream.push(boost::iostreams::gzip_compressor(boost::iostreams::gzip_params(boost::iostreams::gzip::best_compression)));
+  compressingStream.push(boost::iostreams::back_inserter(compressedString));
+  compressingStream << response->body();
+  boost::iostreams::close(compressingStream);
+
+  response->SetBody(compressedString);
+  response->SetHeader("Content-Length", std::to_string(compressedString.size()));
+  response->AddHeader("Content-Encoding", "gzip");
 }
 
 } // namespace server

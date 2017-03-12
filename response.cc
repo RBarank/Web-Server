@@ -83,9 +83,26 @@ namespace http{
     void Response::SetStatus(const ResponseCode response_code){
       response_code_ = response_code;
     }
-    void Response::AddHeader(const std::string& header_name, const std::string& header_value){
+
+    void Response::AddHeader(const std::string& header_name, const std::string& header_value)
+    {
       headers_.push_back(std::make_pair(header_name, header_value));
     }
+
+    bool Response::SetHeader(const std::string header_name, const std::string header_value)
+    {
+      for (auto& header : headers_)
+	{
+	  if (header.first == header_name)
+	    {
+	      header.second = header_value;
+	      std::cout << "header first,second: " << header.first << "," << header.second << std::endl;
+	      return true;
+	    }
+	}
+      return false;
+    }
+
     void Response::SetBody(const std::string& body){
       body_ = body;
     }

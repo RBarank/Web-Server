@@ -32,10 +32,12 @@ namespace http {
       
       void SetStatus(const ResponseCode response_code);
       void AddHeader(const std::string& header_name, const std::string& header_value);
+      bool SetHeader(const std::string header_name, const std::string header_value);
       void SetBody(const std::string& body);
       std::string ToString();
       static Response stock_response(ResponseCode status);
-        ResponseCode ret_response_code() {return response_code_;}
+      ResponseCode ret_response_code() {return response_code_;}
+      std::string body() const { return body_;};
     private:
       
       using Headers = std::vector<std::pair<std::string, std::string>>;

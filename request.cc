@@ -40,54 +40,6 @@ namespace http{
 	}
       
       req->body_ = raw_request.substr(split_by_line+4);
-      
-      /*
-      boost::char_separator<char> separator{"\r\n\r\n"};
-      boost::tokenizer<boost::char_separator<char>> tokens(req->raw_request_, separator);
-      boost::tokenizer<boost::char_separator<char>>::iterator tokens_it = tokens.begin();
-      
-      boost::char_separator<char> separator1{"\r\n"};
-      boost::tokenizer<boost::char_separator<char>> tokens1(*(tokens_it), separator1);
-      boost::tokenizer<boost::char_separator<char>>::iterator tokens_it1 = tokens1.begin();
-
-      ++tokens_it;
-      req->body_ = *(tokens_it);
-
-      boost::char_separator<char> separator2{" "};
-      boost::tokenizer<boost::char_separator<char>> tokens2(*(tokens_it1), separator2);
-      boost::tokenizer<boost::char_separator<char>>::iterator tokens_it2 = tokens2.begin();
-      
-      //request_.method = *(tokens_it);
-      req->method_ = *(tokens_it2);
-      ++tokens_it2;
-      req->uri_ = *(tokens_it2);
-      ++tokens_it2;
-      req->version_ = *(tokens_it2);
-
-      ++tokens_it1;
-      for ( ; tokens_it1 != tokens.end(); ++tokens_it1){
-	std::cout << std::endl << "IN PARSE REQUEST HEADER FIND" << std::endl; 
-        boost::char_separator<char> sep{": "};
-        boost::tokenizer<boost::char_separator<char>> tokens3(*(tokens_it1), sep);
-        tokens_it2 = tokens3.begin();
-        std::string header_name = *(tokens_it2);
-        ++tokens_it2;
-        std::string header_value = *(tokens_it2);
-        req->headers_.push_back(std::make_pair(header_name, header_value));
-      }
-      */
-      
-      std::cout << "------------------NEW------------------------" << std::endl;
-      std::cout << "METHOD " << req->method().size() << " "<< req->method() << std::endl;
-      std::cout << "URI " << req->uri().size() << " "<< req->uri() << std::endl;
-      std::cout << "VERSION " << req->version().size() << " "<< req->version() << std::endl;
-      std::cout << "BODY " << req->body().size() << " "<< req->body() << std::endl;
-      for (const auto& it : req->headers())
-	{
-	  std::cout << "HEADER: " << it.first << " " << it.second << std::endl;
-	}
-
-      std::cout << "------------------NEW------------------------" << std::endl;
 
       return req;
     }
@@ -114,41 +66,38 @@ namespace http{
       return body_;
     }
 
-
-	void Request::set_raw_request(std::string raw_request)
-	{
-		raw_request_ = raw_request;
-	}
-	void Request::set_method(std::string method)
-	{
-		method_ = method;
-	}
-	void Request::set_uri(std::string uri)
-	{
-		uri_= uri;
-	}
-	void Request::set_version(std::string version)
-	{
-		version_ = version;
-	}
-	void Request::set_body(std::string body)
-	{
-		body_ = body;
-	}
-	void Request::set_headers(Headers headers)
-	{
-		headers_ = headers;
-	}
+    void Request::set_raw_request(std::string raw_request)
+    {
+      raw_request_ = raw_request;
+    }
+    void Request::set_method(std::string method)
+    {
+      method_ = method;
+    }
+    void Request::set_uri(std::string uri)
+    {
+      uri_= uri;
+    }
+    void Request::set_version(std::string version)
+    {
+      version_ = version;
+    }
+    void Request::set_body(std::string body)
+    {
+      body_ = body;
+    }
+    void Request::set_headers(Headers headers)
+    {
+      headers_ = headers;
+    }
 
     std::string Request::get_header(const std::string header_name)
     {
-      std::cout << "get_header HEADERS SIZE: " << headers_.size() << std::endl;
-      for (size_t i = 0; i < headers_.size(); i++)
+      for (const auto& header : headers_)
 	{
-	  std::cout << std::endl << "get_header HEADER: " << headers_[i].first << std::endl;
-	  if (headers_[i].first == header_name)
+	  if (header.first == header_name)
 	    {
-	      return headers_[i].second;
+	      return header.second;
 	    }
 	}
       return "";
