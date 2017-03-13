@@ -1,4 +1,5 @@
 #include "static_handler.hpp"
+#include "cpp-markdown/markdown.h"
 #include <fstream>
 #include <sstream>
 #include <iostream>
@@ -58,8 +59,6 @@ namespace http{
     
 
     RequestHandler::Status StaticHandler::HandleRequest(const Request& request, Response* response){
-      // filepath beings after /static/ so at the 8th char
-//        std :: cout << "URI : " << request.uri() << request.uri().length() << std::endl;
         if (request.uri().length() == 0)
         {
             *response = Response::stock_response(Response::bad_request);
@@ -72,7 +71,6 @@ namespace http{
       std::string request_path;
       if (!url_decode(filepath, request_path))
 	{
-//        std :: cout << "Did it here" << std::endl;
 	  *response = Response::stock_response(Response::bad_request);
 	  return RequestHandler::NOT_OK;
 	}
@@ -81,7 +79,6 @@ namespace http{
       if (request_path.empty() || request_path[0] != '/'
 	  || (request_path.find("..") != std::string::npos))
 	  {
-//          std :: cout << "Did it here2" << std::endl;
 	    *response = Response::stock_response(Response::bad_request);
 	    return RequestHandler::NOT_OK;
 	  }
@@ -101,17 +98,13 @@ namespace http{
 	}
       else
 	{
-    //std :: cout << "Did it here3" << std::endl;
 	  *response = Response::stock_response(Response::bad_request);
 	  return RequestHandler::NOT_OK;
 	}
       
       // Open the file to send back.
       std::string full_path = root_path_ + request_path;
-//        std::cout << root_path_ << "\n" ;
       full_path = full_path.substr(1);
-      //std::cout << "filepath: " << pathMap_[request_.base] << std::endl;
-      //std::cout << "full path: " << full_path << std::endl;
       std::ifstream is(full_path.c_str(), std::ios::in | std::ios::binary);
       if (!is)
 	{
@@ -128,17 +121,32 @@ namespace http{
 	  content.append(buf, is.gcount());
 	  memset(buf, 0, sizeof(buf));
 	}
-	  response->SetBody(content); 
-      //std::cout << "content: " << response.content << std::endl; // Debugging
-      // response.headers.resize(2);
-      // response.headers[0].name = "Content-Length";
-      // response.headers[0].value = std::to_string(response.content.size());
-      // response.headers[1].name = "Content-Type";
-      // response.headers[1].value = mime_types::extension_to_type(extension);
+
+      // Handle markdown files
+      if (extension == "md")
+	{
+	  std::string temp = ProcessMarkdown(content);
+	  content = temp;
+	  std::cout << "MARKDOWN" << std::endl;
+	}
+
+      response->SetBody(content); 
       response->AddHeader("Content-Length", std::to_string(content.size()));
       response->AddHeader("Content-Type", mime_types::extension_to_type(extension)); 
-      //std::cout << "type: " << response.headers[1].value << std::endl; // Debugging
       return RequestHandler::OK;
     }
+
+
+    std::string StaticHandler::ProcessMarkdown(const std::string& content)
+    {
+      // Use the cpp-markdown library to handle markdown files
+      markdown::Document md_doc;
+      md_doc.read(content);
+      std::ostringstream oss;
+      md_doc.write(oss);
+
+      return oss.str();
+    }
+    
   } // namespace server
 } // namespace http
