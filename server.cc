@@ -101,7 +101,7 @@ namespace http {
 		    }*/
       
 	      //uri_to_handler_map[uri_prefix] = std::move(handler);
-			uri_to_handler_map[uri_prefix] = handler;
+			      uri_to_handler_map[uri_prefix] = handler;
             uri_to_handler_name[uri_prefix] = handler_name;
 	    }
 	}

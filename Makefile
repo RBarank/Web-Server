@@ -25,7 +25,7 @@ run: all
 	./webserver config_file
 
 push_deploy: 
-	docker save httpserver | bzip2 | ssh -i Razzle-Dazzlepair.pem ubuntu@ec2-35-161-79-255.us-west-2.compute.amazonaws.com 'bunzip2 | docker load && docker stop $$(docker ps -a -q) && docker run --rm -t -p 8080:8080 httpserver'
+	docker save httpserver | bzip2 | ssh -i Razzle-Dazzlepair.pem ubuntu@ec2-35-161-79-255.us-west-2.compute.amazonaws.com 'bunzip2 | docker load && docker stop $$(docker ps -a -q) && docker run --rm -t -p 8020:8020 httpserver'
 
 deploy:
 	rm -rf deploy

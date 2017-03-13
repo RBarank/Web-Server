@@ -1,6 +1,6 @@
 # This is a comment.
 
-port 8080;  # This is also a comment.
+port 8020;  # This is also a comment.
 
 path /static StaticHandler {
   root /test_folder;

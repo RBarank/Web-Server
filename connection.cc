@@ -63,7 +63,7 @@ void connection::handle_read()
           return;
         std::string first = "";
         int i = 0;
-        while (bufferString[i] == ' ')
+        while (bufferString[i] != ' ')
         {
             first += bufferString[i];
             i++;
@@ -76,9 +76,10 @@ void connection::handle_read()
         std::unique_ptr<Request> currentRequest(Request::Parse(bufferString));
         printf("IN CONNECTION::DO_READ ASYNC_READ_SOME\n");
         std::string request_base;
+        request_base = currentRequest->uri();
         
         Response* resp = new Response;
-        RequestHandler* handler = GetRequestHandler(currentRequest->uri());
+        RequestHandler* handler = GetRequestHandler(request_base);
         
         std::cout << currentRequest->uri() << std::endl;
         //std::cout << request_base << std::endl;
@@ -95,7 +96,7 @@ void connection::handle_read()
             HandlerInfo handler_info_;
             handler_info_.type_of_handler = nameMap_[request_base];
             handler_info_.url_prefix = request_base;
-            
+            //std::cout << "TTTTTT\n" << handler_info_.type_of_handler;
             ServerInfo::getInstance().lock();
             ServerInfo::getInstance().append_request(req_info_);
             ServerInfo::getInstance().append_handler(handler_info_);
@@ -105,13 +106,14 @@ void connection::handle_read()
 	// if request accepts gzip encoding, pass response to the gzip-compression function
 	if (currentRequest->accept_gzip())
 	  {
-	    std::cout << "ORIGINAL RESPONSE BODY: " << std::endl << resp->body() << std::endl;
-	    resp->ApplyGzip();
-	    std::cout << "COMPRESSED RESPONSE BODY: " << std::endl << resp->body() << std::endl;
+      std::ofstream myfile;
+      myfile.open ("compressionTest.txt");
+      myfile << "ORIGINAL RESPONSE BODY: " << std::endl << resp->body() << std::endl;
+      resp->ApplyGzip();
+      myfile << "COMPRESSED RESPONSE BODY: " << std::endl << resp->body() << std::endl;
+      myfile.close();
 	  }
 
-        
-        //          printf("WE GOT HEREamazballs\n");
         std::string respString = resp->ToString();
         boost::asio::write(socket_, boost::asio::buffer(respString, respString.size()));
     }
