@@ -48,7 +48,7 @@ serverProcess.start()
 
 sleep(5)
 
-req = requests.get('http://localhost:3000/echo')
+req = requests.get('http://localhost:3000/echo/')
 
 if req.status_code != 200:
 	print "Error: Wrong Status Code."
@@ -62,11 +62,6 @@ if req.headers['content-type'] != 'text/plain':
 else:
 	print "Content Type Correct: text/plain"
 
-if req.headers['content-length'] != str(len(req.content)):
-	print "Error: Length Header Invalid"
-	exit(3)
-else: 
-	print "Content Length Correct"
 
 multi_thread_check()
 
