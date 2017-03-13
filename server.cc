@@ -142,7 +142,7 @@ namespace http {
     
     void server::do_accept()
     {
-    	printf("WE GOT HERE\n");
+    	//printf("WE GOT HERE\n");
       try {
 	acceptor_.async_accept(socket_,
 			       [this](boost::system::error_code ec)
@@ -169,7 +169,7 @@ namespace http {
       {
           acceptor_.close();
           io_service_.stop();
-          std::cout << "Actually killing shit\n"; 
+          std::cout << "Destroyed the server\n"; 
       }
     
   } // namespace server

@@ -40,9 +40,9 @@ int main(int argc, char* argv[])
         return 1;
     }
     
-    if ( !boost::filesystem::exists(argv[1]))
+    if (!boost::filesystem::exists(argv[1]))
     {
-        std::cout << "Can't find my file!" << std::endl;
+        std::cout << "File not found!" << std::endl;
         return 2;
     }
     
