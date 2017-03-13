@@ -6,7 +6,31 @@
 #include <utility>
 #include <vector>
 #include <iostream>
+#include <boost/filesystem.hpp>
+#include <thread>
 
+
+http::server::server* s;
+
+void checkChange(char* inputFile)
+{
+    std::time_t last = boost::filesystem::last_write_time(inputFile);
+    while (last == boost::filesystem::last_write_time(inputFile)) {}
+    s->kill();
+}
+
+void runServer(char* inputFile)
+{
+    NginxConfigParser config_parser;
+    NginxConfig config;
+    config_parser.Parse(inputFile, &config);
+    
+    std::thread t1(checkChange, inputFile);
+    
+    s = new http::server::server("0.0.0.0", config);
+    s->run();
+    t1.join();
+}
 
 int main(int argc, char* argv[])
 {
@@ -16,19 +40,21 @@ int main(int argc, char* argv[])
         return 1;
     }
     
-    NginxConfigParser config_parser;
-    NginxConfig config;
-    config_parser.Parse(argv[1], &config);
+    if (!boost::filesystem::exists(argv[1]))
+    {
+        std::cout << "File not found!" << std::endl;
+        return 2;
+    }
     
-    try
+    while (true)
     {
-        http::server::server s("0.0.0.0", config);
-        s.run();
+        s = nullptr;
+        runServer(argv[1]);
+        delete s;
     }
-    catch (std::exception& e)
-    {
-        std::cerr << "Exception: " << e.what() << "\n";
-    }
+    
     return 0;
     
 }
+
+

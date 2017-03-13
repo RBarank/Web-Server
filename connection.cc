@@ -61,6 +61,18 @@ void connection::handle_read()
         std::cout << "Buffer string : " << bufferString << "\n";
         if(bufferString == "")
           return;
+        std::string first = "";
+        int i = 0;
+        while (bufferString[i] == ' ')
+        {
+            first += bufferString[i];
+            i++;
+        }
+        if (!(first == "GET" || first == "POST" || first == "PUT" || first == "DELETE"))
+        {
+            std::cout << "Incomplete Request received!\n";
+            return;
+        }
         std::unique_ptr<Request> currentRequest(Request::Parse(bufferString));
         printf("IN CONNECTION::DO_READ ASYNC_READ_SOME\n");
         std::string request_base;

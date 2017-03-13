@@ -2,7 +2,7 @@ GTEST_DIR = googletest/googletest
 
 CXX = g++
 CXXFLAGS = -std=c++11 -g -Wall -Werror
-LDFLAGS = -static-libgcc -static-libstdc++ -pthread -Wl,-Bstatic -lboost_system -lboost_regex -lboost_iostreams -lz
+LDFLAGS = -static-libgcc -static-libstdc++ -pthread -Wl,-Bstatic -lboost_system -lboost_regex -lboost_iostreams -lz -lboost_filesystem
 TEST_FLAGS = -fprofile-arcs -ftest-coverage libgtest.a -isystem $(GTEST_DIR)/include $(GTEST_DIR)/src/gtest_main.cc
 SRC = config_parser.cc connection.cc server.cc response.cc request.cc webserver.cc \
 	mime-types.cc request_handler.cc echo_handler.cc static_handler.cc  \

@@ -31,6 +31,8 @@ public:
   /// Run the server's io_service loop.
   void run();
     
+    void kill();
+    
 private:
   /// Perform an asynchronous accept operation.
   void do_accept();
