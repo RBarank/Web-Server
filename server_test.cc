@@ -35,13 +35,7 @@ TEST(ServerTest, GoodAddrAndEmptyConfig)
 TEST(ServerTest, NotGoodConfigs)
 {
     NginxConfig test_config = retGoodConfig();
-  EXPECT_ANY_THROW(http::server::server test_server("127.0.0.1", test_config));
-  EXPECT_ANY_THROW(http::server::server test_server("127.0.0.1", test_config));
-}
-
-TEST(ServerTest, GoodConfigs)
-{
-    NginxConfig config = retGoodConfig();
-    http::server::server test("0.0.0.0", config);
+    EXPECT_NO_THROW(http::server::server test_server("127.0.0.1", test_config));
+    http::server::server test("0.0.0.0", test_config);
     test.kill();
 }
