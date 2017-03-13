@@ -11,38 +11,32 @@ AWS link: <http://ec2-35-161-79-255.us-west-2.compute.amazonaws.com:8020/>
 
 ### Also available in the github wiki section along with (very) brief design documentation.
 
-Let's begin!
-
 Please clone our repository using the following command
 
-    git clone --recursive http://github.com/UCLA-CS130/Razzle-Dazzle
+    git clone --recursive https://github.com/UCLA-CS130/Razzle-Dazzle.git
 
 Now, Once you are in the Razzle-Dazzle directory, you can build our web server using the following commands
 
-    make clean //Clean any previous build
+    make clean-all //Clean any previous build
     make //build webserver
     make test //run unit tests on code
     make integration //run integration tests on code
-    make coverage //run 
+    make coverage //run  gcov to see test coverage
 
-
-Wow! Congratulations you (hopefully) just built the web server without any compilation issues. Phew!  
-If not, Damn, That's embarrassing! Look for the kid's hiding behind their laptops right now. 
-
-Now to test the web server, you can power it up using the following 
+Now to test the web server, you can run it using the following command:
 
     ./webserver deploy_config
 
 This should start our server on <http://127.0.0.1:8020>.
 
-This URL above calls out proxy handler, and should show you ucla's homepage.
+This URL above calls out proxy handler, and should show you ucla's homepage (www.ucla.edu).
 
 Some of the different url's you can test are given below:
 
     <http://127.0.0.1:8020/echo> -> echo's request
-    <http://127.0.0.1:8020/static/test.jpg> -> What a pretty ship?
-    <http://127.0.0.1:8020/static/RazzleDazzle.png> -> Did we dazzle you yet?
-    <http://127.0.0.1:8020/status> -> a brief of what's been going on back in the hood
+    <http://127.0.0.1:8020/static/test.jpg> -> Display an image
+    <http://127.0.0.1:8020/static/RazzleDazzle.png> -> Display an image
+    <http://127.0.0.1:8020/status> -> Display information about the status of the webserver
 
 # Special features and how to demo them
 
