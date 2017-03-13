@@ -23,15 +23,6 @@ TEST(ServerTest, BadAddrAndEmptyConfig)
   EXPECT_ANY_THROW(http::server::server test_server("1234567.0.", empty_config));
 }
 
-TEST(ServerTest, GoodAddrAndEmptyConfig) 
-{
-  NginxConfig empty_config;
-
-  EXPECT_ANY_THROW(http::server::server test_server("127.0.0.1", empty_config));
-  EXPECT_ANY_THROW(http::server::server test_server("127.0.0.1", empty_config));
-  EXPECT_ANY_THROW(http::server::server test_server("127.0.0.1", empty_config));
-}
-
 TEST(ServerTest, NotGoodConfigs)
 {
     NginxConfig test_config = retGoodConfig();
