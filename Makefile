@@ -42,7 +42,7 @@ deploy:
 	rm -f binary.tar
 
 clean:
-	rm -f webserver
+	rm -f webserver compressionTest.txt
 
 clean-tests:
 	for x in *_test; do rm -f $$x; done
