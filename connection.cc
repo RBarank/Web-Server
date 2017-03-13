@@ -62,7 +62,7 @@ void connection::handle_read()
           return;
         std::string first = "";
         int i = 0;
-        while (bufferString[i] == " ")
+        while (bufferString[i] == ' ')
         {
             first += bufferString[i];
             i++;

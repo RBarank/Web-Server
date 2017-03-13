@@ -14,6 +14,52 @@ namespace http {
 
       ProxyHandler proxy_handler;
 
+		TEST(ProxyHandlerInit, NoHostName) {
+			ProxyHandler handler;
+			std::string uri_prefix = "/proxy1";
+			NginxConfig config;
+
+			config.statements_.emplace_back(new NginxConfigStatement);
+			config.statements_.back().get()->tokens_.push_back("port");
+			config.statements_.back().get()->tokens_.push_back("80");
+
+			EXPECT_EQ(handler.Init(uri_prefix, config), 
+				      RequestHandler::NOT_OK);
+		}
+
+		TEST(ProxyHandlerInit, NoPort) {
+			ProxyHandler handler;
+			std::string uri_prefix = "/proxy1";
+			NginxConfig config;
+
+			config.statements_.emplace_back(new NginxConfigStatement);
+			config.statements_.back().get()->tokens_.push_back("host");
+			config.statements_.back().get()->tokens_.push_back("www.ucla.edu");
+
+			EXPECT_EQ(handler.Init(uri_prefix, config), 
+				      RequestHandler::NOT_OK);
+		}
+
+		TEST(ProxyHandlerInit, BadPortNum) {
+			ProxyHandler handler;
+			std::string uri_prefix = "/proxy1";
+			NginxConfig config;
+
+			config.statements_.emplace_back(new NginxConfigStatement);
+			config.statements_.back().get()->tokens_.push_back("port");
+			config.statements_.back().get()->tokens_.push_back("not a valid number");
+
+			EXPECT_EQ(handler.Init(uri_prefix, config), 
+				      RequestHandler::NOT_OK);
+		}
+
+		TEST(ProxyHandlerInit, EmptyConfig) {
+			ProxyHandler handler;
+			std::string uri_prefix = "/proxy1";
+			NginxConfig config;
+			EXPECT_EQ(handler.Init(uri_prefix, config), 
+				      RequestHandler::NOT_OK);
+		}
 		//added a fixture for common variables 
 		class ProxyHandlerTest:public::testing::Test
 		{
@@ -75,5 +121,5 @@ namespace http {
 			auto init_status = proxy_handler.Init("/", out_config);
 			EXPECT_EQ(init_status, RequestHandler::Status::NOT_OK);
 		}
-   }//server
+	}//server
 }//http
