@@ -1,7 +1,9 @@
-Roi Barank, Abineet Das Sharma, Suchit Panjiyar
-Team Razzle-Dazzle
-UCLA CS 130: Software Engineering
-Winter 2017
+This project is a continuation of a group project I worked on for UCLA's CS 130 class in winter of 2017. 
+The class was taught by four visiting software engineers from Google: Greg Billock, James Farrell, Trevor Fouchier, and Josh Hyman.
+The original class project can be seen here: https://github.com/UCLA-CS130/Razzle-Dazzle
+Credit for implementing the original class project goes to: Abineet Das Sharma and Suchit Panjiyar, who were my team members; and Po-Hsun Wu, 
+Yanzun Huang, and Evelyn Chen who were members of a separate team that contributed to our team's code for one of the class's asignments.
+
 
 Source Code Layout:
   1. The server is primarily run by two classes, namely server and connection. The server class takes in a semi-processed config file in the form of child blocks. The server constructor parses these blocks to pull out the port number and initialize a map of request handlers requested by the config file. It then starts up the server on the desired port, and initializes a connection, that processes everything that is sent to the server over the socket.
@@ -33,7 +35,8 @@ Instructions:
 	-Run "make push_depoy" to push the docker image to AWS and run the docker image.
 	( Please request pem file or push to your EC2 server).
 
-Parser for nginx config files inspired by https://github.com/fatiherikli/nginxparser.
+
+Parser for nginx config files written by James Farrell and inspired by https://github.com/fatiherikli/nginxparser.
 
 Includes code from googletest-1.7.0. See https://code.google.com/p/googletest/
 
