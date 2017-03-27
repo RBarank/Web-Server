@@ -1,8 +1,25 @@
 This project is a continuation of a group project I worked on for UCLA's CS 130 class in winter of 2017. 
-The class was taught by four visiting software engineers from Google: Greg Billock, James Farrell, Trevor Fouchier, and Josh Hyman.
+The class was taught by four visiting software engineers from Google: Greg Billock, James Farrell, Trevor Foucher, and Josh Hyman.
 The original class project can be seen here: https://github.com/UCLA-CS130/Razzle-Dazzle
-Credit for implementing the original class project goes to: Abineet Das Sharma and Suchit Panjiyar, who were my team members; and Po-Hsun Wu, 
-Yanzun Huang, and Evelyn Chen who were members of a separate team that contributed to our team's code for one of the class's asignments.
+Credit for helping me implement the original class project goes to: Abineet Das Sharma and Suchit Panjiyar, who were my team members; and Po-Hsun Wu, 
+Yanzun Huang, and Evelyn Chen, who were members of a separate team that contributed to my team's code for one of the class's asignments.
+
+Installation:
+	Supported systems: Ubuntu 14.04
+	
+
+
+Usage:
+1. Running
+2. Tests
+3. Deployment
+
+
+
+
+
+
+Project Organization:
 
 
 Source Code Layout:
