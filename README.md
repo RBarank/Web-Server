@@ -31,16 +31,27 @@ To get an analysis of the test coverage, run `make coverage`.
 
 ### Deployment:
 To build the server inside a Docker container, issue the command `make deploy`.
-To deploy the server to AWS, issue the command `make push_deploy`.
+To deploy the server to AWS, change the Makefile's 'push_deploy' target so that it uses your AWS .pem key file and pushes to the url of your AWS server. Then issue the command `make push_deploy`.
 
 ## Project Organization
-
+  
 
 
 ## Source Code Layout
 
+1. The server is primarily run by two classes, namely server and connection. The server class takes in a semi-processed config file in the form of child blocks. The server constructor parses these blocks to pull out the port number and initialize a map of request handlers requested by the config file. It then starts up the server on the desired port, and initializes a connection, that processes everything that is sent to the server over the socket.
+  
+  2. The server constructs a unordered_map from uri_prefixes to RequestHandler pointers of the correct type. These are used by the connection to point requests to the correct handler type. The connection class checks the return status of the HandleRequest of the handler, which if not OK sets response to bad request/file not found depending on the situation.
+  
+  3. All request handlers share a common API and inherit from a RequestHandler class that defines this API. Handlers are created on basis of a prefix matching done between the handler names in the config file and the names of the handlers we have available. 
 
-
+  4. Handlers:
+	-EchoHandler: Echo's back the sent request into the body of the response in plain text.
+	-StaticHandler: Used for serving files. Fetches files on the basis of prefix called. Each prefix matches to a source directory. There is a separate instance of each StaticHandler for each source directory.
+	-StatusHandler: Returns in plain text data about the previous requests received by the server.
+	-NotFoundHandler: Sets response to a 404 Not Found with a standard HTML.
+  -ProxyHandler: Issue requests and parse the responses 
+  
 
 ## Contributions:
 - Abineet Das Sharma and Suchit Panjiyar, who were my team members and who wrote the original project with me
