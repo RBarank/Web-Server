@@ -1,0 +1,4 @@
+This file is solely used to make sure that git tracks this bin directory.
+Git does not track empty directories, and this bin directory can be empty if the webserver and test
+executables have not been built or were deleted. Keeping this file in this directory will 
+ensure that git still tracks this directory.
