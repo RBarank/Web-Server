@@ -1,6 +1,6 @@
 #include "gtest/gtest.h"
-#include "server.hpp"
-#include "config_parser.h"
+#include "../src/server.hpp"
+#include "../src/config_parser.h"
 #include <string>
 
 std::unordered_map<std::string, std::string> test_map;

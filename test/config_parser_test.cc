@@ -1,5 +1,5 @@
 #include "gtest/gtest.h"
-#include "config_parser.h"
+#include "../src/config_parser.h"
 #include <string>
 
 

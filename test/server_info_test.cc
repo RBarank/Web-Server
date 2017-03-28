@@ -1,8 +1,8 @@
 #include "gtest/gtest.h"
-#include "server_info.hpp"
+#include "../src/server_info.hpp"
 #include <string>
 #include <vector>
-#include "response.hpp"
+#include "../src/response.hpp"
 
 
 TEST(ServerInfoTest, all) 

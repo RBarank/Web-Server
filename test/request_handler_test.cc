@@ -1,6 +1,6 @@
 #include "gtest/gtest.h"
-#include "request_handler.hpp"
-#include "static_handler.hpp"
+#include "../src/request_handler.hpp"
+#include "../src/static_handler.hpp"
 #include <string>
 
 namespace http {

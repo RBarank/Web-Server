@@ -1,10 +1,10 @@
 #include "gtest/gtest.h"
-#include "proxy_handler.hpp"
+#include "../src/proxy_handler.hpp"
 #include <vector>
-#include "config_parser.h"
-#include "request_handler.hpp"
-#include "response.hpp"
-#include "request.hpp"
+#include "../src/config_parser.h"
+#include "../src/request_handler.hpp"
+#include "../src/response.hpp"
+#include "../src/request.hpp"
 
 
 //the gibberish on the command line when testing HandleRequest function is the content of the website dumped to the terminal 

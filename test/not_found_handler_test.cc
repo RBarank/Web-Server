@@ -1,5 +1,5 @@
 #include "gtest/gtest.h"
-#include "not_found_handler.hpp"
+#include "../src/not_found_handler.hpp"
 
 
 namespace http {

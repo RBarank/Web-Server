@@ -1,7 +1,7 @@
 #include "gtest/gtest.h"
-#include "static_handler.hpp"
+#include "../src/static_handler.hpp"
 #include <vector>
-#include "config_parser.h"
+#include "../src/config_parser.h"
 
 namespace http {
     namespace server{

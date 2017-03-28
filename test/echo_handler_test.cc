@@ -1,6 +1,6 @@
 #include "gtest/gtest.h"
-#include "echo_handler.hpp"
-#include "request.hpp"
+#include "../src/echo_handler.hpp"
+#include "../src/request.hpp"
 
 namespace http {
     namespace server{

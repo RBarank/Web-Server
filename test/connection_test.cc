@@ -1,5 +1,5 @@
 #include "gtest/gtest.h"
-#include "connection.hpp"
+#include "../src/connection.hpp"
 #include <boost/asio.hpp>
 
 
