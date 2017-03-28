@@ -6,7 +6,7 @@ TEST_DIR = test
 CXX = g++
 CXXFLAGS = -std=c++11 -g -Wall -Werror
 LDFLAGS = -static-libgcc -static-libstdc++ -pthread -Wl,-Bstatic -lboost_system -lboost_regex -lboost_iostreams -lz -lboost_filesystem
-TEST_FLAGS = -fprofile-arcs -ftest-coverage libgtest.a -isystem $(GTEST_DIR)/include $(GTEST_DIR)/src/gtest_main.cc
+TEST_FLAGS = -fprofile-arcs -ftest-coverage $(BIN_DIR)/libgtest.a -isystem $(GTEST_DIR)/include $(GTEST_DIR)/src/gtest_main.cc
 
 SRC_FILES = $(SRC_DIR)/*.cc $(SRC_DIR)/cpp-markdown/*.cpp
 
@@ -50,6 +50,7 @@ clean:
 
 clean-tests:
 	for x in $(BIN_DIR)/*_test; do rm -f $$x; done
+	rm $(BIN_DIR)/libgtest.a $(BIN_DIR)/gtest-all.o
 
 clean-coverage:
 	rm -f $(BIN_DIR)/*gcov $(BIN_DIR)/*gcda $(BIN_DIR)/*gcno $(BIN_DIR)/*.dSYM
@@ -58,8 +59,8 @@ clean-all: clean clean-tests clean-coverage
 
 
 test:
-	g++ -std=c++11 -pthread -c -isystem $(GTEST_DIR)/include -I$(GTEST_DIR) $(GTEST_DIR)/src/gtest-all.cc
-	ar -rv libgtest.a gtest-all.o
+	g++ -std=c++11 -pthread -c -isystem $(GTEST_DIR)/include -I$(GTEST_DIR) $(GTEST_DIR)/src/gtest-all.cc -o $(BIN_DIR)/gtest-all.o
+	ar -rv $(BIN_DIR)/libgtest.a $(BIN_DIR)/gtest-all.o
 
 	$(CXX) $(TEST_DIR)/server_test.cc $(SRC_DIR)/server.cc $(SRC_DIR)/server_info.cc $(SRC_DIR)/config_parser.cc $(SRC_DIR)/connection.cc $(SRC_DIR)/response.cc $(SRC_DIR)/request.cc $(SRC_DIR)/mime-types.cc $(SRC_DIR)/request_handler.cc $(SRC_DIR)/echo_handler.cc $(SRC_DIR)/static_handler.cc $(SRC_DIR)/cpp-markdown/markdown.cpp $(SRC_DIR)/cpp-markdown/markdown-tokens.cpp -o $(BIN_DIR)/server_test $(CXXFLAGS) $(LDFLAGS) $(TEST_FLAGS)
 
@@ -86,7 +87,7 @@ test:
 	$(CXX) $(TEST_DIR)/proxy_handler_test.cc $(SRC_DIR)/proxy_handler.cc $(SRC_DIR)/request_handler.cc $(SRC_DIR)/response.cc $(SRC_DIR)/request.cc $(SRC_DIR)/config_parser.cc $(SRC_DIR)/server_info.cc -o $(BIN_DIR)/proxy_handler_test $(CXXFLAGS) $(LDFLAGS) $(TEST_FLAGS)
 
         # Run all the tests:
-	for x in *_test; do ./$$x; done
+	for x in $(BIN_DIR)/*_test; do $$x; done
 
 integration: all
 	python $(TEST_DIR)/integration.py
