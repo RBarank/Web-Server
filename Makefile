@@ -40,13 +40,13 @@ deploy:
 	rm -f binary.tar
 
 clean:
-	rm -f webserver compressionTest.txt
+	rm webserver compressionTest.txt
 
 clean-tests:
-	for x in *_test; do rm -f $$x; done
+	rm *_test
 
 clean-coverage:
-	rm -f *gcov *gcda *gcno *.dSYM
+	rm *.gcov *.gcda *.gcno *.dSYM
 
 clean-all: clean clean-tests clean-coverage
 
