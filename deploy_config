@@ -3,7 +3,7 @@
 port 8020;  # This is also a comment.
 
 path /static StaticHandler {
-  root /test_folder;
+  root /static;
 }
 
 path /echo EchoHandler {}
