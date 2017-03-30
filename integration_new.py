@@ -7,9 +7,10 @@ from multiprocessing import Process
 from time import sleep
 
 
+PROXY_CONFIG_NAME = "config_file"
+
 def threadExec():
 	subprocess.call(["./webserver", "config_file"])
-
 
 def multi_thread_check():
 	req = ["GET /echo HTTP/1.1", "Host: localhost:3000", "Connection: keep-alive", "Upgrade-Insecure-Requests: 1"]
@@ -30,7 +31,6 @@ def multi_thread_check():
 	connection1.write("Accept: */*\r\n\r\n")
 	res1 = connection1.read_all()
 
-
 	if res1 != res2:
 		print "Same requests are giving different responses"
 		exit(4)
@@ -38,7 +38,6 @@ def multi_thread_check():
 	 	print "Multi threading tests passed."
 	 	print "The two connections give the same response."
 
-PROXY_CONFIG_NAME = "config_file"
 
 def proxyThreadExec():
     subprocess.call(["./webserver", PROXY_CONFIG_NAME])
@@ -66,10 +65,9 @@ def proxyTest():
     print "Proxy integration test passed!"
 
 
-
+### BEGIN TESTS
 serverProcess = Process(target=threadExec)
 serverProcess.start()
-
 sleep(5)
 
 
@@ -120,6 +118,7 @@ print "redirect test passed!"
 
 
 print "Integration Test Passed!"
+
 
 print "Shutting down web server"
 subprocess.call(["fuser", "-k", "3000/tcp"])
