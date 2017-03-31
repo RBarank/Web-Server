@@ -43,7 +43,7 @@ clean:
 	rm webserver compressionTest.txt
 
 clean-tests:
-	rm *_test
+	rm *_test libgtest.a gtest-all.o
 
 clean-coverage:
 	rm *.gcov *.gcda *.gcno *.dSYM

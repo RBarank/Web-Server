@@ -2,9 +2,6 @@
 #include "response.hpp"
 #include <string>
 
-namespace http{
-  namespace server{
-
 
 TEST(ResponseTest2, EmptyResponse) 
 {
@@ -154,6 +151,3 @@ TEST(Response, Compression)
   EXPECT_NO_THROW(test_response.ApplyGzip());
 }
     
-
-  } // namespace server
-} // namespace http

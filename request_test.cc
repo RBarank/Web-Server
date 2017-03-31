@@ -2,9 +2,6 @@
 #include "request.hpp"
 #include <string>
 
-namespace http{
-  namespace server{
-
 
 TEST(RequestTest, EmptyRequest) 
 {
@@ -59,7 +56,3 @@ TEST(RequestTest, get_header)
   
   EXPECT_EQ(request->get_header("Accept-Encoding"), "gzip, deflate");
 }
-
-
-  } // namespace server
-} // namespace http
