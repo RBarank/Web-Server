@@ -1,6 +1,11 @@
 # This is a comment.
 
-port 8020;  # This is also a comment.
+port 8020;  # This specified the port number of the server.
+
+threads 8; # This specified the number of threads the server will create. Each thread will have it's own io service.
+
+# Default response handler if no handlers match.
+default NotFoundHandler {}
 
 path /static StaticHandler {
   root /static;
@@ -8,17 +13,12 @@ path /static StaticHandler {
 
 path /echo EchoHandler {}
 
-# Default response handler if no handlers match.
-default NotFoundHandler {}
-
 path /status StatusHandler {}
 
 path /404 NotFoundHandler {}
 
-threads 8;
-
-#url for remote host should be in the form "http://url"
 path / ProxyHandler {
-    remote_host http://www.ucla.edu;
+    remote_host http://www.ucla.edu; # url for remote host should be in the form "http://url"
     remote_port 80;
 }
+
