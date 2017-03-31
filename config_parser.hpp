@@ -1,5 +1,5 @@
-#ifndef CONFIG_PARSER_H
-#define CONFIG_PARSER_H
+#ifndef CONFIG_PARSER_HPP
+#define CONFIG_PARSER_HPP
 
 // An nginx config file parser.
 
@@ -64,4 +64,4 @@ class NginxConfigParser {
 };
 
 
-#endif // CONFIG_PARSER_H
+#endif // CONFIG_PARSER_HPP
