@@ -9,7 +9,29 @@ from time import sleep
 
 PROXY_CONFIG_NAME = "config_file"
 
-def threadExec():
+def create_test_config():
+        if os.path.isfile("./test_config"):
+                print "A file called \"test_config\" already exists. Please delete or rename it and try again."
+                exit(1)
+
+
+def echo_test():
+        req = requests.get('http://localhost:3000/echo/')
+
+        if req.status_code != 200:
+                print "Error: Wrong Status Code."
+                exit(1)
+        else:
+                print "Status Code Correct: 200"
+                
+        if req.headers['content-type'] != 'text/plain':
+                print "Incorrect content-type"
+                exit(2)
+        else:
+                print "Content Type Correct: text/plain"
+
+
+def thread_exec():
 	subprocess.call(["./webserver", "config_file"])
 
 def multithread_test():
@@ -39,12 +61,13 @@ def multithread_test():
 	 	print "The two connections give the same response."
 
 
-def proxyThreadExec():
+def proxy_thread_exec():
     subprocess.call(["./webserver", PROXY_CONFIG_NAME])
+
 
 def proxy_test():
     print "Proxy integration test:"
-    proxyProcess = Process(target=proxyThreadExec)
+    proxyProcess = Process(target=proxy_thread_exec)
     proxyProcess.start()
     sleep(0.01)
 
@@ -64,27 +87,13 @@ def proxy_test():
     proxyProcess.terminate()
     print "Proxy integration test passed!"
 
-def echo_test():
-        req = requests.get('http://localhost:3000/echo/')
-
-        if req.status_code != 200:
-                print "Error: Wrong Status Code."
-                exit(1)
-        else:
-                print "Status Code Correct: 200"
-                
-        if req.headers['content-type'] != 'text/plain':
-                print "Incorrect content-type"
-                exit(2)
-        else:
-                print "Content Type Correct: text/plain"
 
 def proxy_redirect_test():
-        server = subprocess.Popen(["./webserver", "config_proxy302"])
+        server = subprocess.Popen(["./webserver", "config_file"])
         sleep(2)
         
         direct = subprocess.call(["curl", "-s", "http://ucla.edu", "-o", "result_direct.txt"])
-        proxy = subprocess.call(["curl", "-s", "http://localhost:8082/", "-o", "result_proxy.txt"])
+        proxy = subprocess.call(["curl", "-s", "http://localhost:3000/", "-o", "result_proxy.txt"])
         sleep(10)
         
         diffOutcome = subprocess.Popen(["diff", "-u", "result_direct.txt", "result_proxy.txt"], stdout = subprocess.PIPE)
@@ -103,7 +112,7 @@ def proxy_redirect_test():
 
 
 ### BEGIN TESTS
-serverProcess = Process(target=threadExec)
+serverProcess = Process(target=thread_exec)
 serverProcess.start()
 sleep(5)
 
