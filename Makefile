@@ -70,7 +70,7 @@ test:
         # Run all the tests:
 	for x in *_test; do ./$$x; done
 
-integration: all
+integration:
 	python integration.py
 
 coverage: test

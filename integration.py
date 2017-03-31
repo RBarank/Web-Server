@@ -145,8 +145,5 @@ print "Integration Test Passed!"
 print "Shutting down web server"
 subprocess.call(["fuser", "-k", "3000/tcp"])
 
-print "Cleaning previous build"
-subprocess.call(["make", "clean"])
-
 serverProcess.terminate()
 exit(0)
