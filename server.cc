@@ -154,7 +154,7 @@ void server::do_accept()
 				 }
 			       if (!ec)
 				 {
-				   std::make_shared<connection>(std::move(socket_), uri_to_handler_map, uri_to_handler_name)->start();
+				   std::make_shared<Connection>(std::move(socket_), uri_to_handler_map, uri_to_handler_name)->Start();
 				 }
 			       do_accept();
 			     });

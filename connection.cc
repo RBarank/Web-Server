@@ -13,18 +13,18 @@
 #include <boost/bind.hpp>
 
 
-connection::connection(boost::asio::ip::tcp::socket socket, const std::unordered_map<std::string, 
-		       RequestHandler*>& pathMap, const std::unordered_map<std::string, std::string>& nameMap)
-  : socket_(std::move(socket)), pathMap_(pathMap), nameMap_(nameMap)
+Connection::Connection(boost::asio::ip::tcp::socket socket, const std::unordered_map<std::string, 
+		       RequestHandler*>& path_map, const std::unordered_map<std::string, std::string>& name_map)
+  : socket_(std::move(socket)), path_map_(path_map), name_map_(name_map)
 {
   
 }
 
-void connection::start()
+void Connection::Start()
 {
   try 
     {
-      do_read();
+      DoRead();
     }
   catch(boost::system::error_code &e) 
     {
@@ -32,39 +32,38 @@ void connection::start()
     }
 }
 
-void connection::stop()
+void Connection::Stop()
 {
   socket_.close();
 }
 
-void connection::do_read()
+void Connection::DoRead()
 {
   auto self(shared_from_this());
 
-  // printf("IN CONNECTION::DO_READ\n");
   // Clear content buffer before every read
-  memset(request_buffer, 0, MAX_REQUEST_SIZE);
+  memset(request_buffer_, 0, MAX_REQUEST_SIZE);
  
   boost::asio::async_read_until(socket_, buffer_, "\r\n\r\n",
-				boost::bind(&connection::handle_read, shared_from_this()));
+				boost::bind(&Connection::HandleRead, shared_from_this()));
 }
 
-void connection::handle_read()
+void Connection::HandleRead()
 {
   //size_t request_buffer_size = bytes;
   std::ostringstream ss;
   ss << &buffer_;
-  std::string bufferString = ss.str();
-  std::cout << "Buffer string : " << bufferString << "\n";
-  if(bufferString == "")
+  std::string buffer_string = ss.str();
+  std::cout << "Buffer String : " << buffer_string << "\n";
+  if(buffer_string == "")
     {
       return;
     }
   std::string first = "";
   int i = 0;
-  while (bufferString[i] != ' ')
+  while (buffer_string[i] != ' ')
     {
-      first += bufferString[i];
+      first += buffer_string[i];
       i++;
     }
   if (!(first == "GET" || first == "POST" || first == "PUT" || first == "DELETE"))
@@ -72,80 +71,71 @@ void connection::handle_read()
       std::cout << "Incomplete Request received!\n";
       return;
     }
-  std::unique_ptr<Request> currentRequest(Request::Parse(bufferString));
-  printf("IN CONNECTION::DO_READ ASYNC_READ_SOME\n");
-  std::string request_base;
-  request_base = currentRequest->uri();
   
-  Response* resp = new Response;
-  RequestHandler* handler = GetRequestHandler(request_base);
+  std::unique_ptr<Request> request(Request::Parse(buffer_string));  
+  std::string request_uri;
+  request_uri = request->uri();
   
-  std::cout << currentRequest->uri() << std::endl;
-  //std::cout << request_base << std::endl;
+  Response* response = new Response;
+  RequestHandler* handler = GetRequestHandler(request_uri);
+  
   if (handler != nullptr)
     {
-      RequestHandler::Status ret = handler->HandleRequest(*currentRequest, resp);
+      RequestHandler::Status ret = handler->HandleRequest(*request, response);
       
       if(ret == RequestHandler::Status::FILE_NOT_FOUND)
 	{
-	  request_base = "/404";
-	  pathMap_[request_base]->HandleRequest(*currentRequest, resp);
+	  request_uri = "/404";
+	  path_map_[request_uri]->HandleRequest(*request, response);
 	}
-      RequestInfo req_info_;
-      req_info_.url = currentRequest->uri();
-      req_info_.rc = resp->ret_response_code();
-      HandlerInfo handler_info_;
-      handler_info_.type_of_handler = nameMap_[request_base];
-      handler_info_.url_prefix = request_base;
-      //std::cout << "TTTTTT\n" << handler_info_.type_of_handler;
+      RequestInfo request_info;
+      request_info.url = request->uri();
+      request_info.rc = response->ret_response_code();
+      HandlerInfo handler_info;
+      handler_info.type_of_handler = name_map_[request_uri];
+      handler_info.url_prefix = request_uri;
+
       ServerInfo::getInstance().lock();
-      ServerInfo::getInstance().append_request(req_info_);
-      ServerInfo::getInstance().append_handler(handler_info_);
+      ServerInfo::getInstance().append_request(request_info);
+      ServerInfo::getInstance().append_handler(handler_info);
       ServerInfo::getInstance().unlock();
     }
 
   // if request accepts gzip encoding, pass response to the gzip-compression function
-  if (currentRequest->accept_gzip())
+  if (request->accept_gzip())
     {
-      std::ofstream myfile;
-      myfile.open ("compressionTest.txt");
-      myfile << "ORIGINAL RESPONSE BODY: " << std::endl << resp->body() << std::endl;
-      resp->ApplyGzip();
-      myfile << "COMPRESSED RESPONSE BODY: " << std::endl << resp->body() << std::endl;
-      myfile.close();
+      response->ApplyGzip();
     }
 
-  std::string respString = resp->ToString();
-  boost::asio::write(socket_, boost::asio::buffer(respString, respString.size()));
+  std::string response_string = response->ToString();
+  boost::asio::write(socket_, boost::asio::buffer(response_string, response_string.size()));
 }
     
-void connection::do_write()
+void Connection::DoWrite()
 {
   auto self(shared_from_this());
   
-  boost::asio::async_write(socket_, boost::asio::buffer(request_buffer),
+  boost::asio::async_write(socket_, boost::asio::buffer(request_buffer_),
 			   [this, self](boost::system::error_code ec, std::size_t)
 			   {
 			     if (!ec)
 			       {
 				 boost::system::error_code ignored_ec;
-				 stop();
+				 Stop();
 			       }
 			   });
 }
 
-RequestHandler* connection::GetRequestHandler(const std::string& path)
+RequestHandler* Connection::GetRequestHandler(const std::string& path)
 {
   std::string temp_path = path;
   while(temp_path.length() > 0) 
     {
-      for(auto& handlerPair: pathMap_) 
+      for(auto& handler_pair: path_map_) 
 	{	
-	  //std::cout<< temp_path<<std::endl;
-	  //std::cout<< handlerPair.first<<std::endl;
-	  if (temp_path == handlerPair.first) 
+	  if (temp_path == handler_pair.first) 
 	    {
-	      return handlerPair.second;
+	      return handler_pair.second;
             }
      	}
       std::size_t slash_found = temp_path.find_last_of("/");

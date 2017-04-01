@@ -4,25 +4,26 @@
 
 
 
-boost::asio::io_service io_service_;
-boost::asio::ip::tcp::socket socket_(io_service_);
+boost::asio::io_service test_io_service;
+boost::asio::ip::tcp::socket test_socket(test_io_service);
 std::unordered_map<std::string, RequestHandler*> test_map;
-std::unordered_map<std::string, std::string> nameMap;
+std::unordered_map<std::string, std::string> name_map;
 
-void startConnection(connection& test_connection)
+void StartConnection(Connection& test_connection)
 {
-    test_connection.start();
+    test_connection.Start();
 }
 
-void stopConnection(connection& test_connection)
+void StopConnection(Connection& test_connection)
 {
-    test_connection.stop();
+    test_connection.Stop();
 }
 
 
-TEST(ConnectionTest, constructor_tests) {
-    connection test_connection(std::move(socket_), test_map, nameMap);
-    EXPECT_FALSE(socket_.is_open());
-    EXPECT_ANY_THROW(startConnection(test_connection));
-    EXPECT_NO_THROW(stopConnection(test_connection));
+TEST(ConnectionTest, Constructor_Tests) 
+{
+    Connection test_connection(std::move(test_socket), test_map, name_map);
+    EXPECT_FALSE(test_socket.is_open());
+    EXPECT_ANY_THROW(StartConnection(test_connection));
+    EXPECT_NO_THROW(StopConnection(test_connection));
 }
