@@ -10,25 +10,27 @@
 #include <thread>
 
 
-server* s;
+Server* s;
 
-void checkChange(char* inputFile)
+void CheckChange(char* input_file)
 {
-  std::time_t last = boost::filesystem::last_write_time(inputFile);
-  while (last == boost::filesystem::last_write_time(inputFile)) {}
-  s->kill();
+  std::time_t last = boost::filesystem::last_write_time(input_file);
+  while (last == boost::filesystem::last_write_time(input_file)) 
+    {
+    }
+  s->Kill();
 }
 
-void runServer(char* inputFile)
+void RunServer(char* input_file)
 {
   NginxConfigParser config_parser;
   NginxConfig config;
-  config_parser.Parse(inputFile, &config);
+  config_parser.Parse(input_file, &config);
   
-  std::thread t1(checkChange, inputFile);
+  std::thread t1(CheckChange, input_file);
   
-  s = new server("0.0.0.0", config);
-  s->run();
+  s = new Server("0.0.0.0", config);
+  s->Run();
   t1.join();
 }
 
@@ -49,7 +51,7 @@ int main(int argc, char* argv[])
   while (true)
     {
       s = nullptr;
-      runServer(argv[1]);
+      RunServer(argv[1]);
       delete s;
     }
   

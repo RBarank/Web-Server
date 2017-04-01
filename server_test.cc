@@ -5,7 +5,7 @@
 
 std::unordered_map<std::string, std::string> test_map;
 
-NginxConfig retGoodConfig()
+NginxConfig RetGoodConfig()
 {
   NginxConfigParser parser;
   NginxConfig test_config;
@@ -15,8 +15,8 @@ NginxConfig retGoodConfig()
 
 TEST(ServerTest, GoodConfigs)
 {
-  NginxConfig test_config = retGoodConfig();
-  EXPECT_NO_THROW(server test_server("127.0.0.1", test_config));
-  server test("0.0.0.0", test_config);
-  test.kill();
+  NginxConfig test_config = RetGoodConfig();
+  EXPECT_NO_THROW(Server test_server("127.0.0.1", test_config));
+  Server test("0.0.0.0", test_config);
+  test.Kill();
 }

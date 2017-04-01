@@ -13,30 +13,29 @@
 
 
 /// The top-level class of the HTTP server.
-class server
+class Server
 {
 public:
-  server(const server&) = delete;
-  server& operator=(const server&) = delete;
+  Server(const Server&) = delete;
+  Server& operator=(const Server&) = delete;
   
-  /// Construct the server to listen on the specified TCP address and port, and
+  /// Construct the Server to listen on the specified TCP address and port, and
   /// serve up files from the given directory.
-  explicit server(const std::string& address, const NginxConfig& config);
+  explicit Server(const std::string& address, const NginxConfig& config);
   
-  // Get Server configuration information from the config
-  bool get_config_info(const NginxConfig& config);
+  // Get Server configuration information from the Nginx config
+  bool GetConfigInfo(const NginxConfig& config);
   
-  /// Run the server's io_service loop.
-  void run();
+  /// Run the Server's io_service loop.
+  void Run();
     
-  void kill();
+  void Kill();
     
 private:
   /// Perform an asynchronous accept operation.
-  void do_accept();
+  void DoAccept();
   
-  /// Wait for a request to stop the server.
-  // void do_await_stop();
+  void SetThreads(const NginxConfig& config);
 
   /// The io_service used to perform asynchronous operations.
   boost::asio::io_service io_service_;
@@ -47,12 +46,10 @@ private:
   /// The next socket to be accepted.
   boost::asio::ip::tcp::socket socket_;
 
-  int portno_;
-  std::unordered_map<std::string, RequestHandler*> uri_to_handler_map;
-  std::unordered_map<std::string, std::string> uri_to_handler_name;
-  
-  void setThreads(const NginxConfig& config);
-  int n_threads;
+  int port_number_;
+  std::unordered_map<std::string, RequestHandler*> uri_to_handler_map_;
+  std::unordered_map<std::string, std::string> uri_to_handler_name_;
+  int num_threads_;
   std::vector<std::shared_ptr<std::thread>> threads_;
   
 };

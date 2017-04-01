@@ -9,43 +9,37 @@ const int MAX_PORT_NO = 65535;
 const int MIN_PORT_NO = 1;
 
         
-server::server(const std::string& address, const NginxConfig& config)
+Server::Server(const std::string& address, const NginxConfig& config)
   : io_service_(),
     acceptor_(io_service_),
     socket_(io_service_),
-    portno_(-1)
+    port_number_(-1)
 {
   
   printf("IN SERVER CONSTRUCTOR\n");
   
-  if (!get_config_info(config))
+  if (!GetConfigInfo(config))
     {
       printf("Config file incorrect. Waiting for a correct config file!\n");
       //throw boost::system::errc::make_error_code(boost::system::errc::invalid_argument);
-      return ;
+      return;
     }
   
-  setThreads(config);
+  SetThreads(config);
   
   // Open the acceptor with the option to reuse the address (i.e. SO_REUSEADDR).
-  //printf("WE GOT HERE");
   boost::asio::ip::tcp::resolver resolver(io_service_);
-  //printf("WE GOT HERE1");
-  //boost::asio::ip::tcp::endpoint endpoint = *resolver.resolve({address, std::to_string(portno_)});
-  boost::asio::ip::tcp::endpoint endpoint(boost::asio::ip::tcp::v4(), portno_);
-  //printf("WE GOT HERE2");
+  boost::asio::ip::tcp::endpoint endpoint(boost::asio::ip::tcp::v4(), port_number_);
   acceptor_.open(endpoint.protocol());
-  //printf("WE GOT HERE3");
   acceptor_.set_option(boost::asio::ip::tcp::acceptor::reuse_address(true));
-  //printf("WE GOT HERE4");
   acceptor_.bind(endpoint);
   acceptor_.listen();
   
   
-  do_accept();
+  DoAccept();
 }
 
-bool server::get_config_info(const NginxConfig& config)
+bool Server::GetConfigInfo(const NginxConfig& config)
 {
   
   for (const auto& statement : config.statements_)
@@ -62,13 +56,13 @@ bool server::get_config_info(const NginxConfig& config)
 	      if (!isdigit(port_string[i]))
 		{
 		  return false;
-		    }
+		}
 	    }
 	  
-	  portno_ = std::stoi(port_string);
+	  port_number_ = std::stoi(port_string);
 	  
 	  // port number not in valid range   
-	  if(portno_ < MIN_PORT_NO || portno_ > MAX_PORT_NO)
+	  if(port_number_ < MIN_PORT_NO || port_number_ > MAX_PORT_NO)
 	    {
 	      return false;
 	    }
@@ -79,8 +73,7 @@ bool server::get_config_info(const NginxConfig& config)
 	  
 	  std::string uri_prefix = statement->tokens_[1];
 	  std::string handler_name = statement->tokens_[2];
-	  
-	  //std::unique_ptr<RequestHandler> handler(RequestHandler::CreateByName(handler_name));
+       
 	  RequestHandler* handler = RequestHandler::CreateByName(handler_name);
 	  
 	  // create by name will return a nullptr if it can't find a handler with this name or there is some error
@@ -99,14 +92,14 @@ bool server::get_config_info(const NginxConfig& config)
 	     return false;
 	     }*/
 	  
-	  //uri_to_handler_map[uri_prefix] = std::move(handler);
-	  uri_to_handler_map[uri_prefix] = handler;
-	  uri_to_handler_name[uri_prefix] = handler_name;
+	  uri_to_handler_map_[uri_prefix] = handler;
+	  uri_to_handler_name_[uri_prefix] = handler_name;
 	}
     }
+
   // if the port number is uninitialized or the handler map is empty, the server should not start
   // we need to to do this check in case we don't come across any config blocks with "port" or "path" terms
-  if (portno_ == -1 || uri_to_handler_map.empty())
+  if (port_number_ == -1 || uri_to_handler_map_.empty())
     {
       return false;
     }
@@ -114,32 +107,33 @@ bool server::get_config_info(const NginxConfig& config)
   return true;
 }
 
-void server::setThreads(const NginxConfig& config)
+void Server::SetThreads(const NginxConfig& config)
 {
   for (const auto& statement : config.statements_)
     {
       if (statement->tokens_[0] == "threads" && statement->tokens_.size() == 2)
 	{
-	  //std::cout << statement->tokens_[1] << "\n";
-	  n_threads = std::stoi(statement->tokens_[1]);
-	  return ;
+	  num_threads_ = std::stoi(statement->tokens_[1]);
+	  return;
 	}
     }
-  n_threads = 4;
+  num_threads_ = 4; // default number of threads
 }
 
-void server::run()
+void Server::Run()
+{
+  for(int i = 0; i < num_threads_; i++)
     {
-      for(int i = 0; i < n_threads; i++){
-	std::shared_ptr<std::thread> thread_(new std::thread(boost::bind(&boost::asio::io_service::run, &io_service_)));
-	threads_.push_back(thread_);
-      }
-      for(int i = 0; i < n_threads ; i++){
-	threads_[i] -> join();
-      }
+      std::shared_ptr<std::thread> thread(new std::thread(boost::bind(&boost::asio::io_service::run, &io_service_)));
+      threads_.push_back(thread);
     }
+  for(int i = 0; i < num_threads_; i++)
+    {
+      threads_[i] -> join();
+    }
+}
 
-void server::do_accept()
+void Server::DoAccept()
 {
   try 
     {
@@ -154,9 +148,9 @@ void server::do_accept()
 				 }
 			       if (!ec)
 				 {
-				   std::make_shared<Connection>(std::move(socket_), uri_to_handler_map, uri_to_handler_name)->Start();
+				   std::make_shared<Connection>(std::move(socket_), uri_to_handler_map_, uri_to_handler_name_)->Start();
 				 }
-			       do_accept();
+			       DoAccept();
 			     });
     } 
   catch (boost::system::error_code const &e) 
@@ -166,7 +160,7 @@ void server::do_accept()
   
 }
 
-void server::kill()
+void Server::Kill()
 {
   acceptor_.close();
   io_service_.stop();
