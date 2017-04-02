@@ -15,9 +15,13 @@ public:
 		      const NginxConfig& config);
   virtual Status HandleRequest(const Request& request,
 			       Response* response);
+
+private:
+  // Gets status info about server and returns it in string form.
+  std::string CreateStatusString() const;
 };
 
 REGISTER_REQUEST_HANDLER(StatusHandler);
 
 
-#endif // ECHO_HANDLER_HPP
+#endif // STATUS_HANDLER_HPP
