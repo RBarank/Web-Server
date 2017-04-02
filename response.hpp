@@ -29,17 +29,29 @@ public:
     SERVICE_UNAVAILABLE = 503
   };
   
+  ResponseCode GetResponseCode() const; 
+  std::string GetBody() const;
+
   void SetStatus(const ResponseCode response_code);
-  void AddHeader(const std::string& header_name, const std::string& header_value);
   bool SetHeader(const std::string header_name, const std::string header_value);
   void SetBody(const std::string& body);
+
+  void AddHeader(const std::string& header_name, const std::string& header_value);
+
+  // Converts the response to a single string and returns that string.
+  // The string is created in this order: response code + headers + body
   std::string ToString() const;
+
+  // Creates and returns a response whose data members are empty
+  // except that its response code is equal to status
   static Response CreateStockResponse(const ResponseCode status);
-  ResponseCode ReturnResponseCode() const; 
-  std::string GetBody() const;
-  void ApplyGzip();
-private:
-  
+
+  // Uses Boost's gzip interface to compress the response's body.
+  // The response's original body is overwritten with the compressed version.
+  // The "Content-Encoding" header is added with the value "gzip".
+  void ApplyGzip(); 
+
+private:  
   using Headers = std::vector<std::pair<std::string, std::string>>;
   Headers headers_;
   std::string body_;

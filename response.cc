@@ -149,7 +149,7 @@ std::string Response::GetBody() const
   return body_;
 }
 
-Response::ResponseCode Response::ReturnResponseCode() const
+Response::ResponseCode Response::GetResponseCode() const
 {
   return response_code_;
 }
