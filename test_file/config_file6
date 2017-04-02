@@ -9,7 +9,7 @@ server {
 
     path /static {
           action static;
-          root /test_folder;
+          root /static;
           add extra stuff, shouldn't crash;
     }
 }

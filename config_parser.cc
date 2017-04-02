@@ -15,7 +15,7 @@
 #include <string>
 #include <vector>
 
-#include "config_parser.h"
+#include "config_parser.hpp"
 
 std::string NginxConfig::ToString(int depth) {
   std::string serialized_config;
