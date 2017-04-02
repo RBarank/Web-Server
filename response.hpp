@@ -11,32 +11,32 @@ class Response
 public:
   enum ResponseCode {
     // Define your HTTP response codes here.
-    ok = 200,
-    created = 201,
-    accepted = 202,
-    no_content = 204,
-    multiple_choices = 300,
-    moved_permanently = 301,
-    moved_temporarily = 302,
-    not_modified = 304,
-    bad_request = 400,
-    unauthorized = 401,
-    forbidden = 403,
-    not_found = 404,
-    internal_server_error = 500,
-    not_implemented = 501,
-    bad_gateway = 502,
-    service_unavailable = 503
+    OK = 200,
+    CREATED = 201,
+    ACCEPTED = 202,
+    NO_CONTENT = 204,
+    MULTIPLE_CHOICES = 300,
+    MOVED_PERMANENTLY = 301,
+    MOVED_TEMPORARILY = 302,
+    NOT_MODIFIED = 304,
+    BAD_REQUEST = 400,
+    UNAUTHORIZED = 401,
+    FORBIDDEN = 403,
+    NOT_FOUND = 404,
+    INTERNAL_SERVER_ERROR = 500,
+    NOT_IMPLEMENTED = 501,
+    BAD_GATEWAY = 502,
+    SERVICE_UNAVAILABLE = 503
   };
   
   void SetStatus(const ResponseCode response_code);
   void AddHeader(const std::string& header_name, const std::string& header_value);
   bool SetHeader(const std::string header_name, const std::string header_value);
   void SetBody(const std::string& body);
-  std::string ToString();
-  static Response stock_response(ResponseCode status);
-  ResponseCode ret_response_code() {return response_code_;}
-  std::string body() const { return body_;};
+  std::string ToString() const;
+  static Response CreateStockResponse(const ResponseCode status);
+  ResponseCode ReturnResponseCode() const; 
+  std::string GetBody() const;
   void ApplyGzip();
 private:
   

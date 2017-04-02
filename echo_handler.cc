@@ -3,7 +3,7 @@
 
 RequestHandler::Status EchoHandler::HandleRequest(const Request& request, Response* response)
 {    
-  response->SetStatus(Response::ok);
+  response->SetStatus(Response::OK);
   response->AddHeader("Content-Length", std::to_string(request.GetRawRequest().size()));
   response->AddHeader("Content-Type", "text/plain");
   response->SetBody(request.GetRawRequest());

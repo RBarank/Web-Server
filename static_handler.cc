@@ -61,7 +61,7 @@ RequestHandler::Status StaticHandler::HandleRequest(const Request& request, Resp
 {
   if (request.GetUri().length() == 0)
     {
-      *response = Response::stock_response(Response::bad_request);
+      *response = Response::CreateStockResponse(Response::BAD_REQUEST);
       return RequestHandler::NOT_OK;
     }
   size_t secondSlash = request.GetUri().substr(1).find_first_of("/");
@@ -71,7 +71,7 @@ RequestHandler::Status StaticHandler::HandleRequest(const Request& request, Resp
   std::string request_path;
   if (!url_decode(filepath, request_path))
     {
-      *response = Response::stock_response(Response::bad_request);
+      *response = Response::CreateStockResponse(Response::BAD_REQUEST);
       return RequestHandler::NOT_OK;
     }
   
@@ -79,7 +79,7 @@ RequestHandler::Status StaticHandler::HandleRequest(const Request& request, Resp
   if (request_path.empty() || request_path[0] != '/'
       || (request_path.find("..") != std::string::npos))
     {
-      *response = Response::stock_response(Response::bad_request);
+      *response = Response::CreateStockResponse(Response::BAD_REQUEST);
       return RequestHandler::NOT_OK;
     }
   
@@ -98,7 +98,7 @@ RequestHandler::Status StaticHandler::HandleRequest(const Request& request, Resp
     }
   else
     {
-      *response = Response::stock_response(Response::bad_request);
+      *response = Response::CreateStockResponse(Response::BAD_REQUEST);
       return RequestHandler::NOT_OK;
     }
   
@@ -108,12 +108,12 @@ RequestHandler::Status StaticHandler::HandleRequest(const Request& request, Resp
   std::ifstream is(full_path.c_str(), std::ios::in | std::ios::binary);
   if (!is)
     {
-      //*response = Response::stock_response(Response::not_found);
+      //*response = Response::CreateStockResponse(Response::not_found);
       return RequestHandler::FILE_NOT_FOUND;
     }
   
   // Fill out the reply to be sent to the client.
-  response->SetStatus(Response::ok);
+  response->SetStatus(Response::OK);
   char buf[512];
   std::string content;
   while (is.read(buf, sizeof(buf)).gcount() > 0)

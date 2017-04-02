@@ -51,7 +51,7 @@ std::string setBody()
 
 RequestHandler::Status StatusHandler::HandleRequest(const Request& request, Response* response)
 {
-  response->SetStatus(Response::ok);
+  response->SetStatus(Response::OK);
         
   std::string body = setBody();
   response->AddHeader("Content-Length", std::to_string(body.size()));

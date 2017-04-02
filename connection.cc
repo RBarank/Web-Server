@@ -90,7 +90,7 @@ void Connection::HandleRead()
 	}
       RequestInfo request_info;
       request_info.url = request->GetUri();
-      request_info.rc = response->ret_response_code();
+      request_info.rc = response->ReturnResponseCode();
       HandlerInfo handler_info;
       handler_info.type_of_handler = name_map_[request_uri];
       handler_info.url_prefix = request_uri;

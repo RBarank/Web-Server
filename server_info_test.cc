@@ -8,9 +8,9 @@
 TEST(ServerInfoTest, all) 
 {
   EXPECT_EQ(ServerInfo::getInstance().get_number_of_requests() , 0);
-  ServerInfo::getInstance().append_request("a", Response::accepted);
+  ServerInfo::getInstance().append_request("a", Response::ACCEPTED);
   EXPECT_EQ(ServerInfo::getInstance().get_number_of_requests() , 1);
-  ServerInfo::getInstance().append_request("a", Response::ok);
+  ServerInfo::getInstance().append_request("a", Response::OK);
   EXPECT_EQ(ServerInfo::getInstance().get_number_of_requests() , 2);
   
   ServerInfo::getInstance().append_handler("echo", "/root");
@@ -23,11 +23,11 @@ TEST(ServerInfoTest, all)
       EXPECT_EQ(requests[i].url, "a");
       if (i == 0)
         {
-	  EXPECT_EQ(requests[i].rc, Response::accepted);
+	  EXPECT_EQ(requests[i].rc, Response::ACCEPTED);
         }
       else
         {
-	  EXPECT_EQ(requests[i].rc, Response::ok);
+	  EXPECT_EQ(requests[i].rc, Response::OK);
         }
     }
   

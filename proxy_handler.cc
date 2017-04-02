@@ -225,7 +225,7 @@ RequestHandler::Status ProxyHandler::HandleRequest(const Request& request, Respo
 	}
       else if (response_status == "HTTP/1.1 200 OK\r\n")
 	{
-	  response->SetStatus(Response::ResponseCode::ok);
+	  response->SetStatus(Response::ResponseCode::OK);
 	  
 	  for (std::vector<std::pair<std::string, std::string>>::const_iterator it = headers_.begin(); it != headers_.end(); it++)
 	    {
