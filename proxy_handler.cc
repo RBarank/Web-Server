@@ -132,7 +132,7 @@ RequestHandler::Status ProxyHandler::HandleRequest(const Request& request, Respo
   response_status = "HTTP/1.1 302";
   while(response_status == "HTTP/1.1 302")
     {
-      std::string request_uri = request.uri();
+      std::string request_uri = request.GetUri();
       boost::asio::io_service io_service;
       tcp::resolver resolver(io_service);
       std::cout<<host_url<<std::endl;

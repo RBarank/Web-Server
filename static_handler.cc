@@ -59,14 +59,14 @@ bool StaticHandler::url_decode(const std::string& in, std::string& out)
 
 RequestHandler::Status StaticHandler::HandleRequest(const Request& request, Response* response)
 {
-  if (request.uri().length() == 0)
+  if (request.GetUri().length() == 0)
     {
       *response = Response::stock_response(Response::bad_request);
       return RequestHandler::NOT_OK;
     }
-  size_t secondSlash = request.uri().substr(1).find_first_of("/");
-  std::string request_base = request.uri().substr(0,secondSlash + 1);
-  std::string filepath = request.uri().substr(request_base.length());
+  size_t secondSlash = request.GetUri().substr(1).find_first_of("/");
+  std::string request_base = request.GetUri().substr(0,secondSlash + 1);
+  std::string filepath = request.GetUri().substr(request_base.length());
   
   std::string request_path;
   if (!url_decode(filepath, request_path))
@@ -133,7 +133,7 @@ RequestHandler::Status StaticHandler::HandleRequest(const Request& request, Resp
   response->SetBody(content); 
   response->AddHeader("Content-Length", std::to_string(content.size()));
   response->AddHeader("Content-Type", mime_types::extension_to_type(extension)); 
-      return RequestHandler::OK;
+  return RequestHandler::OK;
 }
 
 

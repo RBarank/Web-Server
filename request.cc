@@ -55,63 +55,63 @@ std::unique_ptr<Request> Request::Parse(const std::string& raw_request)
   return req;
 }
     
-std::string Request::raw_request() const
+std::string Request::GetRawRequest() const
 {
   return raw_request_;
 }
 
-std::string Request::method() const
+std::string Request::GetMethod() const
 {
   return method_;
 }
 
-std::string Request::uri() const
+std::string Request::GetUri() const
 {
   return uri_;
 }
 
-std::string Request::version() const
+std::string Request::GetVersion() const
 {
   return version_;
 }
     
 using Headers = std::vector<std::pair<std::string, std::string>>;
-Headers Request::headers() const 
+Headers Request::GetHeaders() const 
 {
   return headers_;
 }
 
-std::string Request::body() const 
+std::string Request::GetBody() const 
 {
   return body_;
 }
 
-void Request::set_raw_request(std::string raw_request)
+void Request::SetRawRequest(std::string raw_request)
 {
   raw_request_ = raw_request;
 }
-void Request::set_method(std::string method)
+void Request::SetMethod(std::string method)
 {
   method_ = method;
 }
-void Request::set_uri(std::string uri)
+void Request::SetUri(std::string uri)
 {
   uri_= uri;
 }
-void Request::set_version(std::string version)
+void Request::SetVersion(std::string version)
 {
   version_ = version;
 }
-void Request::set_body(std::string body)
+void Request::SetBody(std::string body)
 {
   body_ = body;
 }
-void Request::set_headers(Headers headers)
+void Request::SetHeaders(Headers headers)
 {
   headers_ = headers;
 }
 
-std::string Request::get_header(const std::string header_name)
+std::string Request::GetHeaderByName(const std::string header_name) const
 {
   for (const auto& header : headers_)
     {
@@ -123,7 +123,7 @@ std::string Request::get_header(const std::string header_name)
   return "";
 }
 
-bool Request::accept_gzip() const
+bool Request::AcceptsGzip() const
 {
   for (const auto& header : headers_)
     {

@@ -15,24 +15,24 @@ public:
   
   static std::unique_ptr<Request> Parse(const std::string& raw_request);
   
-  std::string raw_request() const;
-  std::string method() const;
-  std::string uri() const;
-  std::string version() const;
-  std::string body() const;
+  std::string GetRawRequest() const;
+  std::string GetMethod() const;
+  std::string GetUri() const;
+  std::string GetVersion() const;
+  std::string GetBody() const;
   
   using Headers = std::vector<std::pair<std::string, std::string>>;
-  Headers headers() const;
+  Headers GetHeaders() const;
+  std::string GetHeaderByName(const std::string header_name) const;
   
-  void set_raw_request(std::string raw_request);
-  void set_method(std::string method);
-  void set_uri(std::string uri);
-  void set_version(std::string version);
-  void set_body(std::string body);
-  void set_headers(Headers headers);
+  void SetRawRequest(std::string raw_request);
+  void SetMethod(std::string method);
+  void SetUri(std::string uri);
+  void SetVersion(std::string version);
+  void SetBody(std::string body);
+  void SetHeaders(Headers headers);
   
-  std::string get_header(const std::string header_name);
-  bool accept_gzip() const;
+  bool AcceptsGzip() const;
   
 private:
   
