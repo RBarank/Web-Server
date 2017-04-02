@@ -11,10 +11,6 @@
 
 class StaticHandler : public RequestHandler
 {
-  std::string uri_prefix_;
-  std::string root_path_;
-  bool url_decode(const std::string& in, std::string& out);
-  std::string ProcessMarkdown(const std::string& content);
 public:
   // Initializes the handler. Returns a response code indicating success or
   // failure condition.
@@ -27,7 +23,18 @@ public:
   // contents of the response object are undefined, and the server will return
   // HTTP code 500.
   virtual Status HandleRequest(const Request& request, Response* response);
-  
+
+private:
+  std::string uri_prefix_;
+  std::string root_path_;
+
+  // Extracts the url from "in" and returns it in "out".
+  // Return false if it can't find a proper url.
+  bool UrlDecode(const std::string& in, std::string& out) const;
+
+  // Converts the string content, which represents is in  Markdown format,
+  // to a string in html format and returns that string.
+  std::string MarkdownToHtml(const std::string& content) const;
 };
 
 REGISTER_REQUEST_HANDLER(StaticHandler);
