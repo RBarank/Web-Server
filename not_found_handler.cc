@@ -3,8 +3,10 @@
 
 RequestHandler::Status NotFoundHandler::HandleRequest(const Request& request, Response* response)
 {
-  response->SetStatus(Response::not_found);
-  *response = Response::stock_response(Response::not_found);
+  // delete old response, replace with a stock not found response
+  // TODO: use a unique ptr to response?
+  delete response; 
+  *response = Response::CreateStockResponse(Response::NOT_FOUND);
   return RequestHandler::OK;
 }
 

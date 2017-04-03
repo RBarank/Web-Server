@@ -5,7 +5,6 @@
 #include <iostream>
 
 using boost::asio::ip::tcp;
-
     
 RequestHandler::Status ProxyHandler::Init(const std::string& uri_prefix, const NginxConfig& config)
 {
@@ -23,8 +22,8 @@ RequestHandler::Status ProxyHandler::Init(const std::string& uri_prefix, const N
         {
 	  if (statement->tokens_[0] == "remote_host" && statement->tokens_.size() == 2)
             {
-	      remote_host_whole_url = statement->tokens_[1];
-	      remote_host_found = parse_remote_url(remote_host_whole_url);
+	      remote_host_whole_url_ = statement->tokens_[1];
+	      remote_host_found = ParseRemoteUrl(remote_host_whole_url_);
 	    }
 	  else if (statement->tokens_[0] == "remote_port" && statement->tokens_.size() == 2)
 	    {
@@ -48,7 +47,7 @@ RequestHandler::Status ProxyHandler::Init(const std::string& uri_prefix, const N
     }
 }
 
-bool ProxyHandler::parse_remote_url(std::string remote_host_url)
+bool ProxyHandler::ParseRemoteUrl(std::string remote_host_url)
 {
   std::size_t slash_found = remote_host_url.find("//");
   if(slash_found == std::string::npos)
@@ -72,31 +71,31 @@ bool ProxyHandler::parse_remote_url(std::string remote_host_url)
   return true;	
 }
 
-bool ProxyHandler::parse_remote_response(std::string remote_response)
+bool ProxyHandler::ParseRemoteResponse(std::string remote_response)
 {
   std::size_t status_found = remote_response.find("\r\n");
   if(status_found == std::string::npos)
     {
       return false;
     }
-  response_status = remote_response.substr(0, status_found + 2);
-  rest = remote_response.substr(status_found + 2);        
+  response_status_ = remote_response.substr(0, status_found + 2);
+  rest_ = remote_response.substr(status_found + 2);        
 
-  std::size_t header_found = rest.find("\r\n\r\n");
+  std::size_t header_found = rest_.find("\r\n\r\n");
   if(header_found == std::string::npos)
     {
       return false;
     }
-  response_headers = rest.substr(0, header_found + 3);
-  response_body = rest.substr(header_found + 4);
+  response_headers_ = rest_.substr(0, header_found + 3);
+  response_body_ = rest_.substr(header_found + 4);
   
-  read_header(response_headers);  
+  ReadHeader(response_headers_);  
     
   return true;
     
 }
 
-bool ProxyHandler::read_header(std::string headers)
+bool ProxyHandler::ReadHeader(std::string headers)
 {
   std::string temp_headers = headers;
   std::string line;
@@ -108,20 +107,19 @@ bool ProxyHandler::read_header(std::string headers)
         line = temp_headers.substr(0, header_found+1);
 	temp_headers = temp_headers.substr(header_found+2);
       }
-    std::stringstream ssHeader(line);
+    std::stringstream ss_header(line);
     
-    std::string headerName;
-    std::getline(ssHeader, headerName, ':');
+    std::string header_name;
+    std::getline(ss_header, header_name, ':');
     
-    ssHeader >> std::ws; 
+    ss_header >> std::ws; 
     std::string value;
-    std::getline(ssHeader, value, '\r');
+    std::getline(ss_header, value, '\r');
     
-    std::pair<std::string, std::string> header_pair(headerName, value);
+    std::pair<std::string, std::string> header_pair(header_name, value);
     this->headers_.push_back(header_pair);
   }
-  return 1;
-	
+  return true;
 }
     
 
@@ -129,10 +127,10 @@ RequestHandler::Status ProxyHandler::HandleRequest(const Request& request, Respo
 {
   std::string host_url = host_url_;
   std::string path = path_;
-  response_status = "HTTP/1.1 302";
-  while(response_status == "HTTP/1.1 302")
+  response_status_ = "HTTP/1.1 302";
+  while(response_status_ == "HTTP/1.1 302")
     {
-      std::string request_uri = request.uri();
+      std::string request_uri = request.GetUri();
       boost::asio::io_service io_service;
       tcp::resolver resolver(io_service);
       std::cout<<host_url<<std::endl;
@@ -163,7 +161,7 @@ RequestHandler::Status ProxyHandler::HandleRequest(const Request& request, Respo
 
       std::string remote_response;
       
-      while(1) 
+      while(true) 
 	{
       
 	  boost::array<char, 4096> buf;
@@ -189,14 +187,14 @@ RequestHandler::Status ProxyHandler::HandleRequest(const Request& request, Respo
 	}
 
       bool remote_response_status;
-      remote_response_status = parse_remote_response(remote_response);
+      remote_response_status = ParseRemoteResponse(remote_response);
       if (remote_response_status == false)
 	{
 	  return RequestHandler::Status::NOT_OK;
 	}
       
-      std::cout<< response_status<<std::endl;
-      if (response_status.substr(0,12) == "HTTP/1.1 302")
+      std::cout<< response_status_ <<std::endl;
+      if (response_status_.substr(0,12) == "HTTP/1.1 302")
 	{
 	  for (std::vector<std::pair<std::string, std::string>>::const_iterator it = headers_.begin(); it != headers_.end(); it++)
 	    {
@@ -221,11 +219,11 @@ RequestHandler::Status ProxyHandler::HandleRequest(const Request& request, Respo
 		  path = "";
 		}
 	    }
-	  response_status = "HTTP/1.1 302";
+	  response_status_ = "HTTP/1.1 302";
 	}
-      else if (response_status == "HTTP/1.1 200 OK\r\n")
+      else if (response_status_ == "HTTP/1.1 200 OK\r\n")
 	{
-	  response->SetStatus(Response::ResponseCode::ok);
+	  response->SetStatus(Response::ResponseCode::OK);
 	  
 	  for (std::vector<std::pair<std::string, std::string>>::const_iterator it = headers_.begin(); it != headers_.end(); it++)
 	    {
@@ -234,7 +232,7 @@ RequestHandler::Status ProxyHandler::HandleRequest(const Request& request, Respo
 	  //response->AddHeader("Content-Type", "text/html");
 	  //response->AddHeader("Content-Encoding", "gzip");
 	  //response->SetBody(request.raw_request());
-	  response->SetBody(response_body);
+	  response->SetBody(response_body_);
 	}
       headers_.clear();
     }

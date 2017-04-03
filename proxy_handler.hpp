@@ -13,20 +13,6 @@ typedef std::vector<std::pair<std::string, std::string>> Headers;
 
 class ProxyHandler : public RequestHandler
 {
-  std::string uri_prefix_;
-  std::string remote_host_whole_url;
-  std::string protocol_;
-  std::string host_url_;
-  std::string path_;
-  
-  std::string response_headers, response_body, response_status, rest;
-  Headers headers_;
-  
-  std::string remote_port_;
-  bool url_decode(const std::string& in, std::string& out);
-  bool parse_remote_url(std::string remote_host_url);
-  bool parse_remote_response(std::string remote_response);
-  bool read_header(std::string headers);
 public:
   // Initializes the handler. Returns a response code indicating success or
   // failure condition.
@@ -40,13 +26,23 @@ public:
   // HTTP code 500.
   virtual Status HandleRequest(const Request& request, Response* response);
   
-  std::string getPrefix();
-  std::string getWholeURL();
-  std::string getProtocol();
-  std::string getHostURL();
-  std::string getPath();
-  
-  
+private:
+  std::string uri_prefix_;
+  std::string remote_host_whole_url_;
+  std::string protocol_;
+  std::string host_url_;
+  std::string path_;
+  std::string remote_port_;  
+  std::string response_headers_;
+  std::string response_body_;
+  std::string response_status_;
+  std::string rest_;
+  Headers headers_;
+
+  bool UrlDecode(const std::string& in, std::string& out);
+  bool ParseRemoteUrl(std::string remote_host_url);
+  bool ParseRemoteResponse(std::string remote_response);
+  bool ReadHeader(std::string headers);
 };
     
 

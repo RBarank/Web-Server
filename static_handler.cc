@@ -17,7 +17,7 @@ RequestHandler::Status StaticHandler::Init(const std::string& uri_prefix, const 
   return RequestHandler::OK;
 }
 
-bool StaticHandler::url_decode(const std::string& in, std::string& out)
+bool StaticHandler::UrlDecode(const std::string& in, std::string& out) const
 {
   out.clear();
   out.reserve(in.size());
@@ -59,19 +59,19 @@ bool StaticHandler::url_decode(const std::string& in, std::string& out)
 
 RequestHandler::Status StaticHandler::HandleRequest(const Request& request, Response* response)
 {
-  if (request.uri().length() == 0)
+  if (request.GetUri().length() == 0)
     {
-      *response = Response::stock_response(Response::bad_request);
+      *response = Response::CreateStockResponse(Response::BAD_REQUEST);
       return RequestHandler::NOT_OK;
     }
-  size_t secondSlash = request.uri().substr(1).find_first_of("/");
-  std::string request_base = request.uri().substr(0,secondSlash + 1);
-  std::string filepath = request.uri().substr(request_base.length());
+  size_t second_slash = request.GetUri().substr(1).find_first_of("/");
+  std::string request_base = request.GetUri().substr(0,second_slash + 1);
+  std::string file_path = request.GetUri().substr(request_base.length());
   
   std::string request_path;
-  if (!url_decode(filepath, request_path))
+  if (!UrlDecode(file_path, request_path))
     {
-      *response = Response::stock_response(Response::bad_request);
+      *response = Response::CreateStockResponse(Response::BAD_REQUEST);
       return RequestHandler::NOT_OK;
     }
   
@@ -79,11 +79,12 @@ RequestHandler::Status StaticHandler::HandleRequest(const Request& request, Resp
   if (request_path.empty() || request_path[0] != '/'
       || (request_path.find("..") != std::string::npos))
     {
-      *response = Response::stock_response(Response::bad_request);
+      *response = Response::CreateStockResponse(Response::BAD_REQUEST);
       return RequestHandler::NOT_OK;
     }
   
-  // If path ends in slash (i.e. is a directory) then add "index.html".
+  // TODO: this code in the if statement below is old, remove it and handle this case differently.
+  // If path ends in slash (i.e. is a directory) then add "index.html". <-- replace this behavior
   if (request_path[request_path.size() - 1] == '/')
     {
       request_path += "index.html";
@@ -98,7 +99,7 @@ RequestHandler::Status StaticHandler::HandleRequest(const Request& request, Resp
     }
   else
     {
-      *response = Response::stock_response(Response::bad_request);
+      *response = Response::CreateStockResponse(Response::BAD_REQUEST);
       return RequestHandler::NOT_OK;
     }
   
@@ -108,12 +109,12 @@ RequestHandler::Status StaticHandler::HandleRequest(const Request& request, Resp
   std::ifstream is(full_path.c_str(), std::ios::in | std::ios::binary);
   if (!is)
     {
-      //*response = Response::stock_response(Response::not_found);
+      *response = Response::CreateStockResponse(Response::NOT_FOUND);
       return RequestHandler::FILE_NOT_FOUND;
     }
   
   // Fill out the reply to be sent to the client.
-  response->SetStatus(Response::ok);
+  response->SetStatus(Response::OK);
   char buf[512];
   std::string content;
   while (is.read(buf, sizeof(buf)).gcount() > 0)
@@ -125,19 +126,18 @@ RequestHandler::Status StaticHandler::HandleRequest(const Request& request, Resp
   // Handle markdown files
   if (extension == "md")
     {
-      std::string temp = ProcessMarkdown(content);
+      std::string temp = MarkdownToHtml(content);
       content = temp;
-      std::cout << "MARKDOWN" << std::endl;
     }
   
   response->SetBody(content); 
   response->AddHeader("Content-Length", std::to_string(content.size()));
-  response->AddHeader("Content-Type", mime_types::extension_to_type(extension)); 
-      return RequestHandler::OK;
+  response->AddHeader("Content-Type", mime_types::ExtensionToType(extension)); 
+  return RequestHandler::OK;
 }
 
 
-std::string StaticHandler::ProcessMarkdown(const std::string& content)
+std::string StaticHandler::MarkdownToHtml(const std::string& content) const
 {
   // Use the cpp-markdown library to handle markdown files
   markdown::Document md_doc;

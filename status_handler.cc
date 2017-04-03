@@ -3,7 +3,7 @@
 #include <vector>
 
 
-std::string setBody() 
+std::string StatusHandler::CreateStatusString() const 
 {
   /*
     Write a new request handler that displays information on the status of the web server, such as:
@@ -12,51 +12,51 @@ std::string setBody()
     In your config file, configure the status handler for the "/status" URI.
   */
   
-  std::string ret;
+  std::string status_string;
   
-  ret += "STATUS\n\n";
-  ret += "Number of requests received: " + std::to_string(ServerInfo::getInstance().get_number_of_requests());
-  ret += "\n";
+  status_string += "SERVER STATUS\n\n";
+  status_string += "Number of requests received: " + std::to_string(ServerInfo::getInstance().get_number_of_requests());
+  status_string += "\n\n";
   
   std::vector<HandlerInfo> handler_info = ServerInfo::getInstance().ret_handler_info();
   std::vector<RequestInfo> request_info = ServerInfo::getInstance().ret_request_info();
   
-  ret += "Handlers :\n";
-  for (size_t i =0 ; i <handler_info.size();i++)
+  status_string += "HANDLERS\n";
+  status_string += "Name -> URL Prefix:\n";
+  for (size_t i = 0; i < handler_info.size(); i++)
     {
-      ret += "Type of handler : ";
-      ret += handler_info[i].type_of_handler;
-      ret += ". URL prefix : ";
-      ret += handler_info[i].url_prefix;
-      ret += "\n";
+      status_string += handler_info[i].type_of_handler;
+      status_string += " -> ";
+      status_string += handler_info[i].url_prefix;
+      status_string += "\n";
     }
   
-  ret += "\n";
+  status_string += "\n";
   
-  ret += "Requests :\n";
-  for (size_t i =0 ; i <request_info.size();i++)
+  status_string += "REQUESTS RECEIVED\n";
+  status_string += "URL -> Response Code:\n";
+  for (size_t i = 0; i < request_info.size(); i++)
     {
-      ret += "URL : ";
-      ret += request_info[i].url;
-      ret += " -> Response Code : ";
-      ret += std::to_string(request_info[i].rc);
-      ret += "\n";
+      status_string += request_info[i].url;
+      status_string += " -> ";
+      status_string += std::to_string(request_info[i].rc);
+      status_string += "\n";
     }
   
-  ret += "\n";
+  status_string += "\n";
   
-  return ret;
-  
+  return status_string;  
 }
 
 RequestHandler::Status StatusHandler::HandleRequest(const Request& request, Response* response)
 {
-  response->SetStatus(Response::ok);
-        
-  std::string body = setBody();
+  response->SetStatus(Response::OK);
+
+  std::string body = CreateStatusString();
   response->AddHeader("Content-Length", std::to_string(body.size()));
   response->AddHeader("Content-Type", "text/plain");
   response->SetBody(body);
+
   return RequestHandler::OK;
 }
 

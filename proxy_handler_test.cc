@@ -115,10 +115,10 @@ TEST_F(ProxyHandlerTest, HandleRequest)
   Response response;
   std::string raw_request = "GET / HTTP/1.1\r\n\r\n";
   std::unique_ptr<Request> req(new Request);
-  req->set_raw_request(raw_request);
-  req->set_method("GET");
-  req->set_uri("/");
-  req->set_version("HTTP/1.1");
+  req->SetRawRequest(raw_request);
+  req->SetMethod("GET");
+  req->SetUri("/");
+  req->SetVersion("HTTP/1.1");
   
   parseConfig("remote_host http://www.ucla.edu;");
   

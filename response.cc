@@ -37,47 +37,46 @@ namespace status_strings
   const std::string service_unavailable =
     "HTTP/1.1 503 Service Unavailable";
   
-  std::string response_code_to_string(Response::ResponseCode status)
+  std::string ResponseCodeToString(Response::ResponseCode status)
   {
     switch (status)
       {
-      case Response::ok:
+      case Response::OK:
 	return ok;
-      case Response::created:
+      case Response::CREATED:
 	return created;
-      case Response::accepted:
+      case Response::ACCEPTED:
 	return accepted;
-      case Response::no_content:
+      case Response::NO_CONTENT:
 	return no_content;
-      case Response::multiple_choices:
+      case Response::MULTIPLE_CHOICES:
 	return multiple_choices;
-      case Response::moved_permanently:
+      case Response::MOVED_PERMANENTLY:
 	return moved_permanently;
-      case Response::moved_temporarily:
+      case Response::MOVED_TEMPORARILY:
 	return moved_temporarily;
-      case Response::not_modified:
+      case Response::NOT_MODIFIED:
 	return not_modified;
-      case Response::bad_request:
+      case Response::BAD_REQUEST:
 	return bad_request;
-      case Response::unauthorized:
+      case Response::UNAUTHORIZED:
 	return unauthorized;
-      case Response::forbidden:
+      case Response::FORBIDDEN:
 	return forbidden;
-      case Response::not_found:
+      case Response::NOT_FOUND:
 	return not_found;
-      case Response::internal_server_error:
+      case Response::INTERNAL_SERVER_ERROR:
 	return internal_server_error;
-      case Response::not_implemented:
+      case Response::NOT_IMPLEMENTED:
 	return not_implemented;
-      case Response::bad_gateway:
+      case Response::BAD_GATEWAY:
 	return bad_gateway;
-      case Response::service_unavailable:
+      case Response::SERVICE_UNAVAILABLE:
 	return service_unavailable;
-      default:
+      default: // for now, default is INTERNAL_SERVER_ERROR
 	return internal_server_error;
       }
   }
-  
 } // namespace status_strings
     
 void Response::SetStatus(const ResponseCode response_code)
@@ -108,24 +107,24 @@ void Response::SetBody(const std::string& body)
   body_ = body;
 }
 
-std::string Response::ToString()
+std::string Response::ToString() const
 {
   const std::string CRLF = "\r\n";
-  std::string response_str = status_strings::response_code_to_string(response_code_) + CRLF;
+  std::string response_str = status_strings::ResponseCodeToString(response_code_) + CRLF;
   for (auto header : headers_)
     {
       response_str += header.first + ": " + header.second + CRLF;
     }
-  response_str += CRLF; // there is an extra CRLF between last header and body of response
+  response_str += CRLF; // Note that there is an extra CRLF between last header and body of response
   response_str += body_;
   return response_str;
 }
 
-Response Response::stock_response(Response::ResponseCode status)
+Response Response::CreateStockResponse(Response::ResponseCode status)
 {
   Response resp;
   resp.response_code_ = status;
-  resp.body_ = status_strings::response_code_to_string(status);
+  resp.body_ = status_strings::ResponseCodeToString(status);
   resp.headers_.push_back(std::make_pair("Content-Length", std::to_string(resp.body_.size())));
   resp.headers_.push_back(std::make_pair("Content-Type", "text/html"));            
   return resp;
@@ -143,4 +142,14 @@ void Response::ApplyGzip()
   SetBody(compressedString);
   SetHeader("Content-Length", std::to_string(compressedString.size()));
   AddHeader("Content-Encoding", "gzip");      
+}
+
+std::string Response::GetBody() const
+{
+  return body_;
+}
+
+Response::ResponseCode Response::GetResponseCode() const
+{
+  return response_code_;
 }

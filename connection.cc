@@ -74,7 +74,7 @@ void Connection::HandleRead()
   
   std::unique_ptr<Request> request(Request::Parse(buffer_string));  
   std::string request_uri;
-  request_uri = request->uri();
+  request_uri = request->GetUri();
   
   Response* response = new Response;
   RequestHandler* handler = GetRequestHandler(request_uri);
@@ -89,8 +89,8 @@ void Connection::HandleRead()
 	  path_map_[request_uri]->HandleRequest(*request, response);
 	}
       RequestInfo request_info;
-      request_info.url = request->uri();
-      request_info.rc = response->ret_response_code();
+      request_info.url = request->GetUri();
+      request_info.rc = response->GetResponseCode();
       HandlerInfo handler_info;
       handler_info.type_of_handler = name_map_[request_uri];
       handler_info.url_prefix = request_uri;
@@ -102,7 +102,7 @@ void Connection::HandleRead()
     }
 
   // if request accepts gzip encoding, pass response to the gzip-compression function
-  if (request->accept_gzip())
+  if (request->AcceptsGzip())
     {
       response->ApplyGzip();
     }
