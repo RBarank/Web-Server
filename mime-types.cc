@@ -16,17 +16,16 @@ namespace mime_types {
       { "md", "text/html" }
     };
 
-  std::string extension_to_type(const std::string& extension)
+  std::string ExtensionToType(const std::string& extension)
   {
-    for (mapping m: mappings)
+    for (const mapping mapping: mappings)
       {
-	if (m.extension == extension)
+	if (mapping.extension == extension)
 	  {
-	    return m.mime_type;
+	    return mapping.mime_type;
 	  }
       }
-
-    return "text/plain";
+    return "text/plain"; // if can't find the extension, return a default text/plain
   }
 
 } // namespace mime_types
